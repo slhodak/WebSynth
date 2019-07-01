@@ -27,11 +27,22 @@ class Synthesizer {
     this.filters = [];
     SynthController.createListeners();
     this.playNote = this.playNote.bind(this);
+    this.findFrequencyFromNote = this.findFrequencyFromNote.bind(this);
   }
 
   playNote(note) {
     this.globals.note = note;
     this.oscillators.forEach(osc => osc.sound());
+  }
+
+  findFrequencyFromNote(note) {
+    return Math.pow(2, (note - 49)/12) * 440;
+  }
+
+  updateOscFrequencies() {
+    synthesizer.oscillators.forEach(osc => {
+      osc.setFrequency();
+    });
   }
 }
 
@@ -46,7 +57,7 @@ class Oscillator extends OscillatorNode {
     this.semitoneOffset = 0;
     this.volume = 0.75;
     this.porta = synthesizer.globals.porta;
-    this.frequency.setTargetAtTime(findFrequencyFromNote(synthesizer.globals.note), synthesizer.context.currentTime, 0);
+    this.frequency.setTargetAtTime(synthesizer.findFrequencyFromNote(synthesizer.globals.note), synthesizer.context.currentTime, 0);
     this.attack = synthesizer.globals.attack;
     this.release = synthesizer.globals.release;
     
@@ -69,10 +80,11 @@ class Oscillator extends OscillatorNode {
   }
 
   setFrequency() {
-    this.frequency.setTargetAtTime(findFrequencyFromNote(synthesizer.globals.note + this.semitoneOffset), this.context.currentTime, this.porta);
+    this.frequency.setTargetAtTime(synthesizer.findFrequencyFromNote(synthesizer.globals.note + this.semitoneOffset), this.context.currentTime, this.porta);
   }
 
   sound() {
+    this.setFrequency();
     if (!this.playing) {
       this.gainNode.gain.setTargetAtTime(this.volume, this.context.currentTime, this.attack);
       synthesizer.globals.gain = 1;
@@ -129,16 +141,6 @@ class Oscillator extends OscillatorNode {
   setFineDetune(detune) {
     this.detune.setTargetAtTime(detune, this.context.currentTime, 0);
   }
-}
-
-function findFrequencyFromNote(note) {
-  return Math.pow(2, (note - 49)/12) * 440;
-}
-
-function updateOscFrequencies(note) {
-  synthesizer.oscillators.forEach(osc => {
-    osc.setFrequency();
-  });
 }
 
 //  - Filters
