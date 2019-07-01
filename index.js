@@ -26,6 +26,12 @@ class Synthesizer {
     this.oscillators = [];
     this.filters = [];
     SynthController.createListeners();
+    this.playNote = this.playNote.bind(this);
+  }
+
+  playNote(note) {
+    this.globals.note = note;
+    this.oscillators.forEach(osc => osc.sound());
   }
 }
 
