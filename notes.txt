@@ -1,0 +1,10 @@
+WebSynth
+
+Browser-based synthesizer
+
+Goals:
+  Modularity and flexibility
+  A friction-minimal UI that rewards spontaneity and creativity
+    - Hotkey-drive synth adjustments
+      - Hotkey chords
+        (maybe need an abstraction/helper function to help create chord event handlers?)
