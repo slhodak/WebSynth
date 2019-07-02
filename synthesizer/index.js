@@ -219,7 +219,7 @@ const SynthController = {
     let noteSlider = document.getElementsByClassName('noteSlider')[0];
     noteSlider.addEventListener('input', (e) => {
       synthesizer.globals.note = Number(e.target.value);
-      updateOscFrequencies();
+      synthesizer.updateOscFrequencies();
       OscViews.updateOscList();
     });
     let attackSlider = document.getElementsByClassName('attackSlider')[0];
