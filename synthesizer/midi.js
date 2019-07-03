@@ -1,21 +1,21 @@
-let midiKeyboard = null;
+let midiKeyboard = {};
 window.navigator.requestMIDIAccess()
   .then(resolve => {
-    midiKeyboard = new MidiKeyboard(resolve);
+    extendKeyboard(resolve);
   })
   .catch(reject => {
     console.log(reject);
   });
 
-class MidiKeyboard {
-  constructor(parent) {
-    this.midiAccess = parent;
-    this.midiAccess.onstatechange = (connection) => { 
-      this.connection = connection;
-      this.connection.port.onmidimessage = (msg) => {
-        console.log(msg);
-        synthesizer.playNote(msg.data[1]);
-      }
-    };
-  }
+
+function extendKeyboard(baseObject) {
+  midiKeyboard.midiAccess = baseObject;
+  midiKeyboard.midiAccess.onstatechange = (connection) => { 
+    midiKeyboard.connection = connection;
+    midiKeyboard.connection.port.onmidimessage = (msg) => {
+      console.log(msg);
+      synthesizer.playNote(msg.data[1]);
+    }
+  };
 }
+
