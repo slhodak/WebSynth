@@ -11,6 +11,7 @@ Goals:
 
 Next:
   - Add support for mono/poly
+    - Polyphony button toggles poly mode
   - Mono default legato w/trill (done with room for cleaner refactor)
   - Add velocity sensitivity
     - With slider
