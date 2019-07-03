@@ -204,9 +204,6 @@ window.addEventListener('keydown', (e) => {
     console.log('Creating filter')
   }
 });
-//  - sound control to start/stop Using keyboard space button for now
-//  - add support for USB MIDI
-//  - add 12-key keyboard with octave buttons
 
 //  Global Oscillator Parameters
 const SynthController = {
