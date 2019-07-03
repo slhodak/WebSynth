@@ -15,8 +15,9 @@ class Synthesizer {
     this.masterGain = this.context.createGain();
     this.masterGain.connect(this.context.destination);
     this.globals = {
-      note: 49,
-      noteOn: null,
+      note: null,
+      notesList: [],
+      notesObj: {},
       porta: 0.25,
       attack: 0.01,
       release: 0.01,
@@ -28,30 +29,47 @@ class Synthesizer {
     SynthController.createListeners();
     this.playNote = this.playNote.bind(this);
     this.endNote = this.endNote.bind(this);
+    this.findNextNote = this.findNextNote.bind(this);
     this.findFrequencyFromNote = this.findFrequencyFromNote.bind(this);
   }
 
   playNote(note) {
-    this.globals.note = note;
-    this.updateOscFrequencies();
-    if (!this.globals.noteOn) {
+    this.updateOscFrequencies(note);
+    if (!this.globals.note) {
       this.oscillators.forEach(osc => osc.on());
     }
-    this.globals.noteOn = true;
+    this.globals.note = note;
+    this.globals.notesList.push(note);
+    this.globals.notesObj[note] = note;
   }
-  
-  endNote() {
-    this.globals.noteOn = false;
-    this.oscillators.forEach(osc => osc.off());
+
+  endNote(note) {
+    delete this.globals.notesObj[note];
+    this.findNextNote()
+  }
+
+  findNextNote() {
+    if (!this.globals.notesList.length) {
+      this.oscillators.forEach(osc => osc.off());
+      this.globals.note = null;
+      return;
+    }
+    if (this.globals.notesObj[this.globals.notesList[this.globals.notesList.length - 1]]) {
+      this.globals.note = this.globals.notesList[this.globals.notesList.length - 1];
+      this.updateOscFrequencies(this.globals.note);
+    } else {
+      this.globals.notesList.pop();
+      this.findNextNote();
+    }
   }
 
   findFrequencyFromNote(note) {
     return Math.pow(2, (note - 49)/12) * 440;
   }
 
-  updateOscFrequencies() {
+  updateOscFrequencies(note) {
     synthesizer.oscillators.forEach(osc => {
-      osc.setFrequency();
+      osc.setFrequency(note);
     });
   }
 }
@@ -67,7 +85,6 @@ class Oscillator extends OscillatorNode {
     this.semitoneOffset = 0;
     this.volume = 0.75;
     this.porta = synthesizer.globals.porta;
-    this.frequency.setTargetAtTime(synthesizer.findFrequencyFromNote(synthesizer.globals.note), synthesizer.context.currentTime, 0);
     this.attack = synthesizer.globals.attack;
     this.release = synthesizer.globals.release;
     
@@ -89,8 +106,8 @@ class Oscillator extends OscillatorNode {
     this.setFineDetune = this.setFineDetune.bind(this);
   }
 
-  setFrequency() {
-    this.frequency.setTargetAtTime(synthesizer.findFrequencyFromNote(synthesizer.globals.note + this.semitoneOffset), this.context.currentTime, this.porta);
+  setFrequency(note) {
+    this.frequency.setTargetAtTime(synthesizer.findFrequencyFromNote(note + this.semitoneOffset), this.context.currentTime, this.porta);
   }
 
   on() {

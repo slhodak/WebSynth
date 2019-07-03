@@ -17,7 +17,7 @@ function extendKeyboard(baseObject) {
       if (msg.data[0] === 144) {
         synthesizer.playNote(msg.data[1]);
       } else if (msg.data[0] === 128) {
-        synthesizer.endNote();
+        synthesizer.endNote(msg.data[1]);
       }
     }
   };
