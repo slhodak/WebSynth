@@ -16,23 +16,33 @@ class Synthesizer {
     this.masterGain.connect(this.context.destination);
     this.globals = {
       note: 49,
+      noteOn: null,
       porta: 0.25,
       attack: 0.01,
       release: 0.01,
       gain: 0,
-      type: 'sine',
-      playing: false
+      type: 'sine'
     };
     this.oscillators = [];
     this.filters = [];
     SynthController.createListeners();
     this.playNote = this.playNote.bind(this);
+    this.endNote = this.endNote.bind(this);
     this.findFrequencyFromNote = this.findFrequencyFromNote.bind(this);
   }
 
   playNote(note) {
     this.globals.note = note;
-    this.oscillators.forEach(osc => osc.sound());
+    this.updateOscFrequencies();
+    if (!this.globals.noteOn) {
+      this.oscillators.forEach(osc => osc.on());
+    }
+    this.globals.noteOn = true;
+  }
+  
+  endNote() {
+    this.globals.noteOn = false;
+    this.oscillators.forEach(osc => osc.off());
   }
 
   findFrequencyFromNote(note) {
@@ -66,13 +76,13 @@ class Oscillator extends OscillatorNode {
     this.connect(this.gainNode);
     this.gainNode.connect(synthesizer.masterGain);
     this.start();
-
-    this.playing = synthesizer.globals.playing;
-    this.sound = this.sound.bind(this);
+    
+    this.setFrequency = this.setFrequency.bind(this);
+    this.on = this.on.bind(this);
+    this.off = this.off.bind(this);
     this.connectToFilter = this.connectToFilter.bind(this);
     this.connectToMaster = this.connectToMaster.bind(this);
     this.setVolume = this.setVolume.bind(this);
-    this.setFrequency = this.setFrequency.bind(this);
     this.setPorta = this.setPorta.bind(this);
     this.setType = this.setType.bind(this);
     this.setSemitoneOffset = this.setSemitoneOffset.bind(this);
@@ -83,18 +93,15 @@ class Oscillator extends OscillatorNode {
     this.frequency.setTargetAtTime(synthesizer.findFrequencyFromNote(synthesizer.globals.note + this.semitoneOffset), this.context.currentTime, this.porta);
   }
 
-  sound() {
-    this.setFrequency();
-    if (!this.playing) {
-      this.gainNode.gain.setTargetAtTime(this.volume, this.context.currentTime, this.attack);
-      synthesizer.globals.gain = 1;
-    } else {
-      this.gainNode.gain.setTargetAtTime(0, this.context.currentTime, this.release);
-      synthesizer.globals.gain = 0;
-    }  
-    this.playing = !this.playing;
-    synthesizer.globals.playing = this.playing;
+  on() {
+    this.gainNode.gain.setTargetAtTime(this.volume, this.context.currentTime, this.attack);
+    synthesizer.globals.gain = 1;
     OscViews.updateOscList();
+  }
+
+  off() {
+    this.gainNode.gain.setTargetAtTime(0, this.context.currentTime, this.release);
+    synthesizer.globals.gain = 0;
   }
 
   connectToFilter(id) {
@@ -196,7 +203,13 @@ window.addEventListener('keydown', (e) => {
   }
   if (e.key === ' ') {
     synthesizer.oscillators.forEach(osc => {
-      osc.sound()
+      if (synthesizer.globals.noteOn) {
+        osc.off();
+        synthesizer.globals.noteOn = false;
+      } else {
+        osc.on()
+        synthesizer.globals.noteOn = true;
+      }
     });
   }
   if (e.key === 'f') {

@@ -12,4 +12,5 @@ Goals:
 Next:
   - Add support for mono/poly
   - Mono default legato w/trill
-  
+  - Add velocity sensitivity
+    - With slider
