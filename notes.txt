@@ -8,3 +8,9 @@ Goals:
     - Hotkey-drive synth adjustments
       - Hotkey chords
         (maybe need an abstraction/helper function to help create chord event handlers?)
+
+Next:
+  - Add support for mono/poly
+  - Mono default legato w/trill (done with room for cleaner refactor)
+  - Add velocity sensitivity
+    - With slider

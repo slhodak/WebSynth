@@ -15,33 +15,61 @@ class Synthesizer {
     this.masterGain = this.context.createGain();
     this.masterGain.connect(this.context.destination);
     this.globals = {
-      note: 49,
+      note: null,
+      notesList: [],
+      notesObj: {},
       porta: 0.25,
       attack: 0.01,
       release: 0.01,
       gain: 0,
-      type: 'sine',
-      playing: false
+      type: 'sine'
     };
     this.oscillators = [];
     this.filters = [];
     SynthController.createListeners();
     this.playNote = this.playNote.bind(this);
+    this.endNote = this.endNote.bind(this);
+    this.findNextNote = this.findNextNote.bind(this);
     this.findFrequencyFromNote = this.findFrequencyFromNote.bind(this);
   }
 
   playNote(note) {
+    this.updateOscFrequencies(note);
+    if (!this.globals.note) {
+      this.oscillators.forEach(osc => osc.on());
+    }
     this.globals.note = note;
-    this.oscillators.forEach(osc => osc.sound());
+    this.globals.notesList.push(note);
+    this.globals.notesObj[note] = note;
+  }
+
+  endNote(note) {
+    delete this.globals.notesObj[note];
+    this.findNextNote()
+  }
+
+  findNextNote() {
+    if (!this.globals.notesList.length) {
+      this.oscillators.forEach(osc => osc.off());
+      this.globals.note = null;
+      return;
+    }
+    if (this.globals.notesObj[this.globals.notesList[this.globals.notesList.length - 1]]) {
+      this.globals.note = this.globals.notesList[this.globals.notesList.length - 1];
+      this.updateOscFrequencies(this.globals.note);
+    } else {
+      this.globals.notesList.pop();
+      this.findNextNote();
+    }
   }
 
   findFrequencyFromNote(note) {
     return Math.pow(2, (note - 49)/12) * 440;
   }
 
-  updateOscFrequencies() {
+  updateOscFrequencies(note) {
     synthesizer.oscillators.forEach(osc => {
-      osc.setFrequency();
+      osc.setFrequency(note);
     });
   }
 }
@@ -57,7 +85,6 @@ class Oscillator extends OscillatorNode {
     this.semitoneOffset = 0;
     this.volume = 0.75;
     this.porta = synthesizer.globals.porta;
-    this.frequency.setTargetAtTime(synthesizer.findFrequencyFromNote(synthesizer.globals.note), synthesizer.context.currentTime, 0);
     this.attack = synthesizer.globals.attack;
     this.release = synthesizer.globals.release;
     
@@ -66,35 +93,32 @@ class Oscillator extends OscillatorNode {
     this.connect(this.gainNode);
     this.gainNode.connect(synthesizer.masterGain);
     this.start();
-
-    this.playing = synthesizer.globals.playing;
-    this.sound = this.sound.bind(this);
+    
+    this.setFrequency = this.setFrequency.bind(this);
+    this.on = this.on.bind(this);
+    this.off = this.off.bind(this);
     this.connectToFilter = this.connectToFilter.bind(this);
     this.connectToMaster = this.connectToMaster.bind(this);
     this.setVolume = this.setVolume.bind(this);
-    this.setFrequency = this.setFrequency.bind(this);
     this.setPorta = this.setPorta.bind(this);
     this.setType = this.setType.bind(this);
     this.setSemitoneOffset = this.setSemitoneOffset.bind(this);
     this.setFineDetune = this.setFineDetune.bind(this);
   }
 
-  setFrequency() {
-    this.frequency.setTargetAtTime(synthesizer.findFrequencyFromNote(synthesizer.globals.note + this.semitoneOffset), this.context.currentTime, this.porta);
+  setFrequency(note) {
+    this.frequency.setTargetAtTime(synthesizer.findFrequencyFromNote(note + this.semitoneOffset), this.context.currentTime, this.porta);
   }
 
-  sound() {
-    this.setFrequency();
-    if (!this.playing) {
-      this.gainNode.gain.setTargetAtTime(this.volume, this.context.currentTime, this.attack);
-      synthesizer.globals.gain = 1;
-    } else {
-      this.gainNode.gain.setTargetAtTime(0, this.context.currentTime, this.release);
-      synthesizer.globals.gain = 0;
-    }  
-    this.playing = !this.playing;
-    synthesizer.globals.playing = this.playing;
+  on() {
+    this.gainNode.gain.setTargetAtTime(this.volume, this.context.currentTime, this.attack);
+    synthesizer.globals.gain = 1;
     OscViews.updateOscList();
+  }
+
+  off() {
+    this.gainNode.gain.setTargetAtTime(0, this.context.currentTime, this.release);
+    synthesizer.globals.gain = 0;
   }
 
   connectToFilter(id) {
@@ -196,7 +220,13 @@ window.addEventListener('keydown', (e) => {
   }
   if (e.key === ' ') {
     synthesizer.oscillators.forEach(osc => {
-      osc.sound()
+      if (synthesizer.globals.noteOn) {
+        osc.off();
+        synthesizer.globals.noteOn = false;
+      } else {
+        osc.on()
+        synthesizer.globals.noteOn = true;
+      }
     });
   }
   if (e.key === 'f') {
@@ -204,9 +234,6 @@ window.addEventListener('keydown', (e) => {
     console.log('Creating filter')
   }
 });
-//  - sound control to start/stop Using keyboard space button for now
-//  - add support for USB MIDI
-//  - add 12-key keyboard with octave buttons
 
 //  Global Oscillator Parameters
 const SynthController = {
