@@ -25,6 +25,7 @@ class Synthesizer {
       type: 'sine'
     };
     this.poly = false;
+    this.voices = [];
     this.oscillators = [];
     this.filters = [];
     SynthController.createListeners();
@@ -75,6 +76,32 @@ class Synthesizer {
   }
 }
 
+//  - Voice
+class Voice {
+  constructor(midiMessage) {
+    //  is created by synthesizer to create oscillators
+    this.id = synthesizer.voices.length;
+    this.oscillators = [];
+    this.note = synthesizer.globals.note;
+    this.output = synthesizer.createGain();
+    //  output gain depends on midiMessage velocity
+    this.output.gain = 127 / midiMessage.data[0];
+  }
+
+  on() {
+    //  creates and turns on all oscillators, which ramp up and sound according to their own properties
+    //  adds self to synthesizer list of voices
+
+  }
+
+  off() {
+    //  ramps down all oscillators according to their own properties, and disconnects them
+    //  removes self from synthesizer list of voices
+
+  }
+
+}
+
 //  - Oscillators
 class Oscillator extends OscillatorNode {
   constructor(synthesizer) {
@@ -108,6 +135,7 @@ class Oscillator extends OscillatorNode {
   }
 
   setFrequency(note) {
+    console.log();
     this.frequency.setTargetAtTime(synthesizer.findFrequencyFromNote(note + this.semitoneOffset), this.context.currentTime, this.porta);
   }
 
