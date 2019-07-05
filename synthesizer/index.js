@@ -110,13 +110,14 @@ class Oscillator {
     this.release = synthesizer.globals.release;
 
     this.output = synthesizer.context.createGain();
-    this.output.gain.setTargetAtTime(this.volume, synthesizer.context.currentTime, 0);
+    this.output.gain.value = this.volume;
     this.output.connect(synthesizer.context.destination);
     
-    //  Alter all these to alter children, not self
-    // this.setFrequency = this.setFrequency.bind(this);
     this.connectToFilter = this.connectToFilter.bind(this);
     this.connectToMaster = this.connectToMaster.bind(this);
+
+    //  Alter all these to alter children, not self
+    // this.setFrequency = this.setFrequency.bind(this);
     this.setVolume = this.setVolume.bind(this);
     this.setPorta = this.setPorta.bind(this);
     this.setType = this.setType.bind(this);
@@ -125,24 +126,22 @@ class Oscillator {
   }
 
   addVoice(midiMessage) {
-    let voice = synthesizer.context.createOscillator({
-      frequency: synthesizer.findFrequencyFromNote(midiMessage.data[1]),
+    let voice = new OscillatorNode(synthesizer.context, {
+      frequency: synthesizer.findFrequencyFromNote(midiMessage.data[1], synthesizer.context.currentTime, 0),
       type: this.type
     });
-    console.log(synthesizer.findFrequencyFromNote(midiMessage.data[1]));
-    // voice.frequency.setTargetAtTime(synthesizer.findFrequencyFromNote(midiMessage.data[1]), synthesizer.context.currentTime, 0);
-    console.log(voice.frequency);
     voice.gainNode = synthesizer.context.createGain();
-    voice.gainNode.gain.setTargetAtTime(0, synthesizer.context.currentTime, 0);
-    voice.start();
+    voice.gainNode.gain.value = 0;
+    voice.connect(voice.gainNode);
     voice.gainNode.connect(synthesizer.context.destination);
+    voice.start();
     voice.gainNode.gain.setTargetAtTime(this.volume, synthesizer.context.currentTime, this.attack);
     this.voices[midiMessage.data[1]] = voice;
     console.log(voice);
-    console.log(this.output);
   }
-
+  
   removeVoice(midiMessage) {
+    console.log(this.voices[midiMessage.data[1]].gainNode.gain);
     this.voices[midiMessage.data[1]].gainNode.gain.setTargetAtTime(0, synthesizer.context.currentTime, 0);
     this.voices[midiMessage.data[1]].gainNode.disconnect();
     delete (this.voices[midiMessage.data[1]]);
@@ -164,9 +163,9 @@ class Oscillator {
   }
 
   setType(type) {
+    this.type = type;
     for (let voice in this.voices) {
       this.voices[voice].type = type;
-      console.log(this.voices[voice]);
     }
   }
 
