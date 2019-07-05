@@ -49,6 +49,10 @@ Troubleshooting:
 
   - Voices not creating new oscillator nodes?
   
+  TODO: 
+    - Fix disconnect timing
+    - Re-implement legato alongside poly option
+    - Connect oscillator voices to filter
 
 
 
