@@ -188,7 +188,6 @@ class Oscillator extends OscillatorNode {
 
   setSemitoneOffset(semitoneOffset) {
     this.semitoneOffset = semitoneOffset;
-    this.setFrequency();
   }
 
   setFineDetune(detune) {
