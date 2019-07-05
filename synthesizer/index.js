@@ -15,15 +15,16 @@ class Synthesizer {
     this.masterGain = this.context.createGain();
     this.masterGain.connect(this.context.destination);
     this.globals = {
-      noteOn: false,
-      note: null,
-      notesList: [],
-      notesObj: {},
       porta: 0.05,
       attack: 0.01,
       release: 0.1,
-      gain: 0,
       type: 'sine'
+    };
+    this.mono = {
+      note: null,
+      notesList: [],
+      notesObj: {},
+      voices: {}
     };
     this.poly = true;
     this.oscillators = [];
@@ -41,13 +42,28 @@ class Synthesizer {
         osc.addVoice(midiMessage);
       });
     } else {
-      this.updateOscFrequencies(midiMessage.data[1]);
-      if (!this.globals.note) {
-        this.oscillators.forEach(osc => osc.on());
+      if (!this.mono.note) {
+        this.oscillators.forEach(osc => {
+          this.mono.voices[midiMessage.data[1]] = new Voice(
+            synthesizer.context, 
+            {
+              frequency: synthesizer.findFrequencyFromNote(midiMessage.data[1]),
+              type: osc.type,
+              detune: osc.fineDetune
+            }, 
+            osc);
+          });
+        this.mono.notesObj[midiMessage.data[1]] = true;
+        this.mono.notesList.push(midiMessage.data[1]);
+        this.mono.note = midiMessage.data[1];
+      } else {
+        for (let voice in this.mono.voices) {
+          this.mono.voices[voice].setFrequency(midiMessage.data[1]);
+          this.mono.notesObj[midiMessage.data[1]] = true;
+          this.mono.notesList.push(midiMessage.data[1]);
+          this.mono.note = midiMessage.data[1];
+        }
       }
-      this.globals.note = midiMessage.data[1];
-      this.globals.notesList.push(midiMessage.data[1]);
-      this.globals.notesObj[midiMessage.data[1]] = midiMessage.data[1];
     }
   }
 
@@ -57,36 +73,32 @@ class Synthesizer {
         osc.removeVoice(midiMessage);
       });
     } else {
-      delete this.globals.notesObj[midiMessage.data[1]];
-      this.findNextNote()
+      delete this.mono.notesObj[midiMessage.data[1]];
+      this.findNextNote();
     }
   }
 
   findNextNote() {
-    if (!this.globals.notesList.length) {
-      this.oscillators.forEach(osc => osc.off());
-      this.globals.note = null;
-      return;
-    }
-    if (this.globals.notesObj[this.globals.notesList[this.globals.notesList.length - 1]]) {
-      this.globals.note = this.globals.notesList[this.globals.notesList.length - 1];
-      this.updateOscFrequencies(this.globals.note);
+    if (this.mono.notesList.length) {
+      if (this.mono.notesObj[this.mono.notesList[this.mono.notesList.length - 1]]) {
+        this.mono.note = this.mono.notesList[this.mono.notesList.length - 1];
+        for (let voice in this.mono.voices) {
+          this.mono.voices[voice].setFrequency(this.mono.note);
+        }
+      } else {
+        this.mono.notesList.pop();
+        this.findNextNote();
+      }
     } else {
-      this.globals.notesList.pop();
-      this.findNextNote();
+      for (let voice in this.mono.voices) {
+        this.mono.voices[voice].off();
+      }
+      this.mono.note = null;
     }
   }
 
   findFrequencyFromNote(note) {
     return Math.pow(2, (note - 49)/12) * 440;
-  }
-
-  //  an oscillator does not have a frequency, only its voices do
-  //  in mono mode, one voice is given to each oscillator and its volume and frequency are manipulated?
-  updateOscFrequencies(note) {
-    synthesizer.oscillators.forEach(osc => {
-      // osc.setFrequency(note);
-    });
   }
 
   //  deal with global controls changes...
@@ -97,12 +109,25 @@ class Voice extends OscillatorNode {
   constructor(context, options, parent) {
     super(context, options);
 
+    this.parent = parent;
     this.gainNode = synthesizer.context.createGain();
     this.gainNode.gain.value = 0;
     this.connect(this.gainNode);
     this.gainNode.connect(parent.output);
     this.start();
     this.gainNode.gain.setTargetAtTime(parent.volume, synthesizer.context.currentTime, parent.attack);
+
+    this.setFrequency = this.setFrequency.bind(this);
+    this.off = this.off.bind(this);
+  }
+
+  setFrequency(note) {
+    this.frequency.setTargetAtTime(synthesizer.findFrequencyFromNote(note), synthesizer.context.currentTime, this.parent.porta);
+  }
+
+  off() {
+    this.gainNode.gain.setTargetAtTime(0, synthesizer.context.currentTime, this.parent.release / 10);
+    this.stop(synthesizer.context.currentTime + this.parent.release);
   }
 }
 
@@ -131,8 +156,6 @@ class Oscillator {
     this.connectToFilter = this.connectToFilter.bind(this);
     this.connectToMaster = this.connectToMaster.bind(this);
 
-    //  Alter all these to alter children, not self
-    // this.setFrequency = this.setFrequency.bind(this);
     this.setVolume = this.setVolume.bind(this);
     this.setPorta = this.setPorta.bind(this);
     this.setType = this.setType.bind(this);
@@ -152,6 +175,7 @@ class Oscillator {
       delete this.voices[midiMessage.data[1]];
     };
     this.voices[midiMessage.data[1]] = voice;
+    return voice;
   }
   
   removeVoice(midiMessage) {
@@ -170,7 +194,6 @@ class Oscillator {
     this.gainNode.connect(synthesizer.masterGain);
   }
 
-  //  Probably could have a voice class with all these setters on it instead of iterating
   setVolume(volume) {
     this.volume = volume;
     for (let voice in this.voices) {
@@ -317,7 +340,7 @@ const SynthController = {
       synthesizer.oscillators.forEach(osc => {
         osc.setPorta(e.target.value);
       });
-      synthesizer.globals.porta = porta;
+      synthesizer.globals.porta = e.target.value;
       OscViews.updateOscList();
     });
   }
