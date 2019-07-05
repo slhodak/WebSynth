@@ -11,9 +11,11 @@ Goals:
 
 Next:
   - Add support for mono/poly
-    - Polyphony button toggles poly mode
+    - Polyphony button toggles Poly Mode
       - Poly depends on Voices
         - A voice is almost the entire synthesizer to this point
+        - Notes are started by creating new sets of oscillators, not simply adjusting old ones' volumes
+        - Notes are ended by destroying/releasing old sets of oscillators
   - Mono default legato w/trill (done with room for cleaner refactor)
   - Add velocity sensitivity
     - With slider

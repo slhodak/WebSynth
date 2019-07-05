@@ -24,6 +24,7 @@ class Synthesizer {
       gain: 0,
       type: 'sine'
     };
+    this.poly = false;
     this.oscillators = [];
     this.filters = [];
     SynthController.createListeners();
