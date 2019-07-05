@@ -19,3 +19,14 @@ Next:
   - Mono default legato w/trill (done with room for cleaner refactor)
   - Add velocity sensitivity
     - With slider
+
+  -Voices
+    - Oscillators from Synthesizer (archetypes) all cloned
+    OR
+    - Oscillators sending multiple streams of audio... not possible
+    
+    - Oscillators created on noteOn from synth archetypes
+      - wow sounds like an expensive operation. Deep cloning? Latency?
+        - Deep cloning actually not desired?
+      - Oscillators all must be separate OscillatorNodes but refer to the same MasterGain
+      

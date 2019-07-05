@@ -25,7 +25,7 @@ class Synthesizer {
       type: 'sine'
     };
     this.poly = false;
-    this.voices = [];
+    this.voices = {};
     this.oscillators = [];
     this.filters = [];
     SynthController.createListeners();
@@ -35,19 +35,28 @@ class Synthesizer {
     this.findFrequencyFromNote = this.findFrequencyFromNote.bind(this);
   }
 
-  playNote(note) {
-    this.updateOscFrequencies(note);
-    if (!this.globals.note) {
-      this.oscillators.forEach(osc => osc.on());
+  playNote(midiMessage) {
+    if (poly) {
+      this.voices[midiMessage.data[1]] = new Voice(midiMessage);
+    } else {
+      this.updateOscFrequencies(midiMessage.data[1]);
+      if (!this.globals.note) {
+        this.oscillators.forEach(osc => osc.on());
+      }
+      this.globals.note = midiMessage.data[1];
+      this.globals.notesList.push(midiMessage.data[1]);
+      this.globals.notesObj[note] = midiMessage.data[1];
     }
-    this.globals.note = note;
-    this.globals.notesList.push(note);
-    this.globals.notesObj[note] = note;
   }
 
-  endNote(note) {
-    delete this.globals.notesObj[note];
-    this.findNextNote()
+  endNote(midiMessage) {
+    if (poly) {
+      this.voices[midiMessage.data[1]].off();
+      delete this.voices[midiMessage.data[1]];
+    } else {
+      delete this.globals.notesObj[midiMessage.data[1]];
+      this.findNextNote()
+    }
   }
 
   findNextNote() {
@@ -82,22 +91,24 @@ class Voice {
     //  is created by synthesizer to create oscillators
     this.id = synthesizer.voices.length;
     this.oscillators = [];
-    this.note = synthesizer.globals.note;
+    this.note = midiMessage.data[1];
     this.output = synthesizer.createGain();
     //  output gain depends on midiMessage velocity
-    this.output.gain = 127 / midiMessage.data[0];
-  }
-
-  on() {
-    //  creates and turns on all oscillators, which ramp up and sound according to their own properties
-    //  adds self to synthesizer list of voices
-
+    this.output.gain = 127 / midiMessage.data[2];
+    
+    synthesizer.oscillators.forEach(osc => {
+      osc.on(this.note);
+      this.oscillators.push(Object.assign({}, osc));
+    });
+    synthesizer.voices.push(this);
   }
 
   off() {
     //  ramps down all oscillators according to their own properties, and disconnects them
     //  removes self from synthesizer list of voices
-
+    this.oscillators.forEach(osc => {
+      osc.off();
+    });
   }
 
 }
