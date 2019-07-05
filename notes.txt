@@ -12,6 +12,8 @@ Goals:
 Next:
   - Add support for mono/poly
     - Polyphony button toggles poly mode
+      - Poly depends on Voices
+        - A voice is almost the entire synthesizer to this point
   - Mono default legato w/trill (done with room for cleaner refactor)
   - Add velocity sensitivity
     - With slider
