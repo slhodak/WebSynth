@@ -21,7 +21,7 @@ class Synthesizer {
       notesObj: {},
       porta: 0.05,
       attack: 0.01,
-      release: 0.01,
+      release: 0.1,
       gain: 0,
       type: 'sine'
     };
@@ -92,14 +92,12 @@ class Synthesizer {
   //  deal with global controls changes...
 }
 
-//  - Oscillator abstraction controlling multiple specific voiced oscillator nodes
+//  - Oscillator abstraction controlling multiple voiced oscillator nodes
 class Oscillator {
   constructor() {
     this.voices = {};
     this.addVoice = this.addVoice.bind(this);
     this.removeVoice = this.removeVoice.bind(this);
-
-    this.setTimeout = this.setTimeout.bind(window);
 
     this.id = synthesizer.oscillators.length;
     OscController.createControls(this.id);
@@ -137,7 +135,11 @@ class Oscillator {
       frequency: synthesizer.findFrequencyFromNote(midiMessage.data[1] + this.semitoneOffset, synthesizer.context.currentTime, 0),
       type: this.type,
       detune: this.fineDetune
-    });
+    }); 
+    voice.onended = (e) => {
+      voice.gainNode.disconnect();
+      delete this.voices[midiMessage.data[1]];
+    };
     voice.gainNode = synthesizer.context.createGain();
     voice.gainNode.gain.value = 0;
     voice.connect(voice.gainNode);
@@ -148,12 +150,9 @@ class Oscillator {
   }
   
   removeVoice(midiMessage) {
-    this.voices[midiMessage.data[1]].gainNode.gain.setTargetAtTime(0, synthesizer.context.currentTime, this.release);
-    
-    this.setTimeout(() => {
-      this.voices[midiMessage.data[1]].disconnect();
-      delete this.voices[midiMessage.data[1]];
-    }, 0.1);
+    const voice = this.voices[midiMessage.data[1]];
+    voice.gainNode.gain.setTargetAtTime(0, synthesizer.context.currentTime, this.release);
+    voice.stop(synthesizer.context.currentTime + this.release);
   }
 
   connectToFilter(id) {
@@ -166,9 +165,12 @@ class Oscillator {
     this.gainNode.connect(synthesizer.masterGain);
   }
 
+  //  Probably could have a voice class with all these setters on it instead of iterating
   setVolume(volume) {
     this.volume = volume;
-    this.gainNode.gain.setTargetAtTime(volume, this.context.currentTime, 0);
+    for (let voice in this.voices) {
+      this.voices[voice].gainNode.value = volume;
+    }
   }
 
   setType(type) {
@@ -176,18 +178,6 @@ class Oscillator {
     for (let voice in this.voices) {
       this.voices[voice].type = type;
     }
-  }
-
-  setPorta(porta) {
-    this.porta = porta;
-  }
-
-  setAttack(attack) {
-    this.attack = attack;
-  }
-  
-  setRelease(release) {
-    this.release = release;
   }
 
   setSemitoneOffset(semitoneOffset) {
@@ -202,6 +192,18 @@ class Oscillator {
     for (let voice in this.voices) {
       this.voices[voice].detune.setTargetAtTime(detune, synthesizer.context.currentTime, 0);
     }
+  }
+
+  setPorta(porta) {
+    this.porta = porta;
+  }
+
+  setAttack(attack) {
+    this.attack = attack;
+  }
+  
+  setRelease(release) {
+    this.release = release;
   }
 }
 
