@@ -367,6 +367,11 @@ const OscController = {
     let waveSelector = document.getElementsByClassName('waveSelector')[id];
     waveSelector.addEventListener('change', (e) => {
       synthesizer.oscillators[id].setType(e.target.value);
+      if (synthesizer.mono) {
+        for (let voice in synthesizer.mono.voices) {
+          synthesizer.mono.voices[voice].type = e.target.value;
+        }
+      }
       OscViews.updateOscList();
     });
     let volumeSlider = document.getElementsByClassName('volumeSlider')[id];
