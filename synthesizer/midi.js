@@ -14,9 +14,9 @@ function extendKeyboard(midiAccess) {
     midiKeyboard.connection = connection;
     midiKeyboard.connection.port.onmidimessage = (message) => {
       if (message.data[0] === 144) {
-        synthesizer.playNote(message.data[1]);
+        synthesizer.playNote(message);
       } else if (message.data[0] === 128) {
-        synthesizer.endNote(message.data[1]);
+        synthesizer.endNote(message);
       }
     }
   };

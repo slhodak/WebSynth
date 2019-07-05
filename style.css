@@ -12,6 +12,20 @@ ul {
   margin-bottom: 2px;
 }
 
+.polyButton {
+  height: 30px;
+  width: 55px;
+  font-weight: 700;
+}
+
+.off {
+  background-color: gray;
+}
+
+.on {
+  background-color: rgb(167, 192, 246);
+}
+
 .filtersAndOscillators {
   display: flex;
 }
