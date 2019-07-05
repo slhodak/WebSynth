@@ -92,6 +92,20 @@ class Synthesizer {
   //  deal with global controls changes...
 }
 
+//  - Voice
+class Voice extends OscillatorNode {
+  constructor(context, options, parent) {
+    super(context, options);
+
+    this.gainNode = synthesizer.context.createGain();
+    this.gainNode.gain.value = 0;
+    this.connect(this.gainNode);
+    this.gainNode.connect(parent.output);
+    this.start();
+    this.gainNode.gain.setTargetAtTime(parent.volume, synthesizer.context.currentTime, parent.attack);
+  }
+}
+
 //  - Oscillator abstraction controlling multiple voiced oscillator nodes
 class Oscillator {
   constructor() {
@@ -126,32 +140,23 @@ class Oscillator {
     this.setFineDetune = this.setFineDetune.bind(this);
   }
 
-  setTimeout(callback, time) {
-    setTimeout(callback, time);
-  }
-
   addVoice(midiMessage) {
-    let voice = new OscillatorNode(synthesizer.context, {
+    let voice = new Voice(synthesizer.context, {
       frequency: synthesizer.findFrequencyFromNote(midiMessage.data[1] + this.semitoneOffset, synthesizer.context.currentTime, 0),
       type: this.type,
       detune: this.fineDetune
-    }); 
+    }, this);
     voice.onended = (e) => {
+      voice.disconnect();
       voice.gainNode.disconnect();
       delete this.voices[midiMessage.data[1]];
     };
-    voice.gainNode = synthesizer.context.createGain();
-    voice.gainNode.gain.value = 0;
-    voice.connect(voice.gainNode);
-    voice.gainNode.connect(this.output);
-    voice.start();
-    voice.gainNode.gain.setTargetAtTime(this.volume, synthesizer.context.currentTime, this.attack);
     this.voices[midiMessage.data[1]] = voice;
   }
   
   removeVoice(midiMessage) {
     const voice = this.voices[midiMessage.data[1]];
-    voice.gainNode.gain.setTargetAtTime(0, synthesizer.context.currentTime, this.release);
+    voice.gainNode.gain.setTargetAtTime(0, synthesizer.context.currentTime, this.release / 10);
     voice.stop(synthesizer.context.currentTime + this.release);
   }
 
@@ -255,11 +260,6 @@ window.addEventListener('keydown', (e) => {
   }
   if (e.key === 'o') { 
     let newOsc = new Oscillator();
-    synthesizer.oscillators.forEach(osc => {
-      for (let voice in osc.voices) {
-        newOsc.addVoice({data: [127, Number(voice), 65]});
-      }
-    });
     synthesizer.oscillators.push(newOsc);
     console.log('Creating oscillator');
     OscViews.updateOscList();
