@@ -13,7 +13,6 @@ function extendKeyboard(midiAccess) {
   midiKeyboard.midiAccess.onstatechange = (connection) => { 
     midiKeyboard.connection = connection;
     midiKeyboard.connection.port.onmidimessage = (message) => {
-      console.log(message);
       if (message.data[0] === 144) {
         synthesizer.playNote(message.data[1]);
       } else if (message.data[0] === 128) {
