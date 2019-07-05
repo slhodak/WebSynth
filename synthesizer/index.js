@@ -185,13 +185,13 @@ class Oscillator {
   }
 
   connectToFilter(id) {
-    this.gainNode.disconnect();
-    this.gainNode.connect(synthesizer.filters[id]);
+    this.output.disconnect();
+    this.output.connect(synthesizer.filters[id]);
   }
 
   connectToMaster() {
-    this.gainNode.disconnect();
-    this.gainNode.connect(synthesizer.masterGain);
+    this.output.gainNode.disconnect();
+    this.output.connect(synthesizer.masterGain);
   }
 
   setVolume(volume) {
