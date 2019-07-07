@@ -250,7 +250,6 @@ class Filter extends BiquadFilterNode {
 
     this.id = 2000 + synthesizer.filters.length;
     FilterController.createControls(this.id % 2000);
-    OscViews.updateOscillatorFilters(this.id % 2000);
     this.type = 'lowpass';
     this.frequency.setTargetAtTime(20000, this.context.currentTime, 0);
     this.gain.setTargetAtTime(0, this.context.currentTime, 0);
@@ -357,8 +356,7 @@ const OscController = {
     let semitoneSlider = Template.slider(id, 'semitoneSlider', 'Semitone', 0, 24, 0, 1);
     let fineDetuneSlider = Template.slider(id, 'fineDetuneSlider', 'Detune', 0, 50, 0, 0.001);
     let waveSelector = Template.selector(id, 'waveSelector', 'Wave', ['sine', 'sawtooth', 'square', 'triangle'], ['Sine', 'Sawtooth', 'Square', 'Triangle']);
-    let filterSelector = Template.selector(id, 'filterSelector', 'Filter', ['none', ...synthesizer.filters.map(filter => filter.id)]);
-    return header + volSlider + semitoneSlider + fineDetuneSlider + waveSelector + filterSelector;
+    return header + volSlider + semitoneSlider + fineDetuneSlider + waveSelector;
   },
   createControls(id) {
     let oscControlsDiv = document.getElementsByClassName('oscillatorControls')[0];
@@ -387,14 +385,6 @@ const OscController = {
     let fineDetuneSlider = document.getElementsByClassName('fineDetuneSlider')[id];
     fineDetuneSlider.addEventListener('input', (e) => {
       synthesizer.oscillators[id].setFineDetune(e.target.value);
-    });
-    let filterSelector = document.getElementsByClassName('filterSelector')[id];
-    filterSelector.addEventListener('change', (e) => {
-      if (e.target.value === 'none') {
-        synthesizer.oscillators[id].connectToMaster();
-      } else {
-        synthesizer.oscillators[id].connectToFilter(e.target.value);
-      }
     });
   }
 }
@@ -456,12 +446,6 @@ const OscViews = {
       let oscListNode = document.createElement('li');
       oscListNode.innerText = JSON.stringify(osc);
       oscList.appendChild(oscListNode);
-    });
-  },
-  updateOscillatorFilters(id) {
-    Array.from(document.getElementsByClassName('filterSelector')).forEach(selector => {
-      let option = document.createRange().createContextualFragment(`<option name="${id}" value="${id}">${id}</option>`);
-      selector.appendChild(option);
     });
   }
 };
