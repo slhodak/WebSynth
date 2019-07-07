@@ -108,22 +108,29 @@ class Synthesizer {
 //  - Router
 class Router {
   constructor() {
-    this.updateRoutingTable = this.updateRoutingTable.bind(this);
-    this.table = this.updateRoutingTable(synthesizer);
+    this.table = {};
     // RouterViews.updateRouter();
+    this.updateRouter = this.updateRouter.bind(this);
+    this.setRoute = this.setRoute.bind(this);
   }
-  updateRoutingTable(s) {
-    s.oscillators.concat(s.filters).forEach(source => {
-      let eligibleDestinations = s.filters.filter(dest => {
+  updateRouter() {
+    synthesizer.oscillators.concat(synthesizer.filters).forEach(source => {
+      let eligibleDestinations = synthesizer.filters.filter(dest => {
         //  This must be much more sophisticated--make sure there is no loop at all... LL?
         //    Or utilize errors thrown by Audio API itself
         return dest.id !== source.id;
-      })
+      });
       this.table[source.id] = {
         options: eligibleDestinations,
-        dest: source.output.dest
+        dest: source.dest
       };
-    })
+    });
+    console.log(this.table);
+  }
+  setRoute(source, destination) {
+    source.setDestination(destination);
+    this.table[source.id].dest = destination;
+    this.updateRouter();
   }
 }
 
@@ -174,7 +181,7 @@ class Oscillator {
 
     this.output = synthesizer.context.createGain();
     this.output.gain.value = this.volume;
-    this.output.dest = synthesizer.masterGain;
+    this.dest = synthesizer.masterGain;
     this.output.connect(synthesizer.masterGain);
 
     this.setDestination = this.setDestination.bind(this);
@@ -210,7 +217,7 @@ class Oscillator {
   setDestination(destination) {
     this.output.disconnect();
     this.output.connect(destination);
-    this.output.dest = destination;
+    this.dest = destination;
   }
 
   setVolume(volume) {
@@ -261,14 +268,23 @@ class Filter extends BiquadFilterNode {
 
     this.id = 2000 + synthesizer.filters.length;
     FilterController.createControls(this.id % 2000);
+    FilterController.createListeners(this.id % 2000);
+    
     this.type = 'lowpass';
     this.frequency.setTargetAtTime(20000, this.context.currentTime, 0);
     this.gain.setTargetAtTime(0, this.context.currentTime, 0);
-    FilterController.createListeners(this.id % 2000);
+    this.dest = synthesizer.masterGain;
     this.connect(synthesizer.masterGain);
+
     this.setType = this.setType.bind(this);
     this.setFrequency = this.setFrequency.bind(this);
     this.setGain = this.setGain.bind(this);
+  }
+
+  setDestination(destination) {
+    this.dest.disconnect();
+    this.dest.connect(destination);
+    this.dest = destination;
   }
 
   setType(type) {
@@ -303,6 +319,7 @@ window.addEventListener('keydown', (e) => {
   if (e.key === 'o') { 
     let newOsc = new Oscillator();
     synthesizer.oscillators.push(newOsc);
+    synthesizer.router.updateRouter();
     console.log('Creating oscillator');
   }
   if (e.key === ' ') {
@@ -316,6 +333,7 @@ window.addEventListener('keydown', (e) => {
   }
   if (e.key === 'f') {
     synthesizer.filters.push(new Filter(synthesizer));
+    synthesizer.router.updateRouter();
     console.log('Creating filter')
   }
 });
