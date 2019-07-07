@@ -15,15 +15,18 @@ class Synthesizer {
     this.masterGain = this.context.createGain();
     this.masterGain.connect(this.context.destination);
     this.globals = {
+      porta: 0.05,
+      attack: 0.01,
+      release: 0.1,
+      type: 'sine'
+    };
+    this.mono = {
       note: null,
       notesList: [],
       notesObj: {},
-      porta: 0.25,
-      attack: 0.01,
-      release: 0.01,
-      gain: 0,
-      type: 'sine'
+      voices: {}
     };
+    this.poly = true;
     this.oscillators = [];
     this.filters = [];
     SynthController.createListeners();
@@ -33,33 +36,64 @@ class Synthesizer {
     this.findFrequencyFromNote = this.findFrequencyFromNote.bind(this);
   }
 
-  playNote(note) {
-    this.updateOscFrequencies(note);
-    if (!this.globals.note) {
-      this.oscillators.forEach(osc => osc.on());
+  playNote(midiMessage) {
+    if (this.poly) {
+      this.oscillators.forEach(osc => {
+        osc.addVoice(midiMessage);
+      });
+    } else {
+      if (!this.mono.note) {
+        this.oscillators.forEach(osc => {
+          this.mono.voices[midiMessage.data[1]] = new Voice(
+            synthesizer.context, 
+            {
+              frequency: synthesizer.findFrequencyFromNote(midiMessage.data[1]),
+              type: osc.type,
+              detune: osc.fineDetune
+            }, 
+            osc);
+          });
+        this.mono.notesObj[midiMessage.data[1]] = true;
+        this.mono.notesList.push(midiMessage.data[1]);
+        this.mono.note = midiMessage.data[1];
+      } else {
+        for (let voice in this.mono.voices) {
+          this.mono.voices[voice].setFrequency(midiMessage.data[1]);
+          this.mono.notesObj[midiMessage.data[1]] = true;
+          this.mono.notesList.push(midiMessage.data[1]);
+          this.mono.note = midiMessage.data[1];
+        }
+      }
     }
-    this.globals.note = note;
-    this.globals.notesList.push(note);
-    this.globals.notesObj[note] = note;
   }
 
-  endNote(note) {
-    delete this.globals.notesObj[note];
-    this.findNextNote()
+  endNote(midiMessage) {
+    if (this.poly) {
+      this.oscillators.forEach(osc => {
+        osc.removeVoice(midiMessage);
+      });
+    } else {
+      delete this.mono.notesObj[midiMessage.data[1]];
+      this.findNextNote();
+    }
   }
 
   findNextNote() {
-    if (!this.globals.notesList.length) {
-      this.oscillators.forEach(osc => osc.off());
-      this.globals.note = null;
-      return;
-    }
-    if (this.globals.notesObj[this.globals.notesList[this.globals.notesList.length - 1]]) {
-      this.globals.note = this.globals.notesList[this.globals.notesList.length - 1];
-      this.updateOscFrequencies(this.globals.note);
+    if (this.mono.notesList.length) {
+      if (this.mono.notesObj[this.mono.notesList[this.mono.notesList.length - 1]]) {
+        this.mono.note = this.mono.notesList[this.mono.notesList.length - 1];
+        for (let voice in this.mono.voices) {
+          this.mono.voices[voice].setFrequency(this.mono.note);
+        }
+      } else {
+        this.mono.notesList.pop();
+        this.findNextNote();
+      }
     } else {
-      this.globals.notesList.pop();
-      this.findNextNote();
+      for (let voice in this.mono.voices) {
+        this.mono.voices[voice].off();
+      }
+      this.mono.note = null;
     }
   }
 
@@ -67,38 +101,61 @@ class Synthesizer {
     return Math.pow(2, (note - 49)/12) * 440;
   }
 
-  updateOscFrequencies(note) {
-    synthesizer.oscillators.forEach(osc => {
-      osc.setFrequency(note);
-    });
+  //  deal with global controls changes...
+}
+
+//  - Voice
+class Voice extends OscillatorNode {
+  constructor(context, options, parent) {
+    super(context, options);
+
+    this.parent = parent;
+    this.gainNode = synthesizer.context.createGain();
+    this.gainNode.gain.value = 0;
+    this.connect(this.gainNode);
+    this.gainNode.connect(parent.output);
+    this.start();
+    this.gainNode.gain.setTargetAtTime(parent.volume, synthesizer.context.currentTime, parent.attack);
+
+    this.setFrequency = this.setFrequency.bind(this);
+    this.off = this.off.bind(this);
+  }
+
+  setFrequency(note) {
+    this.frequency.setTargetAtTime(synthesizer.findFrequencyFromNote(note), synthesizer.context.currentTime, this.parent.porta);
+  }
+
+  off() {
+    this.gainNode.gain.setTargetAtTime(0, synthesizer.context.currentTime, this.parent.release / 10);
+    this.stop(synthesizer.context.currentTime + this.parent.release);
   }
 }
 
-//  - Oscillators
-class Oscillator extends OscillatorNode {
-  constructor(synthesizer) {
-    super(synthesizer.context);
+//  - Oscillator abstraction controlling multiple voiced oscillator nodes
+class Oscillator {
+  constructor() {
+    this.voices = {};
+    this.addVoice = this.addVoice.bind(this);
+    this.removeVoice = this.removeVoice.bind(this);
 
     this.id = synthesizer.oscillators.length;
     OscController.createControls(this.id);
     OscController.createListeners(this.id);
     this.semitoneOffset = 0;
+    this.fineDetune = 0;
     this.volume = 0.75;
+    this.type = 'sine';
     this.porta = synthesizer.globals.porta;
     this.attack = synthesizer.globals.attack;
     this.release = synthesizer.globals.release;
+
+    this.output = synthesizer.context.createGain();
+    this.output.gain.value = this.volume;
+    this.output.connect(synthesizer.context.destination);
     
-    this.gainNode = synthesizer.context.createGain();
-    this.gainNode.gain.value = synthesizer.globals.gain;
-    this.connect(this.gainNode);
-    this.gainNode.connect(synthesizer.masterGain);
-    this.start();
-    
-    this.setFrequency = this.setFrequency.bind(this);
-    this.on = this.on.bind(this);
-    this.off = this.off.bind(this);
     this.connectToFilter = this.connectToFilter.bind(this);
     this.connectToMaster = this.connectToMaster.bind(this);
+
     this.setVolume = this.setVolume.bind(this);
     this.setPorta = this.setPorta.bind(this);
     this.setType = this.setType.bind(this);
@@ -106,64 +163,75 @@ class Oscillator extends OscillatorNode {
     this.setFineDetune = this.setFineDetune.bind(this);
   }
 
-  setFrequency(note) {
-    this.frequency.setTargetAtTime(synthesizer.findFrequencyFromNote(note + this.semitoneOffset), this.context.currentTime, this.porta);
+  addVoice(midiMessage) {
+    let voice = new Voice(synthesizer.context, {
+      frequency: synthesizer.findFrequencyFromNote(midiMessage.data[1] + this.semitoneOffset, synthesizer.context.currentTime, 0),
+      type: this.type,
+      detune: this.fineDetune
+    }, this);
+    voice.onended = (e) => {
+      voice.disconnect();
+      voice.gainNode.disconnect();
+      delete this.voices[midiMessage.data[1]];
+    };
+    this.voices[midiMessage.data[1]] = voice;
+    return voice;
   }
-
-  on() {
-    this.gainNode.gain.setTargetAtTime(this.volume, this.context.currentTime, this.attack);
-    synthesizer.globals.gain = 1;
-    OscViews.updateOscList();
-  }
-
-  off() {
-    this.gainNode.gain.setTargetAtTime(0, this.context.currentTime, this.release);
-    synthesizer.globals.gain = 0;
+  
+  removeVoice(midiMessage) {
+    const voice = this.voices[midiMessage.data[1]];
+    voice.gainNode.gain.setTargetAtTime(0, synthesizer.context.currentTime, this.release / 10);
+    voice.stop(synthesizer.context.currentTime + this.release);
   }
 
   connectToFilter(id) {
-    this.gainNode.disconnect();
-    this.gainNode.connect(synthesizer.filters[id]);
+    this.output.disconnect();
+    this.output.connect(synthesizer.filters[id]);
   }
 
   connectToMaster() {
-    this.gainNode.disconnect();
-    this.gainNode.connect(synthesizer.masterGain);
+    this.output.gainNode.disconnect();
+    this.output.connect(synthesizer.masterGain);
   }
 
   setVolume(volume) {
     this.volume = volume;
-    if (this.playing) {
-      this.gainNode.gain.setTargetAtTime(volume, this.context.currentTime, 0);
+    for (let voice in this.voices) {
+      this.voices[voice].gainNode.value = volume;
     }
   }
 
   setType(type) {
     this.type = type;
+    for (let voice in this.voices) {
+      this.voices[voice].type = type;
+    }
+  }
+
+  setSemitoneOffset(semitoneOffset) {
+    this.semitoneOffset = Number(semitoneOffset);
+    for (let voice in this.voices) {
+      this.voices[voice].frequency.setTargetAtTime(synthesizer.findFrequencyFromNote(Number(voice) + this.semitoneOffset), synthesizer.context.currentTime, 0);
+    }
+  }
+
+  setFineDetune(detune) {
+    this.fineDetune = detune;
+    for (let voice in this.voices) {
+      this.voices[voice].detune.setTargetAtTime(detune, synthesizer.context.currentTime, 0);
+    }
   }
 
   setPorta(porta) {
     this.porta = porta;
-    synthesizer.globals.porta = porta;
   }
 
   setAttack(attack) {
     this.attack = attack;
-    synthesizer.globals.attack = attack;
   }
   
   setRelease(release) {
     this.release = release;
-    synthesizer.globals.release = release;
-  }
-
-  setSemitoneOffset(semitoneOffset) {
-    this.semitoneOffset = semitoneOffset;
-    this.setFrequency();
-  }
-
-  setFineDetune(detune) {
-    this.detune.setTargetAtTime(detune, this.context.currentTime, 0);
   }
 }
 
@@ -214,20 +282,19 @@ window.addEventListener('keydown', (e) => {
     synthesizer = new Synthesizer();
   }
   if (e.key === 'o') { 
-    synthesizer.oscillators.push(new Oscillator(synthesizer));
+    let newOsc = new Oscillator();
+    synthesizer.oscillators.push(newOsc);
     console.log('Creating oscillator');
     OscViews.updateOscList();
   }
   if (e.key === ' ') {
-    synthesizer.oscillators.forEach(osc => {
-      if (synthesizer.globals.noteOn) {
-        osc.off();
-        synthesizer.globals.noteOn = false;
-      } else {
-        osc.on()
-        synthesizer.globals.noteOn = true;
-      }
-    });
+    if (!synthesizer.globals.noteOn) {
+      synthesizer.playNote({data: [127, 44, 65]});
+      synthesizer.globals.noteOn = true;
+    } else {
+      synthesizer.endNote({data: [127, 44, 65]})
+      synthesizer.globals.noteOn = false;
+    }
   }
   if (e.key === 'f') {
     synthesizer.filters.push(new Filter(synthesizer));
@@ -238,6 +305,11 @@ window.addEventListener('keydown', (e) => {
 //  Global Oscillator Parameters
 const SynthController = {
   createListeners() {
+    let polyButton = document.getElementsByClassName('polyButton')[0];
+    polyButton.addEventListener('mousedown', (e) => {
+      synthesizer.poly = !synthesizer.poly;
+      FormViews.updatePolyButton(synthesizer.poly);
+    });
     let masterGainSlider = document.getElementsByClassName('masterGainSlider')[0];
     masterGainSlider.addEventListener('input', (e) => {
       synthesizer.masterGain.gain.setTargetAtTime(Number(e.target.value), synthesizer.context.currentTime, 0);
@@ -268,6 +340,7 @@ const SynthController = {
       synthesizer.oscillators.forEach(osc => {
         osc.setPorta(e.target.value);
       });
+      synthesizer.globals.porta = e.target.value;
       OscViews.updateOscList();
     });
   }
@@ -294,6 +367,11 @@ const OscController = {
     let waveSelector = document.getElementsByClassName('waveSelector')[id];
     waveSelector.addEventListener('change', (e) => {
       synthesizer.oscillators[id].setType(e.target.value);
+      if (synthesizer.mono) {
+        for (let voice in synthesizer.mono.voices) {
+          synthesizer.mono.voices[voice].type = e.target.value;
+        }
+      }
       OscViews.updateOscList();
     });
     let volumeSlider = document.getElementsByClassName('volumeSlider')[id];
@@ -406,5 +484,10 @@ const FilterViews = {
   }
 };
 
-
+const FormViews = {
+  updatePolyButton(poly) {
+    let polyButton = document.getElementsByClassName('polyButton')[0];
+    polyButton.setAttribute('class', `polyButton ${poly ? 'on' : 'off'}`);
+  }
+};
 

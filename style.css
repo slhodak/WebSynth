@@ -7,9 +7,31 @@ h4, h3, h2 {
   padding: 0px;
 }
 
+.row {
+  display: flex;
+}
+
+.row div {
+  flex-grow: 1;
+}
+
 ul {
   margin-top: 2px;
   margin-bottom: 2px;
+}
+
+.polyButton {
+  height: 30px;
+  width: 55px;
+  font-weight: 700;
+}
+
+.off {
+  background-color: gray;
+}
+
+.on {
+  background-color: rgb(167, 192, 246);
 }
 
 .filtersAndOscillators {
