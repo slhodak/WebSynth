@@ -138,7 +138,7 @@ class Oscillator {
     this.addVoice = this.addVoice.bind(this);
     this.removeVoice = this.removeVoice.bind(this);
 
-    this.id = synthesizer.oscillators.length;
+    this.id = `o${synthesizer.oscillators.length}`;
     OscController.createControls(this.id);
     OscController.createListeners(this.id);
     this.semitoneOffset = 0;
@@ -240,7 +240,7 @@ class Filter extends BiquadFilterNode {
   constructor(props) {
     super(props.context);
 
-    this.id = synthesizer.filters.length;
+    this.id = `f${synthesizer.filters.length}`;
     FilterController.createControls(this.id);
     OscViews.updateOscillatorFilters(this.id);
     this.type = 'lowpass';
@@ -492,5 +492,5 @@ const FormViews = {
 };
 
 const RouterView = {
-  
+
 }

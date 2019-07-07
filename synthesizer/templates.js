@@ -18,7 +18,7 @@ const Template = {
       </div>`
     );
   },
-  routingTable() {
-    
+  routingTable(sources, destinations) {
+
   }
 }
