@@ -108,7 +108,22 @@ class Synthesizer {
 //  - Router
 class Router {
   constructor() {
-    RouterViews.updateRouter(synthesizer.filters.concat(synthesizer.oscillators), synthesizer.filters);
+    this.updateRoutingTable = this.updateRoutingTable.bind(this);
+    this.table = this.updateRoutingTable(synthesizer);
+    // RouterViews.updateRouter();
+  }
+  updateRoutingTable(s) {
+    s.oscillators.concat(s.filters).forEach(source => {
+      let eligibleDestinations = s.filters.filter(dest => {
+        //  This must be much more sophisticated--make sure there is no loop at all... LL?
+        //    Or utilize errors thrown by Audio API itself
+        return dest.id !== source.id;
+      })
+      this.table[source.id] = {
+        options: eligibleDestinations,
+        dest: synthesizer.masterGain
+      };
+    })
   }
 }
 
@@ -159,7 +174,7 @@ class Oscillator {
 
     this.output = synthesizer.context.createGain();
     this.output.gain.value = this.volume;
-    this.output.connect(synthesizer.context.destination);
+    this.output.connect(synthesizer.masterGain);
     
     this.connectToFilter = this.connectToFilter.bind(this);
     this.connectToMaster = this.connectToMaster.bind(this);
