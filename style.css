@@ -34,10 +34,6 @@ ul {
   background-color: rgb(167, 192, 246);
 }
 
-.filtersAndOscillators {
-  display: flex;
-}
-
 .oscillatorControls {
   width: 60%;
 }
