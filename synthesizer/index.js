@@ -448,7 +448,7 @@ const FilterController = {
 */
 
 //  Visual feedback of what is going on with the models
-//  Number of oscillators, display of parameters
+//  Oscillators, Filters, Routing Table
 
 const OscViews = {
   updateOscList() {
@@ -491,3 +491,6 @@ const FormViews = {
   }
 };
 
+const RouterView = {
+  
+}

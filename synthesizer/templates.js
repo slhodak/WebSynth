@@ -17,5 +17,8 @@ const Template = {
       <input class="${name}" type="range" min="${min}" max="${max}" value="${value}" step="${step}">
       </div>`
     );
+  },
+  routingTable() {
+    
   }
 }
