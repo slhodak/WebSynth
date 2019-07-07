@@ -253,7 +253,7 @@ class Filter extends BiquadFilterNode {
     this.type = 'lowpass';
     this.frequency.setTargetAtTime(20000, this.context.currentTime, 0);
     this.gain.setTargetAtTime(0, this.context.currentTime, 0);
-    FilterController.createListeners(this.id);
+    FilterController.createListeners(this.id % 2000);
     this.connect(synthesizer.masterGain);
     this.setType = this.setType.bind(this);
     this.setFrequency = this.setFrequency.bind(this);
