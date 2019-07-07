@@ -121,7 +121,7 @@ class Router {
       })
       this.table[source.id] = {
         options: eligibleDestinations,
-        dest: synthesizer.masterGain
+        dest: source.output.dest
       };
     })
   }
@@ -174,10 +174,10 @@ class Oscillator {
 
     this.output = synthesizer.context.createGain();
     this.output.gain.value = this.volume;
+    this.output.dest = synthesizer.masterGain;
     this.output.connect(synthesizer.masterGain);
-    
-    this.connectToFilter = this.connectToFilter.bind(this);
-    this.connectToMaster = this.connectToMaster.bind(this);
+
+    this.setDestination = this.setDestination.bind(this);
 
     this.setVolume = this.setVolume.bind(this);
     this.setPorta = this.setPorta.bind(this);
@@ -207,14 +207,10 @@ class Oscillator {
     voice.stop(synthesizer.context.currentTime + this.release);
   }
 
-  connectToFilter(id) {
+  setDestination(destination) {
     this.output.disconnect();
-    this.output.connect(synthesizer.filters[id]);
-  }
-
-  connectToMaster() {
-    this.output.gainNode.disconnect();
-    this.output.connect(synthesizer.masterGain);
+    this.output.connect(destination);
+    this.output.dest = destination;
   }
 
   setVolume(volume) {
