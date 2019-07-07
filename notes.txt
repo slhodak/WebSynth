@@ -9,6 +9,19 @@ Goals:
       - Hotkey chords
         (maybe need an abstraction/helper function to help create chord event handlers?)
 
+Architecture:
+  - Router as a class doesn't make much sense since only one exists
+    - Pro: It does help code readability to have Synthesizer be less huge
+    - Con: It doesn't really make sense, but then again neither does Synth
+      - Nah synth as a class makes some sense. And router and synth shouldn't require each other. Synth can exist without the router.
+  - Why is Synth a class?
+    - Because it needs to be an object with methods and properties
+    - But it doesn't need to be created more than once, so it could just be an object with methods and properties
+      - Yeah but *what if* I did want more than one? Huh? What then?
+      - It just feels like a logical repository of all the synth goodies and probably even keeps me from letting things which are *Not Model* creep into that Model space
+        - The router, on the other hand... seems less justifiable as not being part of the synth.
+          - Could you have a synth without a router? Sure you could. So there.
+
 Next:
   - Add support for mono/poly
     - Polyphony button toggles Poly Mode
