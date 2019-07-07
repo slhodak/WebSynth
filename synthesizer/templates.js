@@ -19,6 +19,11 @@ const Template = {
     );
   },
   routingTable(sources, destinations) {
-
+    return (`
+      <div class="row">
+        ${destinations.map(node => `<div class="cell">${node}</div>`)}
+      </div>
+      `
+    );
   }
 }

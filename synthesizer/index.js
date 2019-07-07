@@ -12,6 +12,7 @@ let synthesizer = null;
 class Synthesizer {
   constructor() {
     this.context = new AudioContext();
+    this.router;
     this.masterGain = this.context.createGain();
     this.masterGain.connect(this.context.destination);
     this.globals = {
@@ -104,6 +105,13 @@ class Synthesizer {
   //  deal with global controls changes...
 }
 
+//  - Router
+class Router {
+  constructor() {
+    RouterViews.updateRouter(synthesizer.filters.concat(synthesizer.oscillators), synthesizer.filters);
+  }
+}
+
 //  - Voice
 class Voice extends OscillatorNode {
   constructor(context, options, parent) {
@@ -138,9 +146,9 @@ class Oscillator {
     this.addVoice = this.addVoice.bind(this);
     this.removeVoice = this.removeVoice.bind(this);
 
-    this.id = `o${synthesizer.oscillators.length}`;
-    OscController.createControls(this.id);
-    OscController.createListeners(this.id);
+    this.id = 1000 + synthesizer.oscillators.length;
+    OscController.createControls(this.id % 1000);
+    OscController.createListeners(this.id % 1000);
     this.semitoneOffset = 0;
     this.fineDetune = 0;
     this.volume = 0.75;
@@ -240,9 +248,9 @@ class Filter extends BiquadFilterNode {
   constructor(props) {
     super(props.context);
 
-    this.id = `f${synthesizer.filters.length}`;
-    FilterController.createControls(this.id);
-    OscViews.updateOscillatorFilters(this.id);
+    this.id = 2000 + synthesizer.filters.length;
+    FilterController.createControls(this.id % 2000);
+    OscViews.updateOscillatorFilters(this.id % 2000);
     this.type = 'lowpass';
     this.frequency.setTargetAtTime(20000, this.context.currentTime, 0);
     this.gain.setTargetAtTime(0, this.context.currentTime, 0);
@@ -280,12 +288,12 @@ class Filter extends BiquadFilterNode {
 window.addEventListener('keydown', (e) => {
   if (!synthesizer) {
     synthesizer = new Synthesizer();
+    synthesizer.router = new Router();
   }
   if (e.key === 'o') { 
     let newOsc = new Oscillator();
     synthesizer.oscillators.push(newOsc);
     console.log('Creating oscillator');
-    OscViews.updateOscList();
   }
   if (e.key === ' ') {
     if (!synthesizer.globals.noteOn) {
@@ -313,27 +321,23 @@ const SynthController = {
     let masterGainSlider = document.getElementsByClassName('masterGainSlider')[0];
     masterGainSlider.addEventListener('input', (e) => {
       synthesizer.masterGain.gain.setTargetAtTime(Number(e.target.value), synthesizer.context.currentTime, 0);
-      OscViews.updateOscList();
     });
     let noteSlider = document.getElementsByClassName('noteSlider')[0];
     noteSlider.addEventListener('input', (e) => {
       synthesizer.globals.note = Number(e.target.value);
       synthesizer.updateOscFrequencies();
-      OscViews.updateOscList();
     });
     let attackSlider = document.getElementsByClassName('attackSlider')[0];
     attackSlider.addEventListener('input', (e) => {
       synthesizer.oscillators.forEach(osc => {
         osc.setAttack(e.target.value);
       });
-      OscViews.updateOscList();
     });
     let releaseSlider = document.getElementsByClassName('releaseSlider')[0];
     releaseSlider.addEventListener('input', (e) => {
       synthesizer.oscillators.forEach(osc => {
         osc.setRelease(e.target.value);
       });
-      OscViews.updateOscList();
     });
     let portaSlider = document.getElementsByClassName('portaSlider')[0];
     portaSlider.addEventListener('input', (e) => {
@@ -341,7 +345,6 @@ const SynthController = {
         osc.setPorta(e.target.value);
       });
       synthesizer.globals.porta = e.target.value;
-      OscViews.updateOscList();
     });
   }
 }
@@ -372,22 +375,18 @@ const OscController = {
           synthesizer.mono.voices[voice].type = e.target.value;
         }
       }
-      OscViews.updateOscList();
     });
     let volumeSlider = document.getElementsByClassName('volumeSlider')[id];
     volumeSlider.addEventListener('input', (e) => {
       synthesizer.oscillators[id].setVolume(e.target.value);
-      OscViews.updateOscList();
     });
     let semitoneSlider = document.getElementsByClassName('semitoneSlider')[id];
     semitoneSlider.addEventListener('input', (e) => {
       synthesizer.oscillators[id].setSemitoneOffset(Number(e.target.value));
-      OscViews.updateOscList();
     });
     let fineDetuneSlider = document.getElementsByClassName('fineDetuneSlider')[id];
     fineDetuneSlider.addEventListener('input', (e) => {
       synthesizer.oscillators[id].setFineDetune(e.target.value);
-      OscViews.updateOscList();
     });
     let filterSelector = document.getElementsByClassName('filterSelector')[id];
     filterSelector.addEventListener('change', (e) => {
@@ -396,7 +395,6 @@ const OscController = {
       } else {
         synthesizer.oscillators[id].connectToFilter(e.target.value);
       }
-      OscViews.updateOscList();
     });
   }
 }
@@ -421,25 +419,22 @@ const FilterController = {
     let filterTypeSelector = document.getElementsByClassName('filterTypeSelector')[id];
     filterTypeSelector.addEventListener('change', (e) => {
       synthesizer.filters[id].setType(e.target.value);
-      OscViews.updateOscList();
     });
     let frequencySlider = document.getElementsByClassName('frequencySlider')[id];
     frequencySlider.addEventListener('input', (e) => {
       synthesizer.filters[id].setFrequency(e.target.value);
-      OscViews.updateOscList();
     });
     let gainSlider = document.getElementsByClassName('gainSlider')[id];
     gainSlider.addEventListener('input', (e) => {
       synthesizer.filters[id].setGain(e.target.value);
-      OscViews.updateOscList();
     });
     let qSlider = document.getElementsByClassName('qSlider')[id];
     qSlider.addEventListener('input', (e) => {
       synthesizer.filters[id].setQ(e.target.value);
-      OscViews.updateOscList();
     });
   }
 }
+
 
 /*  _  _  __  ____  _  _  ____ 
 *  / )( \(  )(  __)/ )( \/ ___)
@@ -451,6 +446,7 @@ const FilterController = {
 //  Oscillators, Filters, Routing Table
 
 const OscViews = {
+  //  deprecated...
   updateOscList() {
     let oscList = document.getElementsByClassName('oscillators')[0];
     Array.from(oscList.children).forEach(node => {
@@ -491,6 +487,8 @@ const FormViews = {
   }
 };
 
-const RouterView = {
-
-}
+const RouterViews = {
+  updateRouter(sources, destinations) {
+    Template.routingTable(sources, destinations);
+  }
+};
