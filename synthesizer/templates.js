@@ -23,9 +23,9 @@ const Template = {
     let destinations = '<div class="destinations matrix">';
     for (let src in table) {
       destinations += `<div class="row" data-id=${src}>`;
-      sources += `<div class="routerCell">${table[src].source.constructor.name} ${src % 1000}</div>`;
+      sources += `<div class="routerCell">${table[src].node.constructor.name} ${src % 1000}</div>`;
       synthesizer.filters.concat(synthesizer.masterGain).forEach(dest => {
-        destinations += `<div class="routerCell ${Helpers.getRouteRelationship(table[src].source, dest)}" data-id=${dest.id === undefined ? 'master' : '0'}>${dest.constructor.name === 'GainNode' ? 'Main Out' : dest.constructor.name} ${dest.id === undefined ? '' : dest.id % 1000}</div>`;
+        destinations += `<div class="routerCell destination ${Helpers.getRouteRelationship(table[src].node, dest)}" data-id=${dest.id === undefined ? 'mainout' : dest.id}>${dest.constructor.name === 'GainNode' ? 'Main Out' : dest.constructor.name} ${dest.id === undefined ? '' : dest.id % 1000}</div>`;
       });
       destinations += "</div>";
     }

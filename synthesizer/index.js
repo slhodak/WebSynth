@@ -113,20 +113,22 @@ class Router {
     this.setRoute = this.setRoute.bind(this);
   }
   updateRouter() {
-    synthesizer.oscillators.concat(synthesizer.filters).forEach(source => {
-      let eligibleDestinations = synthesizer.filters.filter(dest => !Helpers.isNodeLoop(source, dest));
-      this.table[source.id] = {
-        source: source,
+    synthesizer.oscillators.concat(synthesizer.filters).forEach(node => {
+      let eligibleDestinations = synthesizer.filters.filter(dest => !Helpers.isNodeLoop(node, dest));
+      this.table[node.id] = {
+        node: node,
         options: eligibleDestinations
       };
     });
     RouterViews.updateTable(this.table);
+    RouterController.updateRouterClickHandlers();
   }
   setRoute(source, destination) {
     source.setDestination(destination);
     this.table[source.id].dest = destination;
     this.updateRouter();
     RouterViews.updateTable(this.table);
+    RouterController.updateRouterClickHandlers();
   }
 }
 
@@ -375,10 +377,21 @@ const SynthController = {
 
 //  Router Controller
 const RouterController = {
-  makeRouterClickable() {
-    
+  updateRouterClickHandlers() {
+    const destinations = document.getElementsByClassName('destination');
+    Array.from(destinations).forEach(destination => {
+      destination.addEventListener('mousedown', (e) => {
+        if (destination.dataset.id === 'mainout') {
+          synthesizer.router.setRoute(synthesizer.router.table[destination.parentNode.dataset.id].node, synthesizer.masterGain);
+        } else if (Helpers.indexOf(Array.from(destination.classList), 'eligible') >= 0) {
+          synthesizer.router.setRoute(synthesizer.router.table[destination.parentNode.dataset.id].node, synthesizer.router.table[destination.dataset.id].node);
+        } else {
+          console.log('Ineligible route!');
+        }
+      });
+    });
   }
-}
+};
 
 //  Individual Oscillator Parameters
 const OscController = {
