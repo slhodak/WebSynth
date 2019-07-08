@@ -43,33 +43,20 @@ Next:
         - Deep cloning actually not desired?
       - Oscillators all must be separate OscillatorNodes but refer to the same MasterGain
 
+TODO: 
+  - 
 
-Troubleshooting:
-  - Voice buildup
-    1) hitting keyboard
-    2) note on message creating new voice in synth.playnote
-    3) voice added to synth voices
-    3a) voice creates gain node as own gain, connects to master gain
-    4) voice creates shallow copies of oscillators, adds to own oscillators array
-    5) voice alters oscillators with frequency determined by note from new message
-    6) shallow osc copies disconnected from context master gain
-    7) shallow osc copies connected to voice gain
-    8) original oscillators are being turned on, then copied, not copied, rerouted, and then turned on. hm.
-    --- The real problem was probably just that velocity was being calculated upside down (127 / 5 is really loud!)
+Issues:
+  - Changes to the list of oscillators won't take effect until a new note is voiced
 
-
-  - the voice is basically just a gain node that creates oscillators with different frequencies and connects them to itself
-
-  - Voices not creating new oscillator nodes?
-  
-  TODO: 
-    - Fix disconnect timing (done but investigate a debouncer or something)
-    - Re-implement legato alongside poly option (did)
-    - Connect oscillator voices to filter (done)
-
-Next:
+Done: 
+  - Re-implement legato alongside poly option
+  - Connect oscillator voices to filter
+  - Fix disconnect timing (done but investigate a debouncer or something)
   - Moving iterating controller setting functions to iterating synthesizer setting functions
 
 
-Rules:
-  - Changes to the list of oscillators won't take effect until a new note is voiced (todo)
+Journal:
+  - Save Presets?
+    - Would need a well-defined model data shape in order to save data that will be useful after extensions to the synthesizer properties. Distortion nodes, custom waves, etc, would need to be accounted for as much as possible in an early setup. Alternatively consider a schema that would at least lend itself to later being massaged while migrated into a new db reflecting an updated synth design.
+      - In general, it would be best to wait for this. But interesting question about an evolving, potentially open-source project allowing itself to be backward-compatible.
