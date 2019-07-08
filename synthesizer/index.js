@@ -114,16 +114,10 @@ class Router {
   }
   updateRouter() {
     synthesizer.oscillators.concat(synthesizer.filters).forEach(source => {
-      let eligibleDestinations = synthesizer.filters.filter(dest => {
-        //  This must be much more sophisticated--make sure there is no loop at all... use inherent LL structure (dest to dest)
-        //    Or utilize errors thrown by Audio API itself
-        //      Errors do not seem to be as vigilant as I was hoping?
-        return dest.id !== source.id;
-      });
+      let eligibleDestinations = synthesizer.filters.filter(dest => !Helpers.isNodeLoop(source, dest));
       this.table[source.id] = {
         source: source,
-        options: eligibleDestinations,
-        dest: source.dest
+        options: eligibleDestinations
       };
     });
     RouterViews.updateTable(this.table);
