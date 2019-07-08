@@ -18,12 +18,33 @@ const Template = {
       </div>`
     );
   },
-  routingTable(sources, destinations) {
-    return (`
-      <div class="row">
-        ${destinations.map(node => `<div class="cell">${node}</div>`)}
+  routingTable(table) {
+    let sources = '';
+    let destinations = '<div class="destinations matrix">';
+    for (let src in table) {
+      destinations += '<div class="row">';
+      sources += `<div class="routerCell">${table[src].source.constructor.name} ${src % 1000}</div>`;
+      synthesizer.filters.concat(synthesizer.masterGain).forEach(dest => {
+        destinations += `<div class="routerCell ${Helpers.getRouteRelationship(table[src].source, dest)}">${dest.constructor.name} ${dest.id % 1000 || ''}</div>`;
+      });
+      destinations += "</div>";
+    }
+    destinations += "</div>";
+    return(`
+      <div class="router module">
+      <h3>Router</h3>
+        <div class="row">
+          <div class="connected icon">Connected</div>
+          <div class="eligible icon">Eligible</div>
+          <div class="ineligible icon">Ineligible</div>
+        </div>
+        <div class="row">
+          <div class="sources column">
+            ${sources}
+          </div>
+          ${destinations}
+        </div>
       </div>
-      `
-    );
+    `);
   }
 }

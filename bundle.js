@@ -1,4 +1,5 @@
 const scripts = [
+  './synthesizer/helpers.js',
   './synthesizer/templates.js',
   './synthesizer/index.js',
   './synthesizer/midi.js'

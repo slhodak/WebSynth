@@ -11,6 +11,11 @@ h4, h3, h2 {
   display: flex;
 }
 
+.column {
+  display: flex;
+  flex-direction: column;
+}
+
 .row div {
   flex-grow: 1;
 }
@@ -52,4 +57,28 @@ ul {
 
 .hotkey {
   background-color: rgb(161, 161, 161);
+}
+
+.routerCell {
+  height: 1rem;
+  width: 100px;
+  padding: 5px;
+  border: 1px solid black;
+  text-align: center;
+}
+
+.icon {
+  padding: 5px;
+}
+
+.eligible {
+  background-color: rgb(172, 200, 245);
+}
+
+.ineligible {
+  background-color: rgb(212, 147, 158);
+}
+
+.connected {
+  background-color: rgb(176, 235, 159);
 }

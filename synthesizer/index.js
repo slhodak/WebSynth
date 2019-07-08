@@ -109,28 +109,31 @@ class Synthesizer {
 class Router {
   constructor() {
     this.table = {};
-    // RouterViews.updateRouter();
     this.updateRouter = this.updateRouter.bind(this);
     this.setRoute = this.setRoute.bind(this);
   }
   updateRouter() {
     synthesizer.oscillators.concat(synthesizer.filters).forEach(source => {
       let eligibleDestinations = synthesizer.filters.filter(dest => {
-        //  This must be much more sophisticated--make sure there is no loop at all... LL?
+        //  This must be much more sophisticated--make sure there is no loop at all... use inherent LL structure (dest to dest)
         //    Or utilize errors thrown by Audio API itself
+        //      Errors do not seem to be as vigilant as I was hoping?
         return dest.id !== source.id;
       });
       this.table[source.id] = {
+        source: source,
         options: eligibleDestinations,
         dest: source.dest
       };
     });
+    RouterViews.updateTable(this.table);
     console.log(this.table);
   }
   setRoute(source, destination) {
     source.setDestination(destination);
     this.table[source.id].dest = destination;
     this.updateRouter();
+    RouterViews.updateTable(this.table);
   }
 }
 
@@ -269,7 +272,7 @@ class Filter extends BiquadFilterNode {
     this.id = 2000 + synthesizer.filters.length;
     FilterController.createControls(this.id % 2000);
     FilterController.createListeners(this.id % 2000);
-    
+
     this.type = 'lowpass';
     this.frequency.setTargetAtTime(20000, this.context.currentTime, 0);
     this.gain.setTargetAtTime(0, this.context.currentTime, 0);
@@ -467,7 +470,7 @@ const FilterController = {
 const OscViews = {
   //  deprecated...
   updateOscList() {
-    let oscList = document.getElementsByClassName('oscillators')[0];
+    const oscList = document.getElementsByClassName('oscillators')[0];
     Array.from(oscList.children).forEach(node => {
       node.remove();
     });
@@ -481,7 +484,7 @@ const OscViews = {
 
 const FilterViews = {
   updateFiltersList() {
-    let filtList = document.getElementsByClassName('filters')[0];
+    const filtList = document.getElementsByClassName('filters')[0];
     Array.from(filtList.children).forEach(node => {
       node.remove();
     });
@@ -495,13 +498,14 @@ const FilterViews = {
 
 const FormViews = {
   updatePolyButton(poly) {
-    let polyButton = document.getElementsByClassName('polyButton')[0];
+    const polyButton = document.getElementsByClassName('polyButton')[0];
     polyButton.setAttribute('class', `polyButton ${poly ? 'on' : 'off'}`);
   }
 };
 
 const RouterViews = {
-  updateRouter(sources, destinations) {
-    Template.routingTable(sources, destinations);
+  updateTable(table) {
+    const routerTable = document.getElementsByClassName('router')[0];
+    routerTable.innerHTML = Template.routingTable(table);
   }
 };
