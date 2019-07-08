@@ -121,7 +121,6 @@ class Router {
       };
     });
     RouterViews.updateTable(this.table);
-    console.log(this.table);
   }
   setRoute(source, destination) {
     source.setDestination(destination);
@@ -371,6 +370,13 @@ const SynthController = {
       });
       synthesizer.globals.porta = e.target.value;
     });
+  }
+}
+
+//  Router Controller
+const RouterController = {
+  makeRouterClickable() {
+    
   }
 }
 
