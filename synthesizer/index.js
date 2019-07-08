@@ -179,8 +179,8 @@ class Oscillator {
 
     this.output = synthesizer.context.createGain();
     this.output.gain.value = this.volume;
-    this.dest = synthesizer.masterGain;
     this.output.connect(synthesizer.masterGain);
+    this.dest = synthesizer.masterGain;
 
     this.setDestination = this.setDestination.bind(this);
 
@@ -271,8 +271,8 @@ class Filter extends BiquadFilterNode {
     this.type = 'lowpass';
     this.frequency.setTargetAtTime(20000, this.context.currentTime, 0);
     this.gain.setTargetAtTime(0, this.context.currentTime, 0);
-    this.dest = synthesizer.masterGain;
     this.connect(synthesizer.masterGain);
+    this.dest = synthesizer.masterGain;
 
     this.setType = this.setType.bind(this);
     this.setFrequency = this.setFrequency.bind(this);
@@ -280,8 +280,8 @@ class Filter extends BiquadFilterNode {
   }
 
   setDestination(destination) {
-    this.dest.disconnect();
-    this.dest.connect(destination);
+    this.disconnect();
+    this.connect(destination);
     this.dest = destination;
   }
 
