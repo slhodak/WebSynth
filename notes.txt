@@ -8,6 +8,8 @@ Goals:
     - Hotkey-drive synth adjustments
       - Hotkey chords
         (maybe need an abstraction/helper function to help create chord event handlers?)
+  Saving the presets
+  Piano roll, saving midi data
 
 Architecture:
   - Router as a class doesn't make much sense since only one exists
