@@ -311,23 +311,22 @@ class Filter extends BiquadFilterNode {
 
 //  Keyboard controls
 window.addEventListener('keydown', (e) => {
-  console.log(e);
   if (!synthesizer) {
     synthesizer = new Synthesizer();
     synthesizer.router = new Router();
+  } else {
+    Preset.save(synthesizer);
   }
   if (e.key === 'o') { 
     let newOsc = new Oscillator();
     synthesizer.oscillators.push(newOsc);
     synthesizer.router.updateRouter();
     console.log('Creating oscillator');
-    Preset.save(synthesizer);
   }
   if (e.key === 'f') {
     synthesizer.filters.push(new Filter(synthesizer));
     synthesizer.router.updateRouter();
     console.log('Creating filter')
-    Preset.save(synthesizer);
   }
   if (e.key === ' ') {
     if (!synthesizer.globals.demoTone) {
@@ -362,12 +361,14 @@ const SynthController = {
       synthesizer.oscillators.forEach(osc => {
         osc.setAttack(e.target.value);
       });
+      synthesizer.globals.attack = e.target.value;
     });
     let releaseSlider = document.getElementsByClassName('releaseSlider')[0];
     releaseSlider.addEventListener('input', (e) => {
       synthesizer.oscillators.forEach(osc => {
         osc.setRelease(e.target.value);
       });
+      synthesizer.globals.release = e.target.value;
     });
     let portaSlider = document.getElementsByClassName('portaSlider')[0];
     portaSlider.addEventListener('input', (e) => {
@@ -392,7 +393,6 @@ const RouterController = {
         } else {
           console.log('Ineligible route!');
         }
-        Preset.save(synthesizer);
       });
     });
   }
