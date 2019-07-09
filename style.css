@@ -1,4 +1,7 @@
+@import url('https://fonts.googleapis.com/css?family=Nunito+Sans&display=swap');
+
 html {
+  font-family: 'Nunito Sans', sans-serif;
   background-color: rgb(223, 223, 223);
 }
 
@@ -59,7 +62,16 @@ ul {
   background-color: rgb(161, 161, 161);
 }
 
-.routerTable {
+.routerDefault {
+  margin: 0px;
+  color: rgb(37, 37, 37);
+  flex-grow: 1;
+  background-color: rgb(228, 228, 228);
+  text-align: center;
+}
+
+.routingTable {
+  min-height: 10px;
   border: 1px solid black;
 }
 

@@ -32,21 +32,11 @@ const Template = {
     });
     destinations += "</div>";
     return(`
-      <div class="router module">
-      <h3>Router</h3>
-        <div class="row">
-          <div class="connected icon">Connected</div>
-          <div class="eligible icon">Eligible</div>
-          <div class="ineligible icon">Ineligible</div>
+      <div class="row">
+        <div class="sources column">
+          ${sources}
         </div>
-        <div class="routerTable">
-          <div class="row">
-            <div class="sources column">
-              ${sources}
-            </div>
-            ${destinations}
-          </div>
-        </div>
+        ${destinations}
       </div>
     `);
   }

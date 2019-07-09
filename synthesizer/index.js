@@ -518,7 +518,7 @@ const FormViews = {
 
 const RouterViews = {
   updateTable(table) {
-    const routerTable = document.getElementsByClassName('router')[0];
+    const routerTable = document.getElementsByClassName('routingTable')[0];
     routerTable.innerHTML = Template.routingTable(table);
   }
 };
