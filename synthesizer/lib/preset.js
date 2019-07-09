@@ -26,6 +26,15 @@ const Preset = {
         type: osc.type
       }
     });
+    synthesizer.filters.forEach((filt, index) => {
+      synthData.synthesizer.filters[index] = {
+        id: filt.id,
+        type: filt.type,
+        frequency: filt.frequency.value,
+        gain: filt.gain.value,
+        Q: filt.Q.value
+      }
+    });
     console.log(synthData);
   },
   load(synthData) {
