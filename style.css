@@ -16,7 +16,7 @@ h4, h3, h2 {
   flex-direction: column;
 }
 
-.row div {
+.row .module {
   flex-grow: 1;
 }
 
@@ -59,11 +59,23 @@ ul {
   background-color: rgb(161, 161, 161);
 }
 
+.routerTable {
+  border: 1px solid black;
+}
+
+.sources {
+  flex-grow: 1;
+}
+
+.destinations {
+  flex-grow: 1;
+}
+
 .routerCell {
   height: 1rem;
-  width: 100px;
+  flex-grow: 1;
+  min-width: 100px;
   padding: 5px;
-  border: 1px solid black;
   text-align: center;
 }
 
@@ -72,6 +84,14 @@ ul {
   margin: 5px;
   border-radius: 5px;
   border: 1px solid #898989;
+}
+
+.borderTop {
+  border-top: 1px solid black;
+}
+
+.destination {
+  border-left: 1px solid black;
 }
 
 .eligible {
