@@ -1,4 +1,7 @@
+@import url('https://fonts.googleapis.com/css?family=Nunito+Sans&display=swap');
+
 html {
+  font-family: 'Nunito Sans', sans-serif;
   background-color: rgb(223, 223, 223);
 }
 
@@ -11,7 +14,12 @@ h4, h3, h2 {
   display: flex;
 }
 
-.row div {
+.column {
+  display: flex;
+  flex-direction: column;
+}
+
+.row .module {
   flex-grow: 1;
 }
 
@@ -34,10 +42,6 @@ ul {
   background-color: rgb(167, 192, 246);
 }
 
-.filtersAndOscillators {
-  display: flex;
-}
-
 .oscillatorControls {
   width: 60%;
 }
@@ -56,4 +60,60 @@ ul {
 
 .hotkey {
   background-color: rgb(161, 161, 161);
+}
+
+.routerDefault {
+  margin: 0px;
+  color: rgb(37, 37, 37);
+  flex-grow: 1;
+  background-color: rgb(228, 228, 228);
+  text-align: center;
+}
+
+.routingTable {
+  min-height: 10px;
+  border: 1px solid black;
+}
+
+.sources {
+  flex-grow: 1;
+}
+
+.destinations {
+  flex-grow: 1;
+}
+
+.routerCell {
+  height: 1rem;
+  flex-grow: 1;
+  min-width: 100px;
+  padding: 5px;
+  text-align: center;
+}
+
+.icon {
+  padding: 5px;
+  margin: 5px;
+  border-radius: 5px;
+  border: 1px solid #898989;
+}
+
+.borderTop {
+  border-top: 1px solid black;
+}
+
+.destination {
+  border-left: 1px solid black;
+}
+
+.eligible {
+  background-color: rgb(172, 200, 245);
+}
+
+.ineligible {
+  background-color: rgb(212, 147, 158);
+}
+
+.connected {
+  background-color: rgb(176, 235, 159);
 }
