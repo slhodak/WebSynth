@@ -311,6 +311,7 @@ class Filter extends BiquadFilterNode {
 
 //  Keyboard controls
 window.addEventListener('keydown', (e) => {
+  console.log(e);
   if (!synthesizer) {
     synthesizer = new Synthesizer();
     synthesizer.router = new Router();
