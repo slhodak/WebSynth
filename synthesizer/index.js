@@ -116,8 +116,8 @@ class Router {
     synthesizer.oscillators.concat(synthesizer.filters).forEach(node => {
       let eligibleDestinations = synthesizer.filters.filter(dest => !Helpers.isNodeLoop(node, dest));
       this.table[node.id] = {
-        node: node,
-        options: eligibleDestinations
+        node,
+        eligibleDestinations
       };
     });
     RouterViews.updateTable(this.table);
@@ -383,7 +383,7 @@ const RouterController = {
       destination.addEventListener('mousedown', (e) => {
         if (destination.dataset.id === 'mainout') {
           synthesizer.router.setRoute(synthesizer.router.table[destination.parentNode.dataset.id].node, synthesizer.masterGain);
-        } else if (Helpers.indexOf(Array.from(destination.classList), 'eligible') >= 0) {
+        } else if (Helpers.indexOf(synthesizer.router.table[destination.parentNode.dataset.id].eligibleDestinations, synthesizer.router.table[destination.dataset.id].node) >= 0) {
           synthesizer.router.setRoute(synthesizer.router.table[destination.parentNode.dataset.id].node, synthesizer.router.table[destination.dataset.id].node);
         } else {
           console.log('Ineligible route!');

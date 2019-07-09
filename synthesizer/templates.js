@@ -24,6 +24,7 @@ const Template = {
     for (let src in table) {
       destinations += `<div class="row" data-id=${src}>`;
       sources += `<div class="routerCell">${table[src].node.constructor.name} ${src % 1000}</div>`;
+      //  Getting these filters here is doing it wrong
       synthesizer.filters.concat(synthesizer.masterGain).forEach(dest => {
         destinations += `<div class="routerCell destination ${Helpers.getRouteRelationship(table[src].node, dest)}" data-id=${dest.id === undefined ? 'mainout' : dest.id}>${dest.constructor.name === 'GainNode' ? 'Main Out' : dest.constructor.name} ${dest.id === undefined ? '' : dest.id % 1000}</div>`;
       });
