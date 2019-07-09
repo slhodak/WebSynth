@@ -1,8 +1,10 @@
+const host = 'http://localhost:3000';
+
 const scripts = [
-  './synthesizer/helpers.js',
-  './synthesizer/templates.js',
-  './synthesizer/index.js',
-  './synthesizer/midi.js'
+  `/synthesizer/helpers.js`,
+  `/synthesizer/templates.js`,
+  `/synthesizer/index.js`,
+  `/synthesizer/midi.js`
 ];
 
 let reference = document.getElementsByClassName('scripts')[0];
@@ -10,7 +12,7 @@ let reference = document.getElementsByClassName('scripts')[0];
 function addScripts(scripts, reference) {
   scripts.forEach(title => {
     let script = document.createElement('script');
-    script.src = title;
+    script.src = `${host}title`;
     document.body.insertBefore(script, reference);
   });
 }
