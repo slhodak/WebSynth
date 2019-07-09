@@ -21,15 +21,15 @@ const Template = {
   routingTable(table) {
     let sources = '';
     let destinations = '<div class="destinations matrix">';
-    for (let src in table) {
-      destinations += `<div class="row" data-id=${src}>`;
-      sources += `<div class="routerCell">${table[src].node.constructor.name} ${src % 1000}</div>`;
+    Object.keys(table).map(id => table[id].node).forEach(src => {
+      destinations += `<div class="row" data-id=${src.id}>`;
+      sources += `<div class="routerCell">${src.constructor.name} ${src.id % 1000}</div>`;
       let destNodes = Object.keys(synthesizer.router.table).filter(id => id >= 2000).map(notOscId => synthesizer.router.table[notOscId].node);
       destNodes.concat(synthesizer.masterGain).forEach(dest => {
-        destinations += `<div class="routerCell destination ${Helpers.getRouteRelationship(table[src].node, dest)}" data-id=${dest.id === undefined ? 'mainout' : dest.id}>${dest.constructor.name === 'GainNode' ? 'Main Out' : dest.constructor.name} ${dest.id === undefined ? '' : dest.id % 1000}</div>`;
+        destinations += `<div class="routerCell destination ${Helpers.getRouteRelationship(src, dest)}" data-id=${dest.id === undefined ? 'mainout' : dest.id}>${dest.constructor.name === 'GainNode' ? 'Main Out' : dest.constructor.name} ${dest.id === undefined ? '' : dest.id % 1000}</div>`;
       });
       destinations += "</div>";
-    }
+    });
     destinations += "</div>";
     return(`
       <div class="router module">
@@ -39,11 +39,13 @@ const Template = {
           <div class="eligible icon">Eligible</div>
           <div class="ineligible icon">Ineligible</div>
         </div>
-        <div class="row">
-          <div class="sources column">
-            ${sources}
+        <div class="routerTable">
+          <div class="row">
+            <div class="sources column">
+              ${sources}
+            </div>
+            ${destinations}
           </div>
-          ${destinations}
         </div>
       </div>
     `);
