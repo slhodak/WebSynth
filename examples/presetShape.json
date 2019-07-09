@@ -1,0 +1,45 @@
+[
+  {
+    "synthesizer": {
+      "router": {
+        "table": {
+          "1000": 2000,
+          "1001": 2000,
+          "2000": "main out"
+        }
+      },
+      "settings": {
+        "poly": true,
+        "globals": {
+          "porta": 0.05,
+          "attack": 0.01,
+          "release": 0.1
+        }
+      },
+      "oscillators": [
+        {
+          "id": 1000,
+          "semitoneOffset": 0,
+          "fineDetune": 0,
+          "volume": 0.75,
+          "type": "sawtooth"
+        },
+        {
+          "id": 1001,
+          "semitoneOffset": 12,
+          "fineDetune": 0,
+          "volume": 0.8,
+          "type": "sawtooth"
+        }
+      ],
+      "filters": [
+        {
+          "id": 2000,
+          "type": "lowpass",
+          "frequency": 473,
+          "gain": 0
+        }
+      ]
+    }
+  }
+]
