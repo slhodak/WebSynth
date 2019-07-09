@@ -28,7 +28,7 @@ ul {
   margin-bottom: 2px;
 }
 
-.polyButton {
+.polyButton, .saveButton {
   height: 30px;
   width: 55px;
   font-weight: 700;

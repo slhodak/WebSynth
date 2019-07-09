@@ -314,8 +314,6 @@ window.addEventListener('keydown', (e) => {
   if (!synthesizer) {
     synthesizer = new Synthesizer();
     synthesizer.router = new Router();
-  } else {
-    Preset.save(synthesizer);
   }
   if (e.key === 'o') { 
     let newOsc = new Oscillator();
