@@ -17,7 +17,6 @@ let MIDIKeyboard = {
         }
       }
     });
-    MIDIKeyboard.midiAccess.onstatechange = null;
   },
   handleInput(message) {
     if (message.data[0] === 144) {
