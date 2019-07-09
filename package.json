@@ -1,0 +1,24 @@
+{
+  "name": "synthesizer_b2",
+  "version": "1.0.0",
+  "description": "browser-based synth",
+  "main": "bundle.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/slhodak/synthesizer_b2.git"
+  },
+  "keywords": [
+    "synthesizer",
+    "audio",
+    "midi"
+  ],
+  "author": "Sam Hodak",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/slhodak/synthesizer_b2/issues"
+  },
+  "homepage": "https://github.com/slhodak/synthesizer_b2#readme"
+}

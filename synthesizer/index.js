@@ -16,6 +16,7 @@ class Synthesizer {
     this.masterGain = this.context.createGain();
     this.masterGain.connect(this.context.destination);
     this.globals = {
+      demoTone: false,
       porta: 0.05,
       attack: 0.01,
       release: 0.1,
@@ -321,12 +322,12 @@ window.addEventListener('keydown', (e) => {
     console.log('Creating oscillator');
   }
   if (e.key === ' ') {
-    if (!synthesizer.globals.noteOn) {
+    if (!synthesizer.globals.demoTone) {
       synthesizer.playNote({data: [127, 44, 65]});
-      synthesizer.globals.noteOn = true;
+      synthesizer.globals.demoTone = true;
     } else {
       synthesizer.endNote({data: [127, 44, 65]})
-      synthesizer.globals.noteOn = false;
+      synthesizer.globals.demoTone = false;
     }
   }
   if (e.key === 'f') {
