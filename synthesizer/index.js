@@ -321,6 +321,13 @@ window.addEventListener('keydown', (e) => {
     synthesizer.oscillators.push(newOsc);
     synthesizer.router.updateRouter();
     console.log('Creating oscillator');
+    Preset.save(synthesizer);
+  }
+  if (e.key === 'f') {
+    synthesizer.filters.push(new Filter(synthesizer));
+    synthesizer.router.updateRouter();
+    console.log('Creating filter')
+    Preset.save(synthesizer);
   }
   if (e.key === ' ') {
     if (!synthesizer.globals.demoTone) {
@@ -330,11 +337,6 @@ window.addEventListener('keydown', (e) => {
       synthesizer.endNote({data: [127, 44, 65]})
       synthesizer.globals.demoTone = false;
     }
-  }
-  if (e.key === 'f') {
-    synthesizer.filters.push(new Filter(synthesizer));
-    synthesizer.router.updateRouter();
-    console.log('Creating filter')
   }
 });
 
@@ -390,6 +392,7 @@ const RouterController = {
         } else {
           console.log('Ineligible route!');
         }
+        Preset.save(synthesizer);
       });
     });
   }

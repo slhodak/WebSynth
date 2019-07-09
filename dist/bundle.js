@@ -1,10 +1,11 @@
 const host = 'http://localhost:3000';
 
 const scripts = [
-  `/synthesizer/lib/helpers.js`,
-  `/synthesizer/views/templates.js`,
-  `/synthesizer/index.js`,
-  `/synthesizer/midi.js`
+  '/synthesizer/lib/preset.js',
+  '/synthesizer/lib/helpers.js',
+  '/synthesizer/views/templates.js',
+  '/synthesizer/index.js',
+  '/synthesizer/midi.js'
 ];
 
 let reference = document.getElementsByClassName('scripts')[0];
