@@ -274,14 +274,14 @@ class Oscillator {
   setSemitoneOffset(semitoneOffset) {
     this.semitoneOffset = Number(semitoneOffset);
     for (let voice in this.voices) {
-      this.voices[voice].frequency.setTargetAtTime(synthesizer.findFrequencyFromNote(Number(voice) + this.semitoneOffset), synthesizer.context.currentTime, 0);
+      this.voices[voice].frequency.setTargetAtTime(this.synthesizer.findFrequencyFromNote(Number(voice) + this.semitoneOffset), this.synthesizer.context.currentTime, 0);
     }
   }
 
   setFineDetune(detune) {
     this.fineDetune = detune;
     for (let voice in this.voices) {
-      this.voices[voice].detune.setTargetAtTime(detune, synthesizer.context.currentTime, 0);
+      this.voices[voice].detune.setTargetAtTime(detune, this.synthesizer.context.currentTime, 0);
     }
   }
 
