@@ -10,11 +10,11 @@ app.use('/synthesizer', express.static(path.resolve(__dirname, '../synthesizer')
 app.use(express.json());
 
 app.post('/preset', (req, res) => {
-  Preset.create(req.body, (err) => {
-    if (err) {
-      res.status(500).send(err);
+  Preset.create(req.body, (error, success) => {
+    if (error) {
+      res.status(500).send({ error });
     } else {
-      res.status(200).send('Preset saved.');
+      res.status(200).send({ success });
     }
   });
 });

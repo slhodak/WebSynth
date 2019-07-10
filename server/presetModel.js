@@ -10,7 +10,7 @@ module.exports = {
         if (err) {
           callback(err);
         } else {
-          callback(null);
+          callback(null, 'Preset saved');
         }
       });
     }

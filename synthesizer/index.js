@@ -341,6 +341,7 @@ window.addEventListener('keydown', (e) => {
 
 
 //  Save and Download Buttons
+//  - TODO: Provide some non-obtrusive (visual) user feedback that communicates that the preset was saved (the router model flashes green with an animation called "saved"?))
 (() => {
   document.getElementsByClassName('savePreset')[0].addEventListener('submit', (e) => {
     e.preventDefault();
@@ -351,10 +352,14 @@ window.addEventListener('keydown', (e) => {
       },
       body: JSON.stringify(Preset.save(synthesizer, e.srcElement[0].value, manager.overwrite))
     })
-      .catch(err => {
-        if (err === 'exists') {
-          //  ask the user if they want to overwrite the file
+      .then(response => response.json())
+      .then(body => {
+        if (body.error === 'exists') {
+          window.alert('A preset already exists with that name.\nPlease choose another name or select the "overwrite" option.');
         }
+      })
+      .catch(err => {
+        console.log(err);
       });
   });
 })();
