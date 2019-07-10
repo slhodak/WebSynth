@@ -315,7 +315,15 @@ class Filter extends BiquadFilterNode {
 
 const Controls = {
   79: () => {
+    //  I want to add the voices to the new oscillators if existing oscillators are playing
+    //  when the new one is created. in any mode (start with poly)
     let newOsc = new Oscillator();
+    if (synthesizer.oscillators[0]) {
+      for (let voice in synthesizer.oscillators[0].voices) {
+        console.log(voice);
+        newOsc.addVoice({ data: [null, Number(voice), null] });
+      }
+    }
     synthesizer.oscillators.push(newOsc);
     synthesizer.router.updateRouter();
     console.log('Creating oscillator');
@@ -336,13 +344,14 @@ const Controls = {
 };
 
 window.addEventListener('keydown', (e) => {
-  console.log(e.keyCode);
   if (e.target.type !== 'text') {
     if (!synthesizer) {
       synthesizer = new Synthesizer();
       synthesizer.router = new Router();
-      Controls[e.keyCode]();
-    } else {
+      if (Controls[e.keyCode] && e.keyCode !== 32) {
+        Controls[e.keyCode]();
+      }
+    } else if (Controls[e.keyCode]) {
       Controls[e.keyCode]();
     }
   }
