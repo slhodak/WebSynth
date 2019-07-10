@@ -1,5 +1,21 @@
 @import url('https://fonts.googleapis.com/css?family=Nunito+Sans&display=swap');
 
+@keyframes saveConfirmation {
+  from {
+    background-color: rgb(161, 161, 161);
+  }
+  to {
+    background-color: rgb(45, 184, 45);
+  }
+}
+
+.confirmation {
+  animation-name: saveConfirmation;
+  animation-duration: 250ms;
+  animation-iteration-count: 2;
+  animation-direction: alternate;
+}
+
 html {
   font-family: 'Nunito Sans', sans-serif;
   background-color: rgb(223, 223, 223);
@@ -53,7 +69,6 @@ ul {
 .true {
   background-color: rgb(97, 228, 97);
 }
-
 
 .off {
   background-color: gray;
