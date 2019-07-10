@@ -34,6 +34,23 @@ ul {
   font-weight: 700;
 }
 
+.overwrite {
+  height: 30px;
+  width: 70px;
+  font-weight: 700;
+  border-radius: 2px;
+  border: 1px solid white;
+}
+
+.false {
+  background-color: rgb(216, 134, 119);
+}
+
+.true {
+  background-color: rgb(97, 228, 97);
+}
+
+
 .off {
   background-color: gray;
 }

@@ -7,7 +7,9 @@
 
 //  - Global Parameters keep new oscillators in step with existing ones
 let synthesizer = null;
-
+let manager = {
+  overwrite: false
+};
 //  - Synthesizer
 class Synthesizer {
   constructor() {
@@ -337,6 +339,8 @@ window.addEventListener('keydown', (e) => {
   }
 });
 
+
+//  Save and Download Buttons
 (() => {
   document.getElementsByClassName('savePreset')[0].addEventListener('submit', (e) => {
     e.preventDefault();
@@ -345,11 +349,25 @@ window.addEventListener('keydown', (e) => {
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(Preset.save(synthesizer, e.srcElement[0].value, false))
+      body: JSON.stringify(Preset.save(synthesizer, e.srcElement[0].value, manager.overwrite))
     })
       .catch(err => {
-        console.log(err);
+        if (err === 'exists') {
+          //  ask the user if they want to overwrite the file
+        }
       });
+  });
+})();
+
+(() => {
+  let overwrite = document.getElementsByClassName('overwrite')[0];
+  overwrite.addEventListener('mousedown', (e) => {
+    if (manager.overwrite === false) {
+      overwrite.classList.replace('false', 'true');
+    } else {
+      overwrite.classList.replace('true', 'false');
+    }
+    manager.overwrite = !manager.overwrite;
   });
 })();
 
