@@ -14,16 +14,20 @@ import {
 */
 //  - models must have defined interfaces for the controllers to interact with
 
-//  - Global Parameters keep new oscillators in step with existing ones
-let synthesizer = null;
-let manager = {
+
+let Manager = {
+  createSynthesizer() {
+    Manager.synthesizer = new Synthesizer();
+  },
+  synthesizer: null,
   overwrite: false
 };
+
 //  - Synthesizer
 class Synthesizer {
   constructor() {
     this.context = new AudioContext();
-    this.router = new Router();
+    this.router = new Router(this);
     this.masterGain = this.context.createGain();
     this.masterGain.connect(this.context.destination);
     this.globals = {
@@ -83,7 +87,16 @@ class Synthesizer {
   }
 
   addOscillator() {
-
+    let newOsc = new Oscillator(this);
+    if (this.oscillators[0]) {
+      for (let voice in this.oscillators[0].voices) {
+        console.log(voice);
+        newOsc.addVoice({ data: [null, Number(voice), null] });
+      }
+    }
+    this.oscillators.push(newOsc);
+    this.router.updateRouter();
+    console.log('Created oscillator');
   }
 
   addFilter() {
@@ -129,14 +142,15 @@ class Synthesizer {
 
 //  - Router
 class Router {
-  constructor() {
+  constructor(synthesizer) {
+    this.synthesizer = synthesizer;
     this.table = {};
     this.updateRouter = this.updateRouter.bind(this);
     this.setRoute = this.setRoute.bind(this);
   }
   updateRouter() {
-    synthesizer.oscillators.concat(synthesizer.filters).forEach(node => {
-      let eligibleDestinations = synthesizer.filters.filter(dest => !Helpers.isNodeLoop(node, dest));
+    this.synthesizer.oscillators.concat(this.synthesizer.filters).forEach(node => {
+      let eligibleDestinations = this.synthesizer.filters.filter(dest => !Helpers.isNodeLoop(node, dest));
       this.table[node.id] = {
         node,
         eligibleDestinations
@@ -160,46 +174,47 @@ class Voice extends OscillatorNode {
     super(context, options);
 
     this.parent = parent;
-    this.gainNode = synthesizer.context.createGain();
+    this.gainNode = this.parent.synthesizer.context.createGain();
     this.gainNode.gain.value = 0;
     this.connect(this.gainNode);
     this.gainNode.connect(parent.output);
     this.start();
-    this.gainNode.gain.setTargetAtTime(parent.volume, synthesizer.context.currentTime, parent.attack);
+    this.gainNode.gain.setTargetAtTime(parent.volume, this.parent.synthesizer.context.currentTime, parent.attack);
 
     this.setFrequency = this.setFrequency.bind(this);
     this.off = this.off.bind(this);
   }
 
   setFrequency(note) {
-    this.frequency.setTargetAtTime(synthesizer.findFrequencyFromNote(note), synthesizer.context.currentTime, this.parent.porta);
+    this.frequency.setTargetAtTime(this.parent.synthesizer.findFrequencyFromNote(note), this.parent.synthesizer.context.currentTime, this.parent.porta);
   }
 
   off() {
-    this.gainNode.gain.setTargetAtTime(0, synthesizer.context.currentTime, this.parent.release / 10);
-    this.stop(synthesizer.context.currentTime + this.parent.release);
+    this.gainNode.gain.setTargetAtTime(0, this.parent.synthesizer.context.currentTime, this.parent.release / 10);
+    this.stop(this.parent.synthesizer.context.currentTime + this.parent.release);
   }
 }
 
 //  - Oscillator abstraction controlling multiple voiced oscillator nodes
 class Oscillator {
-  constructor() {
+  constructor(synthesizer) {
+    this.synthesizer = synthesizer;
     this.voices = {};
     this.addVoice = this.addVoice.bind(this);
     this.removeVoice = this.removeVoice.bind(this);
 
-    this.id = 1000 + synthesizer.oscillators.length;
+    this.id = 1000 + this.synthesizer.oscillators.length;
     OscController.createControls(this.id % 1000);
     OscController.createListeners(this.id % 1000);
     this.semitoneOffset = 0;
     this.fineDetune = 0;
     this.volume = 0.75;
     this.type = 'sine';
-    this.porta = synthesizer.globals.porta;
-    this.attack = synthesizer.globals.attack;
-    this.release = synthesizer.globals.release;
+    this.porta = this.synthesizer.globals.porta;
+    this.attack = this.synthesizer.globals.attack;
+    this.release = this.synthesizer.globals.release;
 
-    this.output = synthesizer.context.createGain();
+    this.output = this.synthesizer.context.createGain();
     this.output.gain.value = this.volume;
     this.output.connect(synthesizer.masterGain);
     this.dest = synthesizer.masterGain;
@@ -214,8 +229,8 @@ class Oscillator {
   }
 
   addVoice(midiMessage) {
-    let voice = new Voice(synthesizer.context, {
-      frequency: synthesizer.findFrequencyFromNote(midiMessage.data[1] + this.semitoneOffset, synthesizer.context.currentTime, 0),
+    let voice = new Voice(this.synthesizer.context, {
+      frequency: this.synthesizer.findFrequencyFromNote(midiMessage.data[1] + this.semitoneOffset, this.synthesizer.context.currentTime, 0),
       type: this.type,
       detune: this.fineDetune
     }, this);
@@ -230,8 +245,8 @@ class Oscillator {
   
   removeVoice(midiMessage) {
     const voice = this.voices[midiMessage.data[1]];
-    voice.gainNode.gain.setTargetAtTime(0, synthesizer.context.currentTime, this.release / 10);
-    voice.stop(synthesizer.context.currentTime + this.release);
+    voice.gainNode.gain.setTargetAtTime(0, this.synthesizer.context.currentTime, this.release / 10);
+    voice.stop(this.synthesizer.context.currentTime + this.release);
   }
 
   setDestination(destination) {
@@ -377,7 +392,5 @@ const RouterViews = {
 };
 
 export {
-  synthesizer,
-  Synthesizer,
-  manager
+  Manager
 }

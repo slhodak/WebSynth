@@ -1,4 +1,4 @@
-import { synthesizer } from './index.js';
+import { Manager } from './index.js';
 
 let MIDIKeyboard = {
   connect() {
@@ -14,7 +14,7 @@ let MIDIKeyboard = {
     MIDIKeyboard.midiAccess = midiAccess;
     midiAccess.inputs.forEach(port => {
       port.onmidimessage = (message) => {
-        if (synthesizer) {
+        if (Manager.synthesizer) {
           MIDIKeyboard.handleInput(message);
         }
       }
@@ -22,9 +22,9 @@ let MIDIKeyboard = {
   },
   handleInput(message) {
     if (message.data[0] === 144) {
-      synthesizer.playNote(message);
+      Manager.synthesizer.playNote(message);
     } else if (message.data[0] === 128) {
-      synthesizer.endNote(message);
+      Manager.synthesizer.endNote(message);
     }
   }
 };
