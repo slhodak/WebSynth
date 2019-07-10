@@ -1,3 +1,6 @@
+import Helpers from './lib/helpers.js';
+import Template from './views/templates.js';
+import Preset from './lib/preset.js';
 /*  _  _   __  ____  ____  __    ____ 
 *  ( \/ ) /  \(    \(  __)(  )  / ___)
 *  / \/ \(  O )) D ( ) _) / (_/\\___ \
@@ -405,6 +408,7 @@ const SynthController = {
     let polyButton = document.getElementsByClassName('polyButton')[0];
     polyButton.addEventListener('mousedown', (e) => {
       synthesizer.poly = !synthesizer.poly;
+      //  view
       FormViews.updatePolyButton(synthesizer.poly);
     });
     let masterGainSlider = document.getElementsByClassName('masterGainSlider')[0];
@@ -587,3 +591,8 @@ const RouterViews = {
     routerTable.innerHTML = Template.routingTable(table);
   }
 };
+
+export {
+  synthesizer,
+  manager
+}

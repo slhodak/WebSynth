@@ -1,3 +1,5 @@
+import { synthesizer } from './index.js';
+
 let MIDIKeyboard = {
   connect() {
     window.navigator.requestMIDIAccess()

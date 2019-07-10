@@ -43,3 +43,5 @@ const Preset = {
 
   }
 };
+
+export default Preset;

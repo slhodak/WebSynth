@@ -1,3 +1,6 @@
+import { synthesizer } from '../index.js';
+import Helpers from '../lib/helpers.js';
+
 const Template = {
   selector(id, name, title, options, optionTitles) {
     let template = 
@@ -41,3 +44,5 @@ const Template = {
     `);
   }
 }
+
+export default Template;
