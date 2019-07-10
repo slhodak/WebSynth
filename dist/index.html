@@ -24,7 +24,6 @@
       <ul>
         <li>Added oscillators will be audible on the next key pressed</li>
         <li>Altered oscillator parameters will be audible immediately</li>
-        <li>MIDI devices must be plugged in after the page is loaded</li>
       </ul>
     </div>
   </div>
@@ -42,6 +41,16 @@
       <input class="noteSlider" type="range" min="1" max="88" value="49" step="1">
       <label for="portaSlider">Porta</label>
       <input class="portaSlider" type="range" min="0.001" max="1" value="0.05" step="0.001">
+    </div>
+    <div class="module save">
+      <h3>Save Synth Preset</h3>
+      <form class="savePreset">
+        <div class="row">
+          <input type="text" name="presetName" placeholder="name">
+          <button class="saveButton" type="submit">Save</button>
+        </div>
+      </form>
+      <button class="overwrite false" type="button">Overwrite</button>
     </div>
     <div class="router module">
       <h3>Router</h3>

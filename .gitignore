@@ -1,2 +1,9 @@
+### NPM
+node_modules/
+
+### Notes
 note-archive.txt
 notes.txt
+
+### Saved Presets
+server/presets

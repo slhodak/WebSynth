@@ -7,7 +7,9 @@
 
 //  - Global Parameters keep new oscillators in step with existing ones
 let synthesizer = null;
-
+let manager = {
+  overwrite: false
+};
 //  - Synthesizer
 class Synthesizer {
   constructor() {
@@ -16,6 +18,7 @@ class Synthesizer {
     this.masterGain = this.context.createGain();
     this.masterGain.connect(this.context.destination);
     this.globals = {
+      demoTone: false,
       porta: 0.05,
       attack: 0.01,
       release: 0.1,
@@ -308,33 +311,93 @@ class Filter extends BiquadFilterNode {
 *  \___)\__/ \_)__) (__) (__\_) \__/ \____/\____/(____)(__\_)(____/
 */
 
-//  Keyboard controls
-window.addEventListener('keydown', (e) => {
-  if (!synthesizer) {
-    synthesizer = new Synthesizer();
-    synthesizer.router = new Router();
-  }
-  if (e.key === 'o') { 
+//  General controls
+
+const Controls = {
+  79: () => {
+    //  I want to add the voices to the new oscillators if existing oscillators are playing
+    //  when the new one is created. in any mode (start with poly)
     let newOsc = new Oscillator();
+    if (synthesizer.oscillators[0]) {
+      for (let voice in synthesizer.oscillators[0].voices) {
+        console.log(voice);
+        newOsc.addVoice({ data: [null, Number(voice), null] });
+      }
+    }
     synthesizer.oscillators.push(newOsc);
     synthesizer.router.updateRouter();
     console.log('Creating oscillator');
-  }
-  if (e.key === ' ') {
-    if (!synthesizer.globals.noteOn) {
-      synthesizer.playNote({data: [127, 44, 65]});
-      synthesizer.globals.noteOn = true;
-    } else {
-      synthesizer.endNote({data: [127, 44, 65]})
-      synthesizer.globals.noteOn = false;
-    }
-  }
-  if (e.key === 'f') {
+  },
+  70: () => {
     synthesizer.filters.push(new Filter(synthesizer));
     synthesizer.router.updateRouter();
-    console.log('Creating filter')
+    console.log('Creating filter');
+  },
+  32: () => {
+    if (synthesizer.globals.demoTone === false) {
+      synthesizer.playNote({data: [127, 44, 65]});
+    } else {
+      synthesizer.endNote({data: [127, 44, 65]})
+    }
+    synthesizer.globals.demoTone = !synthesizer.globals.demoTone;
+  }
+};
+
+window.addEventListener('keydown', (e) => {
+  if (e.target.type !== 'text') {
+    if (!synthesizer) {
+      synthesizer = new Synthesizer();
+      synthesizer.router = new Router();
+      if (Controls[e.keyCode] && e.keyCode !== 32) {
+        Controls[e.keyCode]();
+      }
+    } else if (Controls[e.keyCode]) {
+      Controls[e.keyCode]();
+    }
   }
 });
+
+
+//  Save and Download Buttons
+//  - TODO: Provide some non-obtrusive (visual) user feedback that communicates that the preset was saved (the router model flashes green with an animation called "saved"?))
+(() => {
+  document.getElementsByClassName('savePreset')[0].addEventListener('submit', (e) => {
+    e.preventDefault();
+    fetch('http://localhost:3000/preset', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(Preset.save(synthesizer, e.srcElement[0].value, manager.overwrite))
+    })
+      .then(response => response.json())
+      .then(body => {
+        if (body.error === 'exists') {
+          window.alert('A preset already exists with that name.\nPlease choose another name or select the "overwrite" option.');
+        } else {
+          document.getElementsByClassName('save')[0].setAttribute('class', 'module save confirmation');
+          setTimeout(() => {
+            document.getElementsByClassName('save')[0].setAttribute('class', 'module save');
+          }, 1000);
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  });
+})();
+
+(() => {
+  let overwrite = document.getElementsByClassName('overwrite')[0];
+  overwrite.addEventListener('mousedown', (e) => {
+    if (manager.overwrite === false) {
+      overwrite.classList.replace('false', 'true');
+    } else {
+      overwrite.classList.replace('true', 'false');
+    }
+    manager.overwrite = !manager.overwrite;
+  });
+})();
 
 //  Global Oscillator Parameters
 const SynthController = {
@@ -358,12 +421,14 @@ const SynthController = {
       synthesizer.oscillators.forEach(osc => {
         osc.setAttack(e.target.value);
       });
+      synthesizer.globals.attack = e.target.value;
     });
     let releaseSlider = document.getElementsByClassName('releaseSlider')[0];
     releaseSlider.addEventListener('input', (e) => {
       synthesizer.oscillators.forEach(osc => {
-        osc.setRelease(e.target.value);
+        osc.setRelease(Number(e.target.value));
       });
+      synthesizer.globals.release = e.target.value;
     });
     let portaSlider = document.getElementsByClassName('portaSlider')[0];
     portaSlider.addEventListener('input', (e) => {
