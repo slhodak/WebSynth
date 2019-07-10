@@ -313,28 +313,30 @@ class Filter extends BiquadFilterNode {
 
 //  General controls
 window.addEventListener('keydown', (e) => {
-  if (!synthesizer) {
-    synthesizer = new Synthesizer();
-    synthesizer.router = new Router();
-  }
-  if (e.key === 'o') { 
-    let newOsc = new Oscillator();
-    synthesizer.oscillators.push(newOsc);
-    synthesizer.router.updateRouter();
-    console.log('Creating oscillator');
-  }
-  if (e.key === 'f') {
-    synthesizer.filters.push(new Filter(synthesizer));
-    synthesizer.router.updateRouter();
-    console.log('Creating filter')
-  }
-  if (e.key === ' ') {
-    if (!synthesizer.globals.demoTone) {
-      synthesizer.playNote({data: [127, 44, 65]});
-      synthesizer.globals.demoTone = true;
-    } else {
-      synthesizer.endNote({data: [127, 44, 65]})
-      synthesizer.globals.demoTone = false;
+  if (e.target.type !== 'text') {
+    if (!synthesizer) {
+      synthesizer = new Synthesizer();
+      synthesizer.router = new Router();
+    }
+    if (e.key === 'o') { 
+      let newOsc = new Oscillator();
+      synthesizer.oscillators.push(newOsc);
+      synthesizer.router.updateRouter();
+      console.log('Creating oscillator');
+    }
+    if (e.key === 'f') {
+      synthesizer.filters.push(new Filter(synthesizer));
+      synthesizer.router.updateRouter();
+      console.log('Creating filter')
+    }
+    if (e.key === ' ') {
+      if (!synthesizer.globals.demoTone) {
+        synthesizer.playNote({data: [127, 44, 65]});
+        synthesizer.globals.demoTone = true;
+      } else {
+        synthesizer.endNote({data: [127, 44, 65]})
+        synthesizer.globals.demoTone = false;
+      }
     }
   }
 });
