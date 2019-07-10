@@ -410,7 +410,7 @@ const SynthController = {
     let releaseSlider = document.getElementsByClassName('releaseSlider')[0];
     releaseSlider.addEventListener('input', (e) => {
       synthesizer.oscillators.forEach(osc => {
-        osc.setRelease(e.target.value);
+        osc.setRelease(Number(e.target.value));
       });
       synthesizer.globals.release = e.target.value;
     });
