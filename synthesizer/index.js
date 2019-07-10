@@ -100,7 +100,9 @@ class Synthesizer {
   }
 
   addFilter() {
-
+    this.filters.push(new Filter(this));
+    this.router.updateRouter();
+    console.log('Created filter');
   }
 
   endNote(midiMessage) {
@@ -298,18 +300,19 @@ class Oscillator {
 
 //  - Filters
 class Filter extends BiquadFilterNode {
-  constructor(props) {
-    super(props.context);
+  constructor(synthesizer) {
+    super(synthesizer.context);
 
-    this.id = 2000 + synthesizer.filters.length;
+    this.synthesizer = synthesizer;
+    this.id = 2000 + this.synthesizer.filters.length;
     FilterController.createControls(this.id % 2000);
     FilterController.createListeners(this.id % 2000);
 
     this.type = 'lowpass';
     this.frequency.setTargetAtTime(20000, this.context.currentTime, 0);
     this.gain.setTargetAtTime(0, this.context.currentTime, 0);
-    this.connect(synthesizer.masterGain);
-    this.dest = synthesizer.masterGain;
+    this.connect(this.synthesizer.masterGain);
+    this.dest = this.synthesizer.masterGain;
 
     this.setType = this.setType.bind(this);
     this.setFrequency = this.setFrequency.bind(this);
