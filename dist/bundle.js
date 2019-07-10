@@ -14,9 +14,7 @@ function addScripts(scripts, reference) {
   scripts.forEach((title, index) => {
     let script = document.createElement('script');
     script.src = host + title;
-    if (index = scripts.length - 1) {
-      script.type = "module"
-    }
+    script.type = "module"
     document.body.insertBefore(script, reference);
   });
 }
