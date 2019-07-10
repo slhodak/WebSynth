@@ -309,7 +309,7 @@ class Filter extends BiquadFilterNode {
 *  \___)\__/ \_)__) (__) (__\_) \__/ \____/\____/(____)(__\_)(____/
 */
 
-//  Keyboard controls
+//  General controls
 window.addEventListener('keydown', (e) => {
   if (!synthesizer) {
     synthesizer = new Synthesizer();
@@ -336,6 +336,22 @@ window.addEventListener('keydown', (e) => {
     }
   }
 });
+
+(() => {
+  document.getElementsByClassName('savePreset')[0].addEventListener('submit', (e) => {
+    e.preventDefault();
+    fetch('http://localhost:3000/preset', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(Preset.save(synthesizer, e.srcElement[0].value))
+    })
+      .catch(err => {
+        console.log(err);
+      });
+  });
+})();
 
 //  Global Oscillator Parameters
 const SynthController = {

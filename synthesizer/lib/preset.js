@@ -1,6 +1,7 @@
 const Preset = {
-  save(synthesizer) {
+  save(synthesizer, name) {
     let synthData = {
+      name,
       synthesizer: {
         router: {},
         settings: {
@@ -35,7 +36,7 @@ const Preset = {
         Q: filt.Q.value
       }
     });
-    console.log(synthData);
+    return synthData;
   },
   load(synthData) {
 
