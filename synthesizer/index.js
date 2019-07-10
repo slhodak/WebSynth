@@ -345,7 +345,7 @@ window.addEventListener('keydown', (e) => {
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(Preset.save(synthesizer, e.srcElement[0].value))
+      body: JSON.stringify(Preset.save(synthesizer, e.srcElement[0].value, false))
     })
       .catch(err => {
         console.log(err);

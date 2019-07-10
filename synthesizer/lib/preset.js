@@ -1,6 +1,7 @@
 const Preset = {
-  save(synthesizer, name) {
+  save(synthesizer, name, overwrite) {
     let synthData = {
+      overwrite,
       name,
       synthesizer: {
         router: {},
