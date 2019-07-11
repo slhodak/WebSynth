@@ -13,12 +13,13 @@ import { RouterViews } from './views/views.js';
 *  / \/ \(  O )) D ( ) _) / (_/\\___ \
 *  \_)(_/ \__/(____/(____)\____/(____/
 */
-//  - models must have defined interfaces for the controllers to interact with
-
 
 let Manager = {
-  createSynthesizer() {
-    Manager.synthesizer = new Synthesizer();
+  createSynthesizerIfNoneExists() {
+    if (!Manager.synthesizer) {
+      Manager.synthesizer = new Synthesizer();
+      document.getElementsByClassName('globalControls')[0].removeEventListener('mousedown', Manager.createSynthesizerIfNoneExists);
+    }
   },
   synthesizer: null,
   overwrite: false

@@ -33,7 +33,7 @@ const Controls = {
 window.addEventListener('keydown', (e) => {
   if (e.target.type !== 'text') {
     if (!Manager.synthesizer) {
-      Manager.createSynthesizer();
+      Manager.createSynthesizerIfNoneExists();
       if (Controls[e.keyCode] && e.keyCode !== 32) {
         Controls[e.keyCode]();
       }
@@ -43,46 +43,55 @@ window.addEventListener('keydown', (e) => {
   }
 });
 
-
 //  Save and Download Buttons
-(() => {
-  document.getElementsByClassName('savePreset')[0].addEventListener('submit', (e) => {
-    e.preventDefault();
-    fetch('http://localhost:3000/preset', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(Preset.save(Manager.synthesizer, e.srcElement[0].value, Manager.overwrite))
-    })
-      .then(response => response.json())
-      .then(body => {
-        if (body.error === 'exists') {
-          window.alert('A preset already exists with that name.\nPlease choose another name or select the "overwrite" option.');
-        } else {
-          document.getElementsByClassName('save')[0].setAttribute('class', 'module save confirmation');
-          setTimeout(() => {
-            document.getElementsByClassName('save')[0].setAttribute('class', 'module save');
-          }, 1000);
-        }
-      })
-      .catch(err => {
-        console.log(err);
-      });
-  });
-})();
+const FormController = {
+  initializeSavePresetModule() {
+    FormController.initializeSaveButton();
+    FormController.initializeOverwriteButton();
+  },
+  initializeSaveButton() {
+    document.getElementsByClassName('savePreset')[0].addEventListener('submit', (e) => {
+      e.preventDefault();
+      console.log(e);
+      if (Manager.synthesizer) {
+        fetch('http://localhost:3000/preset', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(Preset.save(Manager.synthesizer, e.srcElement[0].value, Manager.overwrite))
+        })
+          .then(response => response.json())
+          .then(body => {
+            if (body.error === 'exists') {
+              window.alert('A preset already exists with that name.\nPlease choose another name or select the "overwrite" option.');
+            } else {
+              document.getElementsByClassName('save')[0].setAttribute('class', 'module save confirmation');
+              setTimeout(() => {
+                document.getElementsByClassName('save')[0].setAttribute('class', 'module save');
+              }, 1000);
+            }
+          })
+          .catch(err => {
+            console.log(err);
+          });
+      }
+    });
+  },
+  initializeOverwriteButton() {
+    let overwrite = document.getElementsByClassName('overwrite')[0];
+    overwrite.addEventListener('mousedown', (e) => {
+      if (Manager.overwrite === false) {
+        overwrite.classList.replace('false', 'true');
+      } else {
+        overwrite.classList.replace('true', 'false');
+      }
+      Manager.overwrite = !Manager.overwrite;
+    });
+  }
+}
 
-(() => {
-  let overwrite = document.getElementsByClassName('overwrite')[0];
-  overwrite.addEventListener('mousedown', (e) => {
-    if (Manager.overwrite === false) {
-      overwrite.classList.replace('false', 'true');
-    } else {
-      overwrite.classList.replace('true', 'false');
-    }
-    Manager.overwrite = !Manager.overwrite;
-  });
-})();
+FormController.initializeSavePresetModule();
 
 //  Global Synth Parameters
 const SynthController = {
@@ -106,25 +115,35 @@ const SynthController = {
       Manager.synthesizer.togglePoly();
     });
     let masterGainSlider = document.getElementsByClassName('masterGainSlider')[0];
+    let masterGainSliderDisplay = document.getElementsByClassName('masterGainSliderDisplay')[0];
     masterGainSlider.addEventListener('input', (e) => {
       Manager.synthesizer.setGain(Number(e.target.value));
+      masterGainSliderDisplay.innerText = e.target.value;
     });
     let attackSlider = document.getElementsByClassName('attackSlider')[0];
+    let attackSliderDisplay = document.getElementsByClassName('attackSliderDisplay')[0];
     attackSlider.addEventListener('input', (e) => {
       Manager.synthesizer.setAttack(Number(e.target.value));
+      attackSliderDisplay.innerText = e.target.value;
     });
     let releaseSlider = document.getElementsByClassName('releaseSlider')[0];
+    let releaseSliderDisplay = document.getElementsByClassName('releaseSliderDisplay')[0];
     releaseSlider.addEventListener('input', (e) => {
       Manager.synthesizer.setRelease(Number(e.target.value));
+      releaseSliderDisplay.innerText = e.target.value;
     });
     let portaSlider = document.getElementsByClassName('portaSlider')[0];
+    let portaSliderDisplay = document.getElementsByClassName('portaSliderDisplay')[0];
     portaSlider.addEventListener('input', (e) => {
       Manager.synthesizer.setPorta(Number(e.target.value));
+      portaSliderDisplay.innerText = e.target.value;
     });
   }
 }
 
 SynthController.createControls();
+document.getElementsByClassName('globalControls')[0].addEventListener('mousedown', Manager.createSynthesizerIfNoneExists);
+
 
 //  Router Controller
 const RouterController = {
@@ -189,7 +208,7 @@ const OscController = {
       fineDetuneSliderDisplay.innerText = e.target.value;
     });
   }
-}
+};
 
 //  Individual Filter Parameters
 const FilterController = {
@@ -234,6 +253,7 @@ const FilterController = {
 }
 
 export {
+  FormController,
   SynthController,
   RouterController,
   OscController,
