@@ -1,4 +1,4 @@
-import { Manager } from './index.js';
+import { Manager } from './main.js';
 
 let MIDIKeyboard = {
   connect() {

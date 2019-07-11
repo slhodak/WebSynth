@@ -3,8 +3,10 @@ const host = 'http://localhost:3000';
 const scripts = [
   '/synthesizer/lib/preset.js',
   '/synthesizer/lib/helpers.js',
+  '/synthesizer/controllers/controllers.js',
+  '/synthesizer/views/views.js',
   '/synthesizer/views/templates.js',
-  '/synthesizer/index.js',
+  '/synthesizer/main.js',
   '/synthesizer/midi.js'
 ];
 

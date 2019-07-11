@@ -5,6 +5,7 @@ import {
   OscController,
   FilterController
 } from './controllers/controllers.js';
+import { FormViews } from './views/views.js';
 import { RouterViews } from './views/views.js';
 
 /*  _  _   __  ____  ____  __    ____ 
@@ -54,6 +55,10 @@ class Synthesizer {
     this.findNextNote = this.findNextNote.bind(this);
     this.findFrequencyFromNote = this.findFrequencyFromNote.bind(this);
     this.togglePoly = this.togglePoly.bind(this);
+    this.setAttack = this.setAttack.bind(this);
+    this.setRelease = this.setRelease.bind(this);
+    this.setGain = this.setGain.bind(this);
+    this.setPorta = this.setPorta.bind(this);
   }
 
   playNote(midiMessage) {
@@ -139,10 +144,33 @@ class Synthesizer {
 
   togglePoly() {
     this.poly = !this.poly;
-    FormViews.updatePolyButton(Manager.synthesizer.poly);
+    FormViews.updatePolyButton(this.poly);
   }
 
-  //  deal with global controls changes...
+  setGain(value) {
+    this.masterGain.gain.setTargetAtTime(value, this.context.currentTime, 0);
+  }
+
+  setAttack(value) {
+    this.globals.attack = value;
+    this.oscillators.forEach(osc => {
+      osc.setAttack(value);
+    });
+  }
+
+  setRelease(value) {
+    this.globals.release = value;
+    this.oscillators.forEach(osc => {
+      osc.setRelease(value);
+    });
+  }
+
+  setPorta(value) {
+    this.globals.porta = value;
+    Manager.synthesizer.oscillators.forEach(osc => {
+      osc.setPorta(value);
+    });
+  }
 }
 
 //  - Router

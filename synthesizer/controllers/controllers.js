@@ -1,8 +1,7 @@
-import { Manager } from '../index.js';
+import { Manager } from '../main.js';
 import Preset from '../lib/preset.js';
 import Helpers from '../lib/helpers.js';
 import Template from '../views/templates.js';
-import { FormViews } from '../views/views.js';
 
 //  figure out what to import, how to manage synth/osc/filt API to controllers
 
@@ -91,38 +90,22 @@ const SynthController = {
     let polyButton = document.getElementsByClassName('polyButton')[0];
     polyButton.addEventListener('mousedown', (e) => {
       Manager.synthesizer.togglePoly();
-      Manager.synthesizer.poly = !Manager.synthesizer.poly;
-      //  view
     });
     let masterGainSlider = document.getElementsByClassName('masterGainSlider')[0];
     masterGainSlider.addEventListener('input', (e) => {
-      Manager.synthesizer.masterGain.gain.setTargetAtTime(Number(e.target.value), Manager.synthesizer.context.currentTime, 0);
-    });
-    let noteSlider = document.getElementsByClassName('noteSlider')[0];
-    noteSlider.addEventListener('input', (e) => {
-      Manager.synthesizer.globals.note = Number(e.target.value);
-      Manager.synthesizer.updateOscFrequencies();
+      Manager.synthesizer.setGain(Number(e.target.value));
     });
     let attackSlider = document.getElementsByClassName('attackSlider')[0];
     attackSlider.addEventListener('input', (e) => {
-      Manager.synthesizer.oscillators.forEach(osc => {
-        osc.setAttack(Number(e.target.value));
-      });
-      Manager.synthesizer.globals.attack = Number(e.target.value);
+      Manager.synthesizer.setAttack(Number(e.target.value));
     });
     let releaseSlider = document.getElementsByClassName('releaseSlider')[0];
     releaseSlider.addEventListener('input', (e) => {
-      Manager.synthesizer.oscillators.forEach(osc => {
-        osc.setRelease(Number(e.target.value));
-      });
-      Manager.synthesizer.globals.release = Number(e.target.value);
+      Manager.synthesizer.setRelease(Number(e.target.value));
     });
     let portaSlider = document.getElementsByClassName('portaSlider')[0];
     portaSlider.addEventListener('input', (e) => {
-      Manager.synthesizer.oscillators.forEach(osc => {
-        osc.setPorta(Number(e.target.value));
-      });
-      Manager.synthesizer.globals.porta = Number(e.target.value);
+      Manager.synthesizer.setPorta(Number(e.target.value));
     });
   }
 }
@@ -149,10 +132,10 @@ const RouterController = {
 const OscController = {
   controls(id) {
     let header = `<h3>Oscillator ${id}</h3>`;
-    let volSlider = Template.slider(id, 'volumeSlider', 'Volume', 0, 1, 0.75, 0.001);
-    let semitoneSlider = Template.slider(id, 'semitoneSlider', 'Semitone', -24, 24, 0, 1);
-    let fineDetuneSlider = Template.slider(id, 'fineDetuneSlider', 'Detune', -50, 50, 0, 1);
-    let waveSelector = Template.selector(id, 'waveSelector', 'Wave', ['sine', 'sawtooth', 'square', 'triangle'], ['Sine', 'Sawtooth', 'Square', 'Triangle']);
+    let volSlider = Template.slider('volumeSlider', 'Volume', 0, 1, 0.75, 0.001);
+    let semitoneSlider = Template.slider('semitoneSlider', 'Semitone', -24, 24, 0, 1);
+    let fineDetuneSlider = Template.slider('fineDetuneSlider', 'Detune', -50, 50, 0, 1);
+    let waveSelector = Template.selector('waveSelector', 'Wave', ['sine', 'sawtooth', 'square', 'triangle'], ['Sine', 'Sawtooth', 'Square', 'Triangle']);
     return header + volSlider + semitoneSlider + fineDetuneSlider + waveSelector;
   },
   createControls(id) {
@@ -196,10 +179,10 @@ const OscController = {
 const FilterController = {
   controls(id) {
     let header = `<h3>Filter ${id}</h3>`;
-    let selector = Template.selector(id, 'filterTypeSelector', 'Filter Type', ['lowpass', 'highpass', 'bandpass', 'allpass', 'lowshelf', 'highshelf', 'peaking', 'notch'], ['Lowpass', 'Highpass', 'Bandpass', 'Allpass', 'Lowshelf', 'Highshelf', 'Peaking', 'Notch']);
-    let freqSlider = Template.slider(id, 'frequencySlider', 'Frequency', 20, 10000, 10000, 0.001);
-    let gainSlider = Template.slider(id, 'gainSlider', 'Gain', 0, 1, 0, 0.001);
-    let qSlider = Template.slider(id, 'qSlider', 'Q', 0, 6, 0.001, 0.001);
+    let selector = Template.selector('filterTypeSelector', 'Filter Type', ['lowpass', 'highpass', 'bandpass', 'allpass', 'lowshelf', 'highshelf', 'peaking', 'notch'], ['Lowpass', 'Highpass', 'Bandpass', 'Allpass', 'Lowshelf', 'Highshelf', 'Peaking', 'Notch']);
+    let freqSlider = Template.slider('frequencySlider', 'Frequency', 20, 10000, 10000, 0.001);
+    let gainSlider = Template.slider('gainSlider', 'Gain', 0, 1, 0, 0.001);
+    let qSlider = Template.slider('qSlider', 'Q', 0, 6, 0.001, 0.001);
     return header  + selector + freqSlider + gainSlider + qSlider;
   },
   createControls(id) {
