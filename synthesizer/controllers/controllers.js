@@ -214,16 +214,22 @@ const FilterController = {
       Manager.synthesizer.filters[id].setType(e.target.value);
     });
     let frequencySlider = document.getElementsByClassName('frequencySlider')[id];
+    let frequencySliderDisplay = document.getElementsByClassName('frequencySliderDisplay')[id];
     frequencySlider.addEventListener('input', (e) => {
       Manager.synthesizer.filters[id].setFrequency(e.target.value);
+      frequencySliderDisplay.innerText = e.target.value;
     });
     let gainSlider = document.getElementsByClassName('gainSlider')[id];
+    let gainSliderDisplay = document.getElementsByClassName('gainSliderDisplay')[id];
     gainSlider.addEventListener('input', (e) => {
       Manager.synthesizer.filters[id].setGain(e.target.value);
+      gainSliderDisplay.innerText = e.target.value;
     });
     let qSlider = document.getElementsByClassName('qSlider')[id];
+    let qSliderDisplay = document.getElementsByClassName('qSliderDisplay')[id];
     qSlider.addEventListener('input', (e) => {
       Manager.synthesizer.filters[id].setQ(e.target.value);
+      qSliderDisplay.innerText = e.target.value;
     });
   }
 }
