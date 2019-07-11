@@ -6,6 +6,7 @@ import {
   OscController,
   FilterController
 } from './controllers/controllers.js';
+import { RouterViews } from './views/views.js';
 
 /*  _  _   __  ____  ____  __    ____ 
 *  ( \/ ) /  \(    \(  __)(  )  / ___)
@@ -341,58 +342,6 @@ class Filter extends BiquadFilterNode {
     this.Q.setTargetAtTime(q, this.context.currentTime, 0);
   }
 }
-
-/*  _  _  __  ____  _  _  ____ 
-*  / )( \(  )(  __)/ )( \/ ___)
-*  \ \/ / )(  ) _) \ /\ /\___ \
-*   \__/ (__)(____)(_/\_)(____/
-*/
-
-//  Visual feedback of what is going on with the models
-//  Oscillators, Filters, Routing Table
-
-const OscViews = {
-  //  deprecated...
-  updateOscList() {
-    const oscList = document.getElementsByClassName('oscillators')[0];
-    Array.from(oscList.children).forEach(node => {
-      node.remove();
-    });
-    synthesizer.oscillators.forEach(osc => {
-      let oscListNode = document.createElement('li');
-      oscListNode.innerText = JSON.stringify(osc);
-      oscList.appendChild(oscListNode);
-    });
-  }
-};
-
-const FilterViews = {
-  updateFiltersList() {
-    const filtList = document.getElementsByClassName('filters')[0];
-    Array.from(filtList.children).forEach(node => {
-      node.remove();
-    });
-    synthesizer.filters.forEach(filter => {
-      let filtListNode = document.createElement('li');
-      filtListNode.innerText = JSON.stringify(filter);
-      filtList.appendChild(filtListNode);
-    });
-  }
-};
-
-const FormViews = {
-  updatePolyButton(poly) {
-    const polyButton = document.getElementsByClassName('polyButton')[0];
-    polyButton.setAttribute('class', `polyButton ${poly ? 'on' : 'off'}`);
-  }
-};
-
-const RouterViews = {
-  updateTable(table) {
-    const routerTable = document.getElementsByClassName('routingTable')[0];
-    routerTable.innerHTML = Template.routingTable(table);
-  }
-};
 
 export {
   Manager

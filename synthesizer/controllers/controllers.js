@@ -2,6 +2,7 @@ import { Manager } from '../index.js';
 import Preset from '../lib/preset.js';
 import Helpers from '../lib/helpers.js';
 import Template from '../views/templates.js';
+import { FormViews } from '../views/views.js';
 
 //  figure out what to import, how to manage synth/osc/filt API to controllers
 
@@ -106,23 +107,23 @@ const SynthController = {
     let attackSlider = document.getElementsByClassName('attackSlider')[0];
     attackSlider.addEventListener('input', (e) => {
       Manager.synthesizer.oscillators.forEach(osc => {
-        osc.setAttack(e.target.value);
+        osc.setAttack(Number(e.target.value));
       });
-      Manager.synthesizer.globals.attack = e.target.value;
+      Manager.synthesizer.globals.attack = Number(e.target.value);
     });
     let releaseSlider = document.getElementsByClassName('releaseSlider')[0];
     releaseSlider.addEventListener('input', (e) => {
       Manager.synthesizer.oscillators.forEach(osc => {
         osc.setRelease(Number(e.target.value));
       });
-      Manager.synthesizer.globals.release = e.target.value;
+      Manager.synthesizer.globals.release = Number(e.target.value);
     });
     let portaSlider = document.getElementsByClassName('portaSlider')[0];
     portaSlider.addEventListener('input', (e) => {
       Manager.synthesizer.oscillators.forEach(osc => {
-        osc.setPorta(e.target.value);
+        osc.setPorta(Number(e.target.value));
       });
-      Manager.synthesizer.globals.porta = e.target.value;
+      Manager.synthesizer.globals.porta = Number(e.target.value);
     });
   }
 }
