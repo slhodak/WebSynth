@@ -26,3 +26,5 @@ const Helpers = {
     return false;
   }
 }
+
+export default Helpers;
