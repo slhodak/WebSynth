@@ -47,9 +47,9 @@ class Synthesizer {
     this.poly = true;
     this.oscillators = [];
     this.filters = [];
+    SynthController.createListeners();   
     this.addOscillator = this.addOscillator.bind(this);
     this.addFilter = this.addFilter.bind(this);
-    SynthController.createListeners();
     this.playNote = this.playNote.bind(this);
     this.endNote = this.endNote.bind(this);
     this.findNextNote = this.findNextNote.bind(this);
