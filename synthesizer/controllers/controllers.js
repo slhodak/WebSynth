@@ -151,7 +151,7 @@ const OscController = {
     let header = `<h3>Oscillator ${id}</h3>`;
     let volSlider = Template.slider(id, 'volumeSlider', 'Volume', 0, 1, 0.75, 0.001);
     let semitoneSlider = Template.slider(id, 'semitoneSlider', 'Semitone', -24, 24, 0, 1);
-    let fineDetuneSlider = Template.slider(id, 'fineDetuneSlider', 'Detune', -50, 50, 0, 0.001);
+    let fineDetuneSlider = Template.slider(id, 'fineDetuneSlider', 'Detune', -50, 50, 0, 1);
     let waveSelector = Template.selector(id, 'waveSelector', 'Wave', ['sine', 'sawtooth', 'square', 'triangle'], ['Sine', 'Sawtooth', 'Square', 'Triangle']);
     return header + volSlider + semitoneSlider + fineDetuneSlider + waveSelector;
   },
@@ -172,16 +172,22 @@ const OscController = {
       }
     });
     let volumeSlider = document.getElementsByClassName('volumeSlider')[id];
+    let volumeSliderDisplay = document.getElementsByClassName('volumeSliderDisplay')[id];
     volumeSlider.addEventListener('input', (e) => {
       Manager.synthesizer.oscillators[id].setVolume(e.target.value);
+      volumeSliderDisplay.innerText = e.target.value;
     });
     let semitoneSlider = document.getElementsByClassName('semitoneSlider')[id];
+    let semitoneSliderDisplay = document.getElementsByClassName('semitoneSliderDisplay')[id];
     semitoneSlider.addEventListener('input', (e) => {
       Manager.synthesizer.oscillators[id].setSemitoneOffset(Number(e.target.value));
+      semitoneSliderDisplay.innerText = e.target.value;
     });
     let fineDetuneSlider = document.getElementsByClassName('fineDetuneSlider')[id];
+    let fineDetuneSliderDisplay = document.getElementsByClassName('fineDetuneSliderDisplay')[id];
     fineDetuneSlider.addEventListener('input', (e) => {
       Manager.synthesizer.oscillators[id].setFineDetune(e.target.value);
+      fineDetuneSliderDisplay.innerText = e.target.value;
     });
   }
 }

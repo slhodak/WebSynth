@@ -15,9 +15,10 @@ const Template = {
   },
   slider(id, name, title, min, max, value, step) {
     return (
-      `<div class="slider">
-      <label for="${name}">${title}: </label>
-      <input class="${name}" type="range" min="${min}" max="${max}" value="${value}" step="${step}">
+      `<div class="slider row">
+        <label for="${name}">${title}: </label>
+        <input class="${name}" type="range" min="${min}" max="${max}" value="${value}" step="${step}">
+        <div class="${name}Display">${value}</div>
       </div>`
     );
   },
