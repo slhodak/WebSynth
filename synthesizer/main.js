@@ -1,5 +1,4 @@
 import Helpers from './lib/helpers.js';
-import Template from './views/templates.js';
 import {
   SynthController,
   RouterController,
@@ -54,6 +53,7 @@ class Synthesizer {
     this.endNote = this.endNote.bind(this);
     this.findNextNote = this.findNextNote.bind(this);
     this.findFrequencyFromNote = this.findFrequencyFromNote.bind(this);
+    this.togglePoly = this.togglePoly.bind(this);
   }
 
   playNote(midiMessage) {
@@ -91,19 +91,16 @@ class Synthesizer {
     let newOsc = new Oscillator(this);
     if (this.oscillators[0]) {
       for (let voice in this.oscillators[0].voices) {
-        console.log(voice);
         newOsc.addVoice({ data: [null, Number(voice), null] });
       }
     }
     this.oscillators.push(newOsc);
     this.router.updateRouter();
-    console.log('Created oscillator');
   }
 
   addFilter() {
     this.filters.push(new Filter(this));
     this.router.updateRouter();
-    console.log('Created filter');
   }
 
   endNote(midiMessage) {
@@ -138,6 +135,11 @@ class Synthesizer {
 
   findFrequencyFromNote(note) {
     return Math.pow(2, (note - 49)/12) * 440;
+  }
+
+  togglePoly() {
+    this.poly = !this.poly;
+    FormViews.updatePolyButton(Manager.synthesizer.poly);
   }
 
   //  deal with global controls changes...

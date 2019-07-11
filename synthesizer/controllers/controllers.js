@@ -23,9 +23,9 @@ const Controls = {
   },
   32: () => {
     if (Manager.synthesizer.globals.demoTone === false) {
-      Manager.synthesizer.playNote({data: [127, 44, 65]});
+      Manager.synthesizer.playNote({ data: [127, 44, 65] });
     } else {
-      Manager.synthesizer.endNote({data: [127, 44, 65]})
+      Manager.synthesizer.endNote({ data: [127, 44, 65] })
     }
     Manager.synthesizer.globals.demoTone = !Manager.synthesizer.globals.demoTone;
   }
@@ -46,7 +46,6 @@ window.addEventListener('keydown', (e) => {
 
 
 //  Save and Download Buttons
-//  - TODO: Provide some non-obtrusive (visual) user feedback that communicates that the preset was saved (the router model flashes green with an animation called "saved"?))
 (() => {
   document.getElementsByClassName('savePreset')[0].addEventListener('submit', (e) => {
     e.preventDefault();
@@ -91,9 +90,9 @@ const SynthController = {
   createListeners() {
     let polyButton = document.getElementsByClassName('polyButton')[0];
     polyButton.addEventListener('mousedown', (e) => {
+      Manager.synthesizer.togglePoly();
       Manager.synthesizer.poly = !Manager.synthesizer.poly;
       //  view
-      FormViews.updatePolyButton(Manager.synthesizer.poly);
     });
     let masterGainSlider = document.getElementsByClassName('masterGainSlider')[0];
     masterGainSlider.addEventListener('input', (e) => {
