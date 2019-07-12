@@ -43,6 +43,14 @@ const Helpers = {
        list.tail.next = node;
        list.tail = node; 
       }
+    },
+    changeAllNodes(head, cb) {
+      while(true) {
+        cb(head);
+        if (head === head.next) {
+          break;
+        }
+      }
     }
   }
 }

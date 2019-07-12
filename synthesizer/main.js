@@ -301,7 +301,9 @@ class Oscillator {
   setVolume(volume) {
     this.volume = volume;
     for (let voice in this.voices) {
-      this.voices[voice].gainNode.value = volume;
+      Helpers.LL.changeAllNodes(this.voices[voice].head, (node) => {
+        node.gainNode.value = volume;
+      });
     }
   }
 
