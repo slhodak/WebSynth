@@ -46,7 +46,7 @@ const Helpers = {
     },
     changeAllNodes(list, cb) {
       let head = list.head;
-      while(head.next) {
+      while(head) {
         cb(head);
         head = head.next;
       }
