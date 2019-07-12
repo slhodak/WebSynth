@@ -27,29 +27,28 @@ const Helpers = {
   },
   LL: {
     removeHead(list) {
-      if (list.head !== list.tail) {
-        list.head = list.head.next;
-      } else {
-        list.head = null;
-      }
+      console.log('tail ', list.tail);
+      list.head = list.head.next;
+      console.log('head ', list.head);
       return list.head;
     },
     addToTail(list, node) {
       if (!list.head) {
-        list.head = node,
-        list.tail = node
-        list.head.next = list.tail;
-      } else {
-       list.tail.next = node;
-       list.tail = node; 
+        list.head = node;
+        return;
       }
+      if (!list.tail) {
+        list.head.next = node;
+      } else {
+        list.tail.next = node;
+      }
+      list.tail = node; 
     },
-    changeAllNodes(head, cb) {
-      while(true) {
+    changeAllNodes(list, cb) {
+      let head = list.head;
+      while(head.next) {
         cb(head);
-        if (head === head.next) {
-          break;
-        }
+        head = head.next;
       }
     }
   }
