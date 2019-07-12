@@ -28,6 +28,19 @@ h4, h3, h2 {
 
 .title {
   background-image: linear-gradient(to right, rgb(236, 236, 236), rgb(236, 236, 236) 15%, rgb(0, 91, 133) 40%, rgb(0, 133, 78) 60%, rgb(129, 0, 133) 80%, rgb(180, 124, 21) 100%);
+  justify-content: space-between;
+}
+
+.darkMode {
+  border-radius: 10px;
+}
+
+.light {
+  background-color: rgb(236, 236, 236);
+}
+
+.dark {
+  background-color: rgb(63, 63, 63);
 }
 
 .row {
