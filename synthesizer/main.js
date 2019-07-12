@@ -208,6 +208,8 @@ class Voice extends OscillatorNode {
   constructor(context, options, parent) {
     super(context, options);
 
+    this.next = null;
+
     this.parent = parent;
     this.gainNode = this.parent.synthesizer.context.createGain();
     this.gainNode.gain.value = 0;
@@ -268,18 +270,24 @@ class Oscillator {
       frequency: this.synthesizer.findFrequencyFromNote(midiMessage.data[1] + this.semitoneOffset, this.synthesizer.context.currentTime, 0),
       type: this.type,
       detune: this.fineDetune
-    }, this);
+    }, this); 
     voice.onended = (e) => {
       voice.disconnect();
       voice.gainNode.disconnect();
-      delete this.voices[midiMessage.data[1]];
+      if (!Helpers.LL.removeHead(this.voices[midiMessage.data[1]])) {
+        delete this.voices[midiMessage.data[1]];
+      }
     };
-    this.voices[midiMessage.data[1]] = voice;
+    if (!this.voices[midiMessage.data[1]]) {
+      this.voices[midiMessage.data[1]] = {};
+    }
+    Helpers.LL.addToTail(this.voices[midiMessage.data[1]], voice);
+    console.log(this.voices);
     return voice;
   }
   
   removeVoice(midiMessage) {
-    const voice = this.voices[midiMessage.data[1]];
+    const voice = this.voices[midiMessage.data[1]].head;
     voice.gainNode.gain.setTargetAtTime(0, this.synthesizer.context.currentTime, this.release / 10);
     voice.stop(this.synthesizer.context.currentTime + this.release);
   }

@@ -24,6 +24,26 @@ const Helpers = {
       destination = destination.dest;
     }
     return false;
+  },
+  LL: {
+    removeHead(list) {
+      if (list.head !== list.tail) {
+        list.head = list.head.next;
+      } else {
+        list.head = null;
+      }
+      return list.head;
+    },
+    addToTail(list, node) {
+      if (!list.head) {
+        list.head = node,
+        list.tail = node
+        list.head.next = list.tail;
+      } else {
+       list.tail.next = node;
+       list.tail = node; 
+      }
+    }
   }
 }
 
