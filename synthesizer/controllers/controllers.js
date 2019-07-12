@@ -43,7 +43,7 @@ window.addEventListener('keydown', (e) => {
   }
 });
 
-//  Save and Download Buttons
+//  Save, Load, and DarkMode Buttons
 const FormController = {
   initializeSavePresetModule() {
     FormController.initializeSaveButton();
@@ -89,6 +89,16 @@ const FormController = {
       Manager.overwrite = !Manager.overwrite;
     });
   },
+  initializeLoadPresetModule() {
+    FormController.initializeLoadPresetSelector();
+    FormController.initializeLoadPresetButton();
+  },
+  initializeLoadPresetSelector() {
+    //  populate selector with all preset names
+  },
+  initializeLoadPresetButton() {
+    //  get selected preset by name
+  },
   initializeDarkModeButton() {
     document.getElementsByClassName('darkMode')[0].addEventListener('mousedown', (e) => {
       let newMode, oldMode;
@@ -112,6 +122,7 @@ const FormController = {
   }
 }
 
+FormController.initializeLoadPresetModule();
 FormController.initializeSavePresetModule();
 FormController.initializeDarkModeButton();
 
