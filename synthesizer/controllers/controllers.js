@@ -88,10 +88,32 @@ const FormController = {
       }
       Manager.overwrite = !Manager.overwrite;
     });
+  },
+  initializeDarkModeButton() {
+    document.getElementsByClassName('darkMode')[0].addEventListener('mousedown', (e) => {
+      let newMode, oldMode;
+      if (Manager.darkMode === true) {
+        oldMode = 'dark';
+        newMode = 'light';
+      } else {
+        oldMode = 'light';
+        newMode = 'dark';
+      }
+      Array.from(document.getElementsByClassName(oldMode)).forEach(element => {
+        let classes = Array.from(element.classList).filter(name => name !== oldMode);
+        classes.push(newMode);
+        element.setAttribute('class', classes.join(' '));
+      });
+      document.body.setAttribute('class', `${newMode}Body`);
+      document.getElementsByClassName('title')[0].setAttribute('class', `title module row ${newMode}Title`);
+      e.target.innerText = `${oldMode} mode`;
+      Manager.darkMode = !Manager.darkMode;
+    });
   }
 }
 
 FormController.initializeSavePresetModule();
+FormController.initializeDarkModeButton();
 
 //  Global Synth Parameters
 const SynthController = {

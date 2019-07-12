@@ -7,13 +7,13 @@
   <link href="style.css" rel="stylesheet" type="text/css">
   <title>WebSynth</title>
 </head>
-<body>
-  <div class="title module row light">
+<body class="lightBody">
+  <div class="title module row lightTitle">
     <h2>websynth</h2>
-    <button class="darkMode">Dark Mode</button>
+    <button class="darkMode light" type="button">dark mode</button>
   </div>
   <div class="row">
-    <div class="hotkey module">
+    <div class="hotkey module light">
       <h3>Controls</h3>
       <hr>
       <ul>
@@ -23,7 +23,7 @@
         <li>Clicking eligible nodes in the routing table directs output from the source node to the clicked node</li>
       </ul>
     </div>
-    <div class="instructions module">
+    <div class="instructions module light">
       <h3>Take Note</h3>
       <hr>
       <ul>
@@ -31,7 +31,7 @@
         <li>Altered oscillator parameters will be audible immediately</li>
       </ul>
     </div>
-    <div class="module save">
+    <div class="module save light">
       <h3>Save Synth Preset</h3>
       <hr>
       <form class="savePreset">
@@ -44,12 +44,12 @@
     </div>
   </div>
   <div class="row">
-    <div class="module">
+    <div class="module light">
       <h3>Global Controls</h3>
       <hr>
       <div class="globalControls"></div>
     </div>
-    <div class="router module">
+    <div class="router module light">
       <h3>Router</h3>
       <hr>
       <div class="row">
@@ -58,7 +58,7 @@
         <div class="ineligible icon">Ineligible</div>
       </div>
       <div class="routingTable">
-        <p class="routerDefault">create nodes</p>
+        <p class="routerDefault light">create nodes</p>
       </div>
       </div>
     </div>
@@ -69,10 +69,10 @@
 
   <div class="row">
     <!-- Oscillator Individual Controls -->
-    <div class="oscillatorControls module"><h2>Oscillators</h2><hr></div>
+    <div class="oscillatorControls module light"><h2>Oscillators</h2><hr></div>
     
     <!-- Filter Individual Controls -->
-    <div class="filterControls module"><h2>Filters</h2><hr></div>
+    <div class="filterControls module light"><h2>Filters</h2><hr></div>
   </div>
     
   <div class="scripts"></div>

@@ -22,7 +22,8 @@ let Manager = {
     }
   },
   synthesizer: null,
-  overwrite: false
+  overwrite: false,
+  darkMode: false
 };
 
 //  - Synthesizer
