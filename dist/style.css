@@ -81,6 +81,7 @@ h4, h3, h2 {
 }
 
 ul {
+  padding-left: 20px;
   margin-top: 2px;
   margin-bottom: 2px;
 }
