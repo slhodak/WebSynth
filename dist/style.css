@@ -90,7 +90,7 @@ ul {
   margin-top: 5px;
 }
 
-.polyButton, .saveButton {
+.polyButton, .saveButton, .loadButton {
   height: 30px;
   width: 55px;
   font-weight: 700;
