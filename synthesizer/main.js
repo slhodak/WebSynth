@@ -208,6 +208,8 @@ class Voice extends OscillatorNode {
   constructor(context, options, parent) {
     super(context, options);
 
+    this.next = null;
+
     this.parent = parent;
     this.gainNode = this.parent.synthesizer.context.createGain();
     this.gainNode.gain.value = 0;
@@ -272,14 +274,21 @@ class Oscillator {
     voice.onended = (e) => {
       voice.disconnect();
       voice.gainNode.disconnect();
-      delete this.voices[midiMessage.data[1]];
+      
     };
-    this.voices[midiMessage.data[1]] = voice;
+    if (!this.voices[midiMessage.data[1]]) {
+      this.voices[midiMessage.data[1]] = {};
+    }
+    Helpers.LL.addToTail(this.voices[midiMessage.data[1]], voice);
     return voice;
   }
-  
+
   removeVoice(midiMessage) {
-    const voice = this.voices[midiMessage.data[1]];
+    const voice = this.voices[midiMessage.data[1]].head;
+    let head = Helpers.LL.removeHead(this.voices[midiMessage.data[1]]);
+    if (head === null || head === undefined) {
+      delete this.voices[midiMessage.data[1]];
+    }
     voice.gainNode.gain.setTargetAtTime(0, this.synthesizer.context.currentTime, this.release / 10);
     voice.stop(this.synthesizer.context.currentTime + this.release);
   }
@@ -293,28 +302,36 @@ class Oscillator {
   setVolume(volume) {
     this.volume = volume;
     for (let voice in this.voices) {
-      this.voices[voice].gainNode.value = volume;
+      Helpers.LL.changeAllNodes(this.voices[voice], (node) => {
+        node.gainNode.value = volume;
+      });
     }
   }
 
   setType(type) {
     this.type = type;
     for (let voice in this.voices) {
-      this.voices[voice].type = type;
+      Helpers.LL.changeAllNodes(this.voices[voice], (node) => {
+        node.type = type;
+      });
     }
   }
 
   setSemitoneOffset(semitoneOffset) {
     this.semitoneOffset = Number(semitoneOffset);
     for (let voice in this.voices) {
-      this.voices[voice].frequency.setTargetAtTime(this.synthesizer.findFrequencyFromNote(Number(voice) + this.semitoneOffset), this.synthesizer.context.currentTime, 0);
+      Helpers.LL.changeAllNodes(this.voices[voice], (node) => {
+        node.frequency.setTargetAtTime(this.synthesizer.findFrequencyFromNote(Number(voice) + this.semitoneOffset), this.synthesizer.context.currentTime, 0);
+      });
     }
   }
 
   setFineDetune(detune) {
     this.fineDetune = detune;
     for (let voice in this.voices) {
-      this.voices[voice].detune.setTargetAtTime(detune, this.synthesizer.context.currentTime, 0);
+      Helpers.LL.changeAllNodes(this.voices[voice], (node) => {
+        node.detune.setTargetAtTime(detune, this.synthesizer.context.currentTime, 0);
+      });
     }
   }
 
