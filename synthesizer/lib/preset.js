@@ -40,7 +40,11 @@ const Preset = {
     return synthData;
   },
   load(synthData) {
-
+    //  create a synth from data provided by preset object
+    //  first clear existing synth
+    //  then call constructors and add nodes, 
+    //    set settings -- move sliders to correct values too!
+    
   }
 };
 
