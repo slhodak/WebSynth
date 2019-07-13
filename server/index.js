@@ -20,11 +20,11 @@ app.post('/preset', (req, res) => {
 });
 
 app.get('/presetNames', (req, res) => {
-  Preset.getAllNames((error, success) => {
+  Preset.getAllNames((error, names) => {
     if (error) {
       res.status(500).send({ error });
     } else {
-      res.status(200).send({ success });
+      res.status(200).send({ names });
     }
   });
 });

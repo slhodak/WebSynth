@@ -67,6 +67,7 @@ const FormController = {
             if (body.error === 'exists') {
               window.alert('A preset already exists with that name.\nPlease choose another name or select the "overwrite" option.');
             } else {
+              FormController.populatePresetSelector();
               document.getElementsByClassName('save')[0].setAttribute('class', 'module save confirmation');
               setTimeout(() => {
                 document.getElementsByClassName('save')[0].setAttribute('class', 'module save');
@@ -91,23 +92,23 @@ const FormController = {
     });
   },
   initializeLoadPresetModule() {
-    FormController.initializeLoadPresetSelector();
+    FormController.populatePresetSelector();
     FormController.initializeLoadPresetButton();
   },
-  initializeLoadPresetSelector() {
-    //  populate selector with all preset names (on selector click)
+  populatePresetSelector() {
+    //  populate selector with all preset names (on page load and preset save)
     let presetSelector = document.getElementsByClassName('presetSelector')[0];
-    presetSelector.addEventListener('mousedown', (e) => {
-      fetch(`${netConfig.host}/presetNames`)
-        .then(response => response.json())
-        .then(data => {
-          console.log(data);
-          // let option = document.createElement('option');
-          // option.innerText = 'new option';
-          // selector.append(option);
-        })
-        .catch(err => console.log(err));
-    })
+    fetch(`${netConfig.host}/presetNames`)
+      .then(response => response.json())
+      .then(data => {
+        presetSelector.innerHTML = '';
+        data.names.forEach(name => {
+          let option = document.createElement('option');
+          option.innerText = name;
+          presetSelector.append(option);
+        });
+      })
+      .catch(err => console.log(err));
   },
   initializeLoadPresetButton() {
     //  get selected preset by name
