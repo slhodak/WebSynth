@@ -1,5 +1,6 @@
 [
   {
+    "name": "name",
     "synthesizer": {
       "router": {
         "1000": 2000,

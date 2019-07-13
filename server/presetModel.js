@@ -6,7 +6,7 @@ module.exports = {
     if (synthData.overwrite === false && fs.existsSync(path.resolve(__dirname, `./presets/${synthData.name || 'default'}.websynth.json`))) {
       callback('exists');
     } else {
-      fs.writeFile(path.resolve(__dirname, `./presets/${synthData.name || 'default'}.websynth.json`), JSON.stringify(synthData.synthesizer), (err) => {
+      fs.writeFile(path.resolve(__dirname, `./presets/${synthData.name || 'default'}.websynth.json`), JSON.stringify(synthData), (err) => {
         if (err) {
           callback(err);
         } else {
