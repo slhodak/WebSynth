@@ -96,7 +96,6 @@ const FormController = {
     FormController.initializeLoadPresetButton();
   },
   populatePresetSelector() {
-    //  populate selector with all preset names (on page load and preset save)
     let presetSelector = document.getElementsByClassName('presetSelector')[0];
     fetch(`${netConfig.host}/presetNames`)
       .then(response => response.json())
