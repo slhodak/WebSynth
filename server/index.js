@@ -10,7 +10,7 @@ app.use('/synthesizer', express.static(path.resolve(__dirname, '../synthesizer')
 app.use(express.json());
 
 app.post('/preset', (req, res) => {
-  Preset.create(req.body, (error, success) => {
+  Preset.create(req.body, req.query.overwrite, (error, success) => {
     if (error) {
       res.status(500).send({ error });
     } else {
