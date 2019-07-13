@@ -55,12 +55,12 @@ const FormController = {
       e.preventDefault();
       console.log(e);
       if (Manager.synthesizer) {
-        fetch(`${netConfig.host}/preset`, {
+        fetch(`${netConfig.host}/preset?overwrite=${Manager.overwrite}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify(Preset.save(Manager.synthesizer, e.srcElement[0].value, Manager.overwrite))
+          body: JSON.stringify(Preset.save(Manager.synthesizer, e.srcElement[0].value))
         })
           .then(response => response.json())
           .then(body => {
