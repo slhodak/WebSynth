@@ -19,6 +19,16 @@ app.post('/preset', (req, res) => {
   });
 });
 
+app.get('/preset', (req, res) => {
+  Preset.getOnePreset(req.query.name, (error, synthData) => {
+    if (error) {
+      res.status(500).send({ error });
+    } else {
+      res.status(200).send(synthData);
+    }
+  });
+});
+
 app.get('/presetNames', (req, res) => {
   Preset.getAllNames((error, names) => {
     if (error) {
@@ -28,6 +38,7 @@ app.get('/presetNames', (req, res) => {
     }
   });
 });
+
 
 app.listen(port, () => {
   console.log(`Server listening on port ${port}`);

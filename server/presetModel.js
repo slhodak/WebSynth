@@ -23,5 +23,20 @@ module.exports = {
         callback(err);
       }
     });
+  },
+  getOnePreset(filename, callback) {
+    fs.open(path.resolve(__dirname, `./presets/${filename}.websynth.json`), 'r', (err, fd) => {
+      if (!err) {
+        fs.readFile(fd, (err, data) => {
+          if (!err) {
+            callback(null, data);
+          } else {
+            callback(err);
+          }
+        });
+      } else {
+        callback(err);
+      }
+    });
   }
 };
