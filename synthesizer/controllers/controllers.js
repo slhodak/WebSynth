@@ -101,8 +101,11 @@ const FormController = {
       .then(response => response.json())
       .then(data => {
         presetSelector.innerHTML = '';
+        let option = document.createElement('option');
+        option.innerText = '-- Preset Name --';
+        presetSelector.append(option);
         data.names.forEach(name => {
-          let option = document.createElement('option');
+          option = document.createElement('option');
           option.innerText = name;
           presetSelector.append(option);
         });
@@ -111,10 +114,10 @@ const FormController = {
   },
   initializeLoadPresetButton() {
     document.getElementsByClassName('loadButton')[0].addEventListener('mousedown', (e) => {
-      fetch(`${netConfig.host}/preset/?name=${document.getElementsByClassName('presetSelector').value}`)
+      fetch(`${netConfig.host}/preset/?name=${document.getElementsByClassName('presetSelector')[0].value}`)
         .then(response => response.json())
         .then(data => {
-          console.log(data);
+          Preset.load(data);
         })
         .catch(err => console.log(err));
     });
