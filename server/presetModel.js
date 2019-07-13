@@ -16,6 +16,12 @@ module.exports = {
     }
   },
   getAllNames(callback) {
-    callback(null, 'getting names!');
+    fs.readdir(path.resolve(__dirname, './presets'), (err, files) => {
+      if (!err) {
+        callback(null, files.map(name => name.split('.')[0]));
+      } else {
+        callback(err);
+      }
+    });
   }
 };

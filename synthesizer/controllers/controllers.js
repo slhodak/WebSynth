@@ -2,6 +2,7 @@ import { Manager } from '../main.js';
 import Preset from '../lib/preset.js';
 import Helpers from '../lib/helpers.js';
 import Template from '../views/templates.js';
+import netConfig from '../config/netConfig.js';
 
 //  figure out what to import, how to manage synth/osc/filt API to controllers
 
@@ -54,7 +55,7 @@ const FormController = {
       e.preventDefault();
       console.log(e);
       if (Manager.synthesizer) {
-        fetch('http://localhost:3000/preset', {
+        fetch(`${netConfig.host}/preset`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -94,7 +95,19 @@ const FormController = {
     FormController.initializeLoadPresetButton();
   },
   initializeLoadPresetSelector() {
-    //  populate selector with all preset names
+    //  populate selector with all preset names (on selector click)
+    let presetSelector = document.getElementsByClassName('presetSelector')[0];
+    presetSelector.addEventListener('mousedown', (e) => {
+      fetch(`${netConfig.host}/presetNames`)
+        .then(response => response.json())
+        .then(data => {
+          console.log(data);
+          // let option = document.createElement('option');
+          // option.innerText = 'new option';
+          // selector.append(option);
+        })
+        .catch(err => console.log(err));
+    })
   },
   initializeLoadPresetButton() {
     //  get selected preset by name
