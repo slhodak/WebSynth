@@ -110,7 +110,14 @@ const FormController = {
       .catch(err => console.log(err));
   },
   initializeLoadPresetButton() {
-    //  get selected preset by name
+    document.getElementsByClassName('loadButton')[0].addEventListener('mousedown', (e) => {
+      fetch(`${netConfig.host}/preset/?name=${document.getElementsByClassName('presetSelector').value}`)
+        .then(response => response.json())
+        .then(data => {
+          console.log(data);
+        })
+        .catch(err => console.log(err));
+    });
   },
   initializeDarkModeButton() {
     document.getElementsByClassName('darkMode')[0].addEventListener('mousedown', (e) => {
