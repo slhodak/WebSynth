@@ -44,7 +44,7 @@ const Preset = {
     //  first clear existing synth
     //  then call constructors and add nodes, 
     //    set settings -- move sliders to correct values too!
-    
+
   }
 };
 
