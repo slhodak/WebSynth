@@ -14,5 +14,8 @@ module.exports = {
         }
       });
     }
+  },
+  getAllNames(callback) {
+    callback(null, 'getting names!');
   }
 };
