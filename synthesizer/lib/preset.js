@@ -69,23 +69,20 @@ const Preset = {
     synthData.synthesizer.filters.forEach(filterData => {
       Manager.synthesizer.addFilter();
     });
-    
+
+    console.log(Manager.synthesizer.router.table);
     //  route all routes in routing table by ID or 'main out'
     for (let route in synthData.synthesizer.router) {
-      let listFrom, listTo;
-      if (route < 2000) {
-        listFrom = Manager.synthesizer.oscillators;
+      let destination;
+      if (synthData.synthesizer.router[route] === 'main out') {
+        destination = Manager.synthesizer.masterGain;
       } else {
-        listFrom = Manager.synthesizer.filters;
+        destination = Manager.synthesizer.router.table[synthData.synthesizer.router[route]].node;
       }
-      if (synthData.router[route] < 2000) {
-        listTo = Manager.synthesizer.oscillators;
-      } else {
-        listTo = Manager.synthesizer.filters;
-      }
+
       Manager.synthesizer.router.setRoute(
-        listFrom[route % 1000], 
-        listTo[route % 1000]
+        Manager.synthesizer.router.table[route].node,
+        destination
       );
     }
 
