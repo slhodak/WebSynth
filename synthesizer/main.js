@@ -183,6 +183,7 @@ class Router {
     this.updateRouter = this.updateRouter.bind(this);
     this.setRoute = this.setRoute.bind(this);
   }
+
   updateRouter() {
     this.synthesizer.oscillators.concat(this.synthesizer.filters).forEach(node => {
       let eligibleDestinations = this.synthesizer.filters.filter(dest => !Helpers.isNodeLoop(node, dest));
@@ -194,6 +195,7 @@ class Router {
     RouterViews.updateTable(this.table);
     RouterController.updateRouterClickHandlers();
   }
+
   setRoute(source, destination) {
     source.setDestination(destination);
     this.table[source.id].dest = destination;
