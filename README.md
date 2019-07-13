@@ -2,7 +2,9 @@
 
 ## Description
 
-A browser-based subtractive synthesizer. 
+A browser-based subtractive synthesizer.  
+
+Start with `npm run start`.
 
 **In this document**  
 Hotkey actions are given in italicized brackets (like: _\[o\]_) when mentioned.
