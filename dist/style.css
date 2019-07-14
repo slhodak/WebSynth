@@ -2,7 +2,7 @@
 
 @keyframes saveConfirmation {
   from {
-    background-color: rgb(236, 236, 236);
+    background-color: rgb(241, 241, 241);
   }
   to {
     background-color: rgb(45, 184, 45);
@@ -30,7 +30,7 @@ body {
 }
 
 .lightBody {
-  background-color: rgb(236, 236, 236);
+  background-color: rgb(241, 241, 241);
 }
 
 h4, h3, h2 {
@@ -39,7 +39,7 @@ h4, h3, h2 {
 }
 
 .lightTitle {
-  background-image: linear-gradient(to right, rgb(236, 236, 236), rgb(236, 236, 236) 15%, rgb(0, 91, 133) 40%, rgb(0, 133, 78) 60%, rgb(129, 0, 133) 80%, rgb(180, 124, 21) 100%);
+  background-image: linear-gradient(to right, rgb(241, 241, 241), rgb(241, 241, 241) 15%, rgb(0, 91, 133) 40%, rgb(0, 133, 78) 60%, rgb(129, 0, 133) 80%, rgb(180, 124, 21) 100%);
   justify-content: space-between;
   box-shadow: 0px 0px 5px 0px rgb(190, 190, 190);
 }
@@ -56,7 +56,7 @@ h4, h3, h2 {
 }
 
 .light {
-  background-color: rgb(236, 236, 236);
+  background-color: rgb(241, 241, 241);
   color: black;
   box-shadow: 0px 0px 5px 0px rgb(190, 190, 190);
 }
