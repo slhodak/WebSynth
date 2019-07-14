@@ -227,7 +227,7 @@ const OscController = {
     let semitoneSlider = Template.slider('semitoneSlider', 'Semitone', -24, 24, 0, 1);
     let fineDetuneSlider = Template.slider('fineDetuneSlider', 'Detune', -50, 50, 0, 1);
     let waveSelector = Template.selector('waveSelector', 'Wave', ['sine', 'sawtooth', 'square', 'triangle'], ['Sine', 'Sawtooth', 'Square', 'Triangle']);
-    return header + volSlider + semitoneSlider + fineDetuneSlider + waveSelector;
+    return `<div data-id=${1000 + id}>` + header + volSlider + semitoneSlider + fineDetuneSlider + waveSelector + '</div>';
   },
   createControls(id) {
     let oscControlsDiv = document.getElementsByClassName('oscillatorControls')[0];
@@ -274,7 +274,7 @@ const FilterController = {
     let freqSlider = Template.slider('frequencySlider', 'Frequency', 20, 10000, 10000, 0.001);
     let gainSlider = Template.slider('gainSlider', 'Gain', 0, 1, 0, 0.001);
     let qSlider = Template.slider('qSlider', 'Q', 0, 6, 0.001, 0.001);
-    return header  + selector + freqSlider + gainSlider + qSlider;
+    return `<div data-id=${2000 + id}>` + header  + selector + freqSlider + gainSlider + qSlider + '</div>';
   },
   createControls(id) {
     let filterControlsDiv = document.getElementsByClassName('filterControls')[0];

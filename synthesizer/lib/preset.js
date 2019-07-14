@@ -42,13 +42,7 @@ const Preset = {
     return synthData;
   },
   load(synthData) {
-    console.log('loading preset...');
-
-    //  create a synth from data provided by preset object
-    //  then call constructors and add nodes, 
-    //    set settings -- move sliders to correct values too!
-
-    //  warn user that this is going to overwrite all synth settings!
+    //  warn user that this is going to overwrite all synth settings? annoying?
 
     Manager.synthesizer = null;
     Manager.createSynthesizerIfNoneExists({
@@ -58,8 +52,6 @@ const Preset = {
       poly: true
     });
 
-    //  replace all current oscillators with preset oscillators
-    //    move corresponding slider to value
     Manager.synthesizer.oscillators = [];
     synthData.synthesizer.oscillators.forEach(osc => {
       Manager.synthesizer.addOscillator({
@@ -70,8 +62,6 @@ const Preset = {
       });
     });
     
-    //  replace all current filters with preset filters
-    //    move corresponding slider to value
     Manager.synthesizer.filters = [];
     synthData.synthesizer.filters.forEach(filt => {
       Manager.synthesizer.addFilter({
@@ -82,7 +72,6 @@ const Preset = {
       });
     });
 
-    //  route all routes in routing table by ID or 'main out'
     for (let route in synthData.synthesizer.router) {
       let destination;
       if (synthData.synthesizer.router[route] === 'main out') {
@@ -96,6 +85,15 @@ const Preset = {
         destination
       );
     }
+
+    // Update all Views
+
+    //  update view modules to reflect model
+    //    correct number of nodes
+    //    slider positions from values in model
+    //    displays from values in model
+    
+
   }
 };
 
