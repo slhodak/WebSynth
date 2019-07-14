@@ -6,7 +6,7 @@ const Template = {
     let template = 
       `<div class="selector">
       <label for="${name}">${title}: </label>
-      <select class="${name}" name="${title.toLowerCase()}">`;
+      <select class="${name}" name="${title}">`;
     for (let i = 0; i < options.length; i++) {
       template += `<option name="${options[i]}" value="${options[i]}">${optionTitles ? optionTitles[i] : options[i]}</option>`;
     }
@@ -17,7 +17,7 @@ const Template = {
     return (
       `<div class="slider row">
         <label for="${name}">${title}: </label>
-        <input class="${name}" name="${title.toLowerCase()}" type="range" min="${min}" max="${max}" value="${value}" step="${step}">
+        <input class="${name}" name="${title}" type="range" min="${min}" max="${max}" value="${value}" step="${step}">
         <div class="${name}Display">${value}</div>
       </div>`
     );

@@ -104,13 +104,19 @@ const Preset = {
     synthData.synthesizer.oscillators.forEach(osc => {
       Array.from(document.getElementById(`${osc.id}`).children).forEach(child => {
         ///  if child is a slider, set range and display (with what value on osc?)
+        const reference = {
+          'Volume': 'volume',
+          'Semitone': 'semitoneOffset',
+          'Detune': 'fineDetune',
+          'Wave': 'wave'
+        };
         const classes = Array.from(child.classList);
         if (Helpers.indexOf(classes, 'slider') >= 0) {
-          console.log(child.children[1].name);
-          // child.children[1].value = osc[child.children[1].name];
-          // child.children[2].value = osc[child.children[2].name];
+          console.log(reference[child.children[1].name]);
+          child.children[1].value = osc[reference[child.children[1].name]];
+          child.children[2].innerText = osc[reference[child.children[1].name]];
         } else if (Helpers.indexOf(classes), 'selector') {
-          // child.children[1].value = osc[child.children[1].name];
+          // child.children[1].value = osc[reference[child.children[1].name]];
         }
         //  if child is a selector, set value
       });
