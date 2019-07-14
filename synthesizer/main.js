@@ -38,7 +38,7 @@ class Synthesizer {
       porta: options.porta || 0.05,
       attack: options.attack || 0.01,
       release: options.release || 0.1,
-      type: 'sine'
+      wave: 'sine'
     };
     this.mono = {
       note: null,
@@ -248,7 +248,7 @@ class Oscillator {
     this.semitoneOffset = options.semitoneOffset || 0;
     this.fineDetune = options.fineDetune || 0;
     this.volume = options.volume || 0.75;
-    this.type = options.type || 'sine';
+    this.wave = options.wave || 'sine';
     this.porta = this.synthesizer.globals.porta;
     this.attack = this.synthesizer.globals.attack;
     this.release = this.synthesizer.globals.release;
