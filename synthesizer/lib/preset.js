@@ -117,6 +117,24 @@ const Preset = {
       });
     });
 
+    const filtParamControlDict = {
+      'Frequency': 'frequency',
+      'Gain': 'gain',
+      'Q': 'q',
+      'Filter Type': 'type'
+    };
+
+    synthData.synthesizer.filters.forEach(filt => {
+      Array.from(document.getElementById(`${filt.id}`).children).forEach(child => {
+        const classes = Array.from(child.classList);
+        if (Helpers.indexOf(classes, 'slider') >= 0) {
+          child.children[1].value = filt[filtParamControlDict[child.children[1].name]];
+          child.children[2].innerText = filt[filtParamControlDict[child.children[1].name]];
+        } else if (Helpers.indexOf(classes, 'selector') >= 0) {
+          child.children[1].value = filt[filtParamControlDict[child.children[1].name]];
+        }
+      });
+    });
   }
 };
 
