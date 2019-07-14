@@ -29,7 +29,7 @@ const Preset = {
         semitoneOffset: osc.semitoneOffset,
         fineDetune: osc.fineDetune,
         volume: osc.volume,
-        wave: osc.type
+        wave: osc.wave
       }
     });
     synthesizer.filters.forEach((filt, index) => {
@@ -70,7 +70,7 @@ const Preset = {
         semitoneOffset: osc.semitoneOffset,
         fineDetune: osc.fineDetune,
         volume: osc.volume,
-        type: osc.type
+        wave: osc.wave
       });
     });
     
