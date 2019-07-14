@@ -45,14 +45,23 @@ const Preset = {
     console.log('loading preset...');
 
     //  create a synth from data provided by preset object
-    //  first clear existing synth
     //  then call constructors and add nodes, 
     //    set settings -- move sliders to correct values too!
 
     //  warn user that this is going to overwrite all synth settings!
 
     Manager.synthesizer = null;
-    Manager.createSynthesizerIfNoneExists();
+    //  high-quality options object func will allow for mere subset of properties to be specified
+    Manager.createSynthesizerIfNoneExists({
+      globals: {
+        demoTone: false,
+        porta: 0.01,
+        attack: 0.05,
+        release: 0.6,
+        type: 'sine'
+      }
+      poly: true
+    });
 
     //  replace all current oscillators with preset oscillators
     //    set each oscillator param
@@ -70,7 +79,6 @@ const Preset = {
       Manager.synthesizer.addFilter();
     });
 
-    console.log(Manager.synthesizer.router.table);
     //  route all routes in routing table by ID or 'main out'
     for (let route in synthData.synthesizer.router) {
       let destination;

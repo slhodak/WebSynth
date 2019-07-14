@@ -28,12 +28,13 @@ let Manager = {
 
 //  - Synthesizer
 class Synthesizer {
-  constructor() {
+  constructor(options = {}) {
     this.context = new AudioContext();
     this.router = new Router(this);
     this.masterGain = this.context.createGain();
     this.masterGain.connect(this.context.destination);
-    this.globals = {
+    //  allow for mere subset of options to be specified with options obj. extend/defaults
+    this.globals = options.globals || {
       demoTone: false,
       porta: 0.05,
       attack: 0.01,
@@ -46,7 +47,7 @@ class Synthesizer {
       notesObj: {},
       voices: {}
     };
-    this.poly = true;
+    this.poly = options.poly || true;
     this.oscillators = [];
     this.filters = [];
     SynthController.createListeners();   
