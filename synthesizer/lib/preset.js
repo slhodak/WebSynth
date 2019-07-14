@@ -18,6 +18,7 @@ const Preset = {
     for (let route in synthesizer.router.table) {
       synthData.synthesizer.router[route] = synthesizer.router.table[route].node.dest.id || 'main out';
     }
+    synthData.synthesizer.settings.globals.volume = synthesizer.masterGain.gain.value;
     synthData.synthesizer.settings.poly = synthesizer.poly;
     synthData.synthesizer.settings.globals.porta = synthesizer.globals.porta;
     synthData.synthesizer.settings.globals.attack = synthesizer.globals.attack;
@@ -57,10 +58,10 @@ const Preset = {
 
     Manager.synthesizer = null;
     Manager.createSynthesizerIfNoneExists({
-      porta: 0.01,
-      attack: 0.05,
-      release: 0.6,
-      poly: true
+      porta: synthData.synthesizer.settings.globals.porta,
+      attack: synthData.synthesizer.settings.globals.attack,
+      release: synthData.synthesizer.settings.globals.release,
+      poly: synthData.synthesizer.settings.poly
     });
 
     Manager.synthesizer.oscillators = [];
@@ -98,6 +99,24 @@ const Preset = {
     }
 
     // Update new Control Views
+
+
+    const synthParamControlDict = {
+      'Volume': 'volume',
+      'Attack': 'attack',
+      'Release': 'release',
+      'Porta': 'porta'
+    };
+    
+    Array.from(document.getElementsByClassName('globalControls')[0].firstChild.children).forEach(child => {
+      //  deal with poly button
+      const classes = Array.from(child.classList);
+      if (Helpers.indexOf(classes, 'slider') >= 0) {
+        child.children[1].value = synthData.synthesizer.settings.globals[synthParamControlDict[child.children[1].name]];
+        child.children[2].innerText = Number(synthData.synthesizer.settings.globals[synthParamControlDict[child.children[1].name]]).toFixed(3);
+      }
+    });
+
     const oscParamControlDict = {
       'Volume': 'volume',
       'Semitone': 'semitoneOffset',
