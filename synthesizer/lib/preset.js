@@ -110,6 +110,7 @@ const Preset = {
     
     Array.from(document.getElementsByClassName('globalControls')[0].firstChild.children).forEach(child => {
       //  deal with poly button
+      document.getElementsByClassName('polyButton')[0].setAttribute('class', `${synthData.synthesizer.settings.poly ? 'polyButton on' : 'polyButton off'}`);
       const classes = Array.from(child.classList);
       if (Helpers.indexOf(classes, 'slider') >= 0) {
         child.children[1].value = synthData.synthesizer.settings.globals[synthParamControlDict[child.children[1].name]];
