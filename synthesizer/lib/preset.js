@@ -51,15 +51,10 @@ const Preset = {
     //  warn user that this is going to overwrite all synth settings!
 
     Manager.synthesizer = null;
-    //  high-quality options object func will allow for mere subset of properties to be specified
     Manager.createSynthesizerIfNoneExists({
-      globals: {
-        demoTone: false,
-        porta: 0.01,
-        attack: 0.05,
-        release: 0.6,
-        type: 'sine'
-      }
+      porta: 0.01,
+      attack: 0.05,
+      release: 0.6,
       poly: true
     });
 
@@ -68,7 +63,12 @@ const Preset = {
     //    move corresponding slider to value
     Manager.synthesizer.oscillators = [];
     synthData.synthesizer.oscillators.forEach(osc => {
-      Manager.synthesizer.addOscillator();
+      Manager.synthesizer.addOscillator({
+        semitoneOffset: osc.semitoneOffset,
+        fineDetune: osc.fineDetune,
+        volume: osc.volume,
+        type: osc.type
+      });
     });
     
     //  replace all current filters with preset filters

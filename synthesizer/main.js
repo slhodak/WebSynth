@@ -33,12 +33,11 @@ class Synthesizer {
     this.router = new Router(this);
     this.masterGain = this.context.createGain();
     this.masterGain.connect(this.context.destination);
-    //  allow for mere subset of options to be specified with options obj. extend/defaults
-    this.globals = options.globals || {
+    this.globals = {
       demoTone: false,
-      porta: 0.05,
-      attack: 0.01,
-      release: 0.1,
+      porta: options.porta || 0.05,
+      attack: options.attack || 0.01,
+      release: options.release || 0.1,
       type: 'sine'
     };
     this.mono = {
@@ -95,8 +94,8 @@ class Synthesizer {
     }
   }
 
-  addOscillator() {
-    let newOsc = new Oscillator(this);
+  addOscillator(options = {}) {
+    let newOsc = new Oscillator(this, options);
     if (this.oscillators[0]) {
       for (let voice in this.oscillators[0].voices) {
         newOsc.addVoice({ data: [null, Number(voice), null] });
@@ -237,7 +236,7 @@ class Voice extends OscillatorNode {
 
 //  - Oscillator abstraction controlling multiple voiced oscillator nodes
 class Oscillator {
-  constructor(synthesizer) {
+  constructor(synthesizer, options = {}) {
     this.synthesizer = synthesizer;
     this.voices = {};
     this.addVoice = this.addVoice.bind(this);
@@ -246,10 +245,10 @@ class Oscillator {
     this.id = 1000 + this.synthesizer.oscillators.length;
     OscController.createControls(this.id % 1000);
     OscController.createListeners(this.id % 1000);
-    this.semitoneOffset = 0;
-    this.fineDetune = 0;
-    this.volume = 0.75;
-    this.type = 'sine';
+    this.semitoneOffset = options.semitoneOffset || 0;
+    this.fineDetune = options.fineDetune || 0;
+    this.volume = options.volume || 0.75;
+    this.type = options.type || 'sine';
     this.porta = this.synthesizer.globals.porta;
     this.attack = this.synthesizer.globals.attack;
     this.release = this.synthesizer.globals.release;
