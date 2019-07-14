@@ -1,4 +1,5 @@
 import { Manager } from '../main.js';
+import Helpers from '../lib/helpers.js';
 
 const Preset = {
   save(synthesizer, name, overwrite) {
@@ -27,7 +28,7 @@ const Preset = {
         semitoneOffset: osc.semitoneOffset,
         fineDetune: osc.fineDetune,
         volume: osc.volume,
-        type: osc.type
+        wave: osc.type
       }
     });
     synthesizer.filters.forEach((filt, index) => {
@@ -36,13 +37,23 @@ const Preset = {
         type: filt.type,
         frequency: filt.frequency.value,
         gain: filt.gain.value,
-        Q: filt.Q.value
+        q: filt.Q.value
       }
     });
     return synthData;
   },
   load(synthData) {
     //  warn user that this is going to overwrite all synth settings? annoying?
+
+    //  Remove old Control Views
+    const oscillatorsModule = document.getElementsByClassName('oscillatorControls')[0];
+    while(oscillatorsModule.children[2]) {
+      oscillatorsModule.removeChild(oscillatorsModule.lastChild);
+    }
+    const filtersModule = document.getElementsByClassName('filterControls')[0];
+    while(filtersModule.children[2]) {
+      filtersModule.removeChild(filtersModule.lastChild);
+    }
 
     Manager.synthesizer = null;
     Manager.createSynthesizerIfNoneExists({
@@ -86,13 +97,24 @@ const Preset = {
       );
     }
 
-    // Update all Views
+    // Update new Control Views
 
-    //  update view modules to reflect model
-    //    correct number of nodes
     //    slider positions from values in model
     //    displays from values in model
-    
+    synthData.synthesizer.oscillators.forEach(osc => {
+      Array.from(document.getElementById(`${osc.id}`).children).forEach(child => {
+        ///  if child is a slider, set range and display (with what value on osc?)
+        const classes = Array.from(child.classList);
+        if (Helpers.indexOf(classes, 'slider') >= 0) {
+          console.log(child.children[1].name);
+          // child.children[1].value = osc[child.children[1].name];
+          // child.children[2].value = osc[child.children[2].name];
+        } else if (Helpers.indexOf(classes), 'selector') {
+          // child.children[1].value = osc[child.children[1].name];
+        }
+        //  if child is a selector, set value
+      });
+    });
 
   }
 };
