@@ -105,8 +105,8 @@ class Synthesizer {
     this.router.updateRouter();
   }
 
-  addFilter() {
-    this.filters.push(new Filter(this));
+  addFilter(options = {}) {
+    this.filters.push(new Filter(this, options));
     this.router.updateRouter();
   }
 
@@ -352,7 +352,7 @@ class Oscillator {
 
 //  - Filters
 class Filter extends BiquadFilterNode {
-  constructor(synthesizer) {
+  constructor(synthesizer, options = {}) {
     super(synthesizer.context);
 
     this.synthesizer = synthesizer;
@@ -360,9 +360,10 @@ class Filter extends BiquadFilterNode {
     FilterController.createControls(this.id % 2000);
     FilterController.createListeners(this.id % 2000);
 
-    this.type = 'lowpass';
-    this.frequency.setTargetAtTime(20000, this.context.currentTime, 0);
-    this.gain.setTargetAtTime(0, this.context.currentTime, 0);
+    this.type = options.type || 'lowpass';
+    this.frequency.setTargetAtTime(options.frequency || 20000, this.context.currentTime, 0);
+    this.gain.setTargetAtTime(options.gain || 0, this.context.currentTime, 0);
+    this.Q.setTargetAtTime(options.Q || 0, this.context.currentTime, 0);
     this.connect(this.synthesizer.masterGain);
     this.dest = this.synthesizer.masterGain;
 

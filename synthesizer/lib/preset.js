@@ -75,8 +75,10 @@ const Preset = {
     //    set each filter param
     //    move corresponding slider to value
     Manager.synthesizer.filters = [];
-    synthData.synthesizer.filters.forEach(filterData => {
-      Manager.synthesizer.addFilter();
+    synthData.synthesizer.filters.forEach(filt => {
+      Manager.synthesizer.addFilter({
+        
+      });
     });
 
     //  route all routes in routing table by ID or 'main out'
