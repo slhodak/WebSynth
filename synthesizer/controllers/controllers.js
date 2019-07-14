@@ -53,7 +53,6 @@ const FormController = {
   initializeSaveButton() {
     document.getElementsByClassName('savePreset')[0].addEventListener('submit', (e) => {
       e.preventDefault();
-      console.log(e);
       if (Manager.synthesizer) {
         fetch(`${netConfig.host}/preset?overwrite=${Manager.overwrite}`, {
           method: 'POST',
