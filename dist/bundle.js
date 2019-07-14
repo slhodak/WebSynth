@@ -2,6 +2,7 @@ const host = 'http://localhost:3000';
 
 const scripts = [
   '/synthesizer/lib/preset.js',
+  '/synthesizer/config/netConfig.js',
   '/synthesizer/lib/helpers.js',
   '/synthesizer/controllers/controllers.js',
   '/synthesizer/views/views.js',

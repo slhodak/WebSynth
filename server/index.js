@@ -10,7 +10,7 @@ app.use('/synthesizer', express.static(path.resolve(__dirname, '../synthesizer')
 app.use(express.json());
 
 app.post('/preset', (req, res) => {
-  Preset.create(req.body, (error, success) => {
+  Preset.create(req.body, req.query.overwrite, (error, success) => {
     if (error) {
       res.status(500).send({ error });
     } else {
@@ -18,6 +18,27 @@ app.post('/preset', (req, res) => {
     }
   });
 });
+
+app.get('/preset', (req, res) => {
+  Preset.getOnePreset(req.query.name, (error, synthData) => {
+    if (error) {
+      res.status(500).send({ error });
+    } else {
+      res.status(200).send(synthData);
+    }
+  });
+});
+
+app.get('/presetNames', (req, res) => {
+  Preset.getAllNames((error, names) => {
+    if (error) {
+      res.status(500).send({ error });
+    } else {
+      res.status(200).send({ names });
+    }
+  });
+});
+
 
 app.listen(port, () => {
   console.log(`Server listening on port ${port}`);
