@@ -59,7 +59,6 @@ const Preset = {
     });
 
     //  replace all current oscillators with preset oscillators
-    //    set each oscillator param
     //    move corresponding slider to value
     Manager.synthesizer.oscillators = [];
     synthData.synthesizer.oscillators.forEach(osc => {
@@ -72,12 +71,14 @@ const Preset = {
     });
     
     //  replace all current filters with preset filters
-    //    set each filter param
     //    move corresponding slider to value
     Manager.synthesizer.filters = [];
     synthData.synthesizer.filters.forEach(filt => {
       Manager.synthesizer.addFilter({
-        
+        type: filt.type,
+        frequency: filt.frequency,
+        gain: filt.gain,
+        Q: filt.Q
       });
     });
 
@@ -95,10 +96,6 @@ const Preset = {
         destination
       );
     }
-
-    //  set all global synth params
-    //    move corresponding sliders to values
-
   }
 };
 
