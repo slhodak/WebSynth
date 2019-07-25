@@ -2,9 +2,8 @@ import { Manager } from '../main.js';
 import Helpers from '../lib/helpers.js';
 
 const Preset = {
-  save(synthesizer, name, overwrite) {
+  save(synthesizer, name) {
     let synthData = {
-      overwrite,
       name,
       synthesizer: {
         router: {},
