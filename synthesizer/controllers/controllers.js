@@ -44,6 +44,23 @@ window.addEventListener('keydown', (e) => {
   }
 });
 
+//  Deal with possible query params searching for active synth from DAW request
+window.onload = (event) => {
+  let url = new URL(window.location);
+  if (url.search) {
+    if(window.confirm(`Load synth ${url.searchParams.get('name')}?`)) {
+      fetch(`${netConfig.host}/synths/${url.search}`)
+        .then(response => response.json())
+        .then(synthData => {
+          Preset.load(synthData)
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    }
+  }
+};
+
 //  Save, Load, and DarkMode Buttons
 const FormController = {
   initializeSavePresetModule() {
