@@ -36,13 +36,23 @@ app.post('/synths/active', (req, res) => {
 });
 
 app.get('/synths', (req, res) => {
-  Preset.getOneActive(req.query.name, (error, synthData) => {
-    if (error) {
-      res.status(500).send({ error });
-    } else {
-      res.status(200).send(synthData);
-    }
-  });
+  if (req.query.name) {
+    Preset.getOneActive(req.query.name, (error, synthData) => {
+      if (error) {
+        res.status(500).send({ error });
+      } else {
+        res.status(200).send(synthData);
+      }
+    });
+  } else if (req.query.updateSince) {
+    Preset.checkForUpdates(req.query.updateSince, (error, synthsToUpdate) => {
+      if (error) {
+        res.status(500).send({ error });
+      } else {
+        res.status(200).send({ synthsToUpdate });
+      }
+    });
+  }
 });
 
 app.get('/preset', (req, res) => {
