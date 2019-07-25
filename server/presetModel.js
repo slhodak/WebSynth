@@ -11,6 +11,21 @@ module.exports = {
       }
     });
   },
+  getOneActive(name, callback) {
+    fs.open(path.resolve(__dirname, `./presets/active/${name}.websynth.json`), 'r', (err, fd) => {
+      if (!err) {
+        fs.readFile(fd, (err, data) => {
+          if (!err) {
+            callback(null, data);
+          } else {
+            callback(err);
+          }
+        });
+      } else {
+        callback(err);
+      }
+    });
+  },
   create(synthData, overwrite, callback) {
     if (overwrite === 'false' && fs.existsSync(path.resolve(__dirname, `./presets/${synthData.name || 'default'}.websynth.json`))) {
       callback('exists');
