@@ -57,6 +57,7 @@ const Preset = {
 
     Manager.synthesizer = null;
     Manager.createSynthesizerIfNoneExists({
+      name: synthData.name,
       porta: synthData.synthesizer.settings.globals.porta,
       attack: synthData.synthesizer.settings.globals.attack,
       release: synthData.synthesizer.settings.globals.release,
