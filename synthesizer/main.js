@@ -15,13 +15,14 @@ import { RouterViews } from './views/views.js';
 */
 
 let Manager = {
-  createSynthesizerIfNoneExists() {
+  createSynthesizerIfNoneExists(options = {}) {
     if (!Manager.synthesizer) {
-      Manager.synthesizer = new Synthesizer();
+      Manager.synthesizer = new Synthesizer(options);
       document.getElementsByClassName('globalControls')[0].removeEventListener('mousedown', Manager.createSynthesizerIfNoneExists);
     }
   },
   synthesizer: null,
+  edited: false,
   overwrite: false,
   darkMode: false
 };
@@ -29,6 +30,7 @@ let Manager = {
 //  - Synthesizer
 class Synthesizer {
   constructor(options = {}) {
+    this.name = options.name || 'default';
     this.context = new AudioContext();
     this.router = new Router(this);
     this.masterGain = this.context.createGain();
