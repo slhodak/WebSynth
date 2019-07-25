@@ -44,7 +44,23 @@ window.addEventListener('keydown', (e) => {
   }
 });
 
-//  Deal with possible query params searching for active synth from DAW request
+//  Visibility Changes
+window.addEventListener('visibilitychange', (e) => {
+  if (document.hidden) {
+    fetch(`${Network.host}/synths/active`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(Preset.save(Manager.synthesizer, Manager.synthesizer.name))
+    })
+      .catch(error => {
+        console.log(`Fetch error: ${error}`);
+      });
+  }
+});
+
+//  Possible Query Params for active synth
 window.onload = (event) => {
   let url = new URL(window.location);
   if (url.search) {
