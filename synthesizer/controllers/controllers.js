@@ -47,7 +47,7 @@ window.addEventListener('keydown', (e) => {
 //  Visibility Changes
 window.addEventListener('visibilitychange', (e) => {
   if (document.hidden) {
-    fetch(`${Network.host}/synths/active`, {
+    fetch(`${netConfig.host}/synths/active`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
