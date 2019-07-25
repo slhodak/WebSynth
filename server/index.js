@@ -9,8 +9,24 @@ app.use(express.static(path.resolve(__dirname, '../dist')));
 app.use('/synthesizer', express.static(path.resolve(__dirname, '../synthesizer')));
 app.use(express.json());
 
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
+
 app.post('/preset', (req, res) => {
   Preset.create(req.body, req.query.overwrite, (error, success) => {
+    if (error) {
+      res.status(500).send({ error });
+    } else {
+      res.status(200).send({ success });
+    }
+  });
+});
+
+app.post('/synths/active', (req, res) => {
+  Preset.createActive(req.body, (error, success) => {
     if (error) {
       res.status(500).send({ error });
     } else {

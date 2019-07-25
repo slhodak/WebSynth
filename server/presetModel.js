@@ -2,6 +2,15 @@ const fs = require('fs');
 const path = require('path');
 
 module.exports = {
+  createActive(synthData, callback) {
+    fs.writeFile(path.resolve(__dirname, `./presets/active/${synthData.name}.websynth.json`), JSON.stringify(synthData), (err) => {
+      if (err) {
+        callback(err);
+      } else {
+        callback(null, 'Active synth data saved');
+      }
+    });
+  },
   create(synthData, overwrite, callback) {
     if (overwrite === 'false' && fs.existsSync(path.resolve(__dirname, `./presets/${synthData.name || 'default'}.websynth.json`))) {
       callback('exists');
