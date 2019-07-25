@@ -35,6 +35,16 @@ app.post('/synths/active', (req, res) => {
   });
 });
 
+app.get('/synths', (req, res) => {
+  Preset.getOneActive(req.query.name, (error, synthData) => {
+    if (error) {
+      res.status(500).send({ error });
+    } else {
+      res.status(200).send(synthData);
+    }
+  });
+});
+
 app.get('/preset', (req, res) => {
   Preset.getOnePreset(req.query.name, (error, synthData) => {
     if (error) {
