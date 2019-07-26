@@ -1,0 +1,3 @@
+{
+  "ignore": ["server/presets/*", "README.md"] 
+}
