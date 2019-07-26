@@ -48,8 +48,10 @@ app.get('/synths', (req, res) => {
     Preset.checkForUpdates(req.query.dawLastVisible, (error, synthsToUpdate) => {
       if (error) {
         res.status(500).send({ error });
+      } else if (synthsToUpdate.length) {
+        res.status(200).send({ synthsToUpdate });
       } else {
-        res.status(200).send(synthsToUpdate);
+        res.status(200).send({ message: 'No synths to update.' });
       }
     });
   }
