@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const Preset = require('./presetModel');
+const wss = require('./dawSocket');
 
 const port = 3000;
 const app = express();
@@ -15,6 +16,18 @@ app.use((req, res, next) => {
   next();
 });
 
+//  Serving /preset
+
+app.get('/preset', (req, res) => {
+  Preset.getOnePreset(req.query.name, (error, synthData) => {
+    if (error) {
+      res.status(500).send({ error });
+    } else {
+      res.status(200).send(synthData);
+    }
+  });
+});
+
 app.post('/preset', (req, res) => {
   Preset.create(req.body, req.query.overwrite, (error, success) => {
     if (error) {
@@ -25,15 +38,17 @@ app.post('/preset', (req, res) => {
   });
 });
 
-app.post('/synths/active', (req, res) => {
-  Preset.createActive(req.body, (error, success) => {
+app.get('/presetNames', (req, res) => {
+  Preset.getAllNames((error, names) => {
     if (error) {
       res.status(500).send({ error });
     } else {
-      res.status(200).send({ success });
+      res.status(200).send({ names });
     }
   });
 });
+
+//  Serving /synths
 
 app.get('/synths', (req, res) => {
   if (req.query.name) {
@@ -57,26 +72,15 @@ app.get('/synths', (req, res) => {
   }
 });
 
-app.get('/preset', (req, res) => {
-  Preset.getOnePreset(req.query.name, (error, synthData) => {
+app.post('/synths/active', (req, res) => {
+  Preset.createActive(req.body, (error, success) => {
     if (error) {
       res.status(500).send({ error });
     } else {
-      res.status(200).send(synthData);
+      res.status(200).send({ success });
     }
   });
 });
-
-app.get('/presetNames', (req, res) => {
-  Preset.getAllNames((error, names) => {
-    if (error) {
-      res.status(500).send({ error });
-    } else {
-      res.status(200).send({ names });
-    }
-  });
-});
-
 
 app.listen(port, () => {
   console.log(`Server listening on port ${port}`);
