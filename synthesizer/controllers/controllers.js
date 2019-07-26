@@ -55,7 +55,7 @@ window.addEventListener('visibilitychange', (e) => {
       body: JSON.stringify(Preset.save(Manager.synthesizer, Manager.synthesizer.name))
     })
       .catch(error => {
-        console.log(`Fetch error: ${error}`);
+        console.error(`Fetch error: ${error}`);
       });
   }
 });
@@ -71,7 +71,7 @@ window.onload = (event) => {
           Preset.load(synthData)
         })
         .catch(err => {
-          console.log(err);
+          console.error(err);
         });
     }
   }
@@ -107,7 +107,7 @@ const FormController = {
             }
           })
           .catch(err => {
-            console.log(err);
+            console.error(err);
           });
       }
     });
@@ -142,7 +142,7 @@ const FormController = {
           presetSelector.append(option);
         });
       })
-      .catch(err => console.log(err));
+      .catch(err => console.error(err));
   },
   initializeLoadPresetButton() {
     document.getElementsByClassName('loadButton')[0].addEventListener('mousedown', (e) => {
@@ -151,7 +151,7 @@ const FormController = {
         .then(data => {
           Preset.load(data);
         })
-        .catch(err => console.log(err));
+        .catch(err => console.error(err));
     });
   },
   initializeDarkModeButton() {
@@ -244,7 +244,7 @@ const RouterController = {
         } else if (Helpers.indexOf(Manager.synthesizer.router.table[destination.parentNode.dataset.id].eligibleDestinations, Manager.synthesizer.router.table[destination.dataset.id].node) >= 0) {
           Manager.synthesizer.router.setRoute(Manager.synthesizer.router.table[destination.parentNode.dataset.id].node, Manager.synthesizer.router.table[destination.dataset.id].node);
         } else {
-          console.log('Ineligible route!');
+          console.warn('Ineligible route!');
         }
       });
     });
@@ -271,7 +271,6 @@ const OscController = {
     let waveSelector = document.getElementsByClassName('waveSelector')[id];
     waveSelector.addEventListener('change', (e) => {
       Manager.synthesizer.oscillators[id].setType(e.target.value);
-      console.log(Manager.synthesizer.oscillators[id]);
       if (Manager.synthesizer.mono) {
         for (let voice in Manager.synthesizer.mono.voices) {
           Manager.synthesizer.mono.voices[voice].type = e.target.value;
