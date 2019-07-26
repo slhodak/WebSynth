@@ -46,7 +46,7 @@ window.addEventListener('keydown', (e) => {
 
 //  Visibility Changes
 window.addEventListener('visibilitychange', (e) => {
-  if (document.hidden && Manager.synthesizer) {
+  if (document.hidden && Manager.synthesizer && window.location.search) {
     fetch(`${netConfig.host}/synths/active`, {
       method: 'POST',
       headers: {
