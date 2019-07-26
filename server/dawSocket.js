@@ -19,4 +19,4 @@ const wss = new ws.Server({
   });
 });
 
-module.exports = DawSocket;
+module.exports = wss.DawSocket;
