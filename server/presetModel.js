@@ -1,7 +1,5 @@
 const fs = require('fs');
 const path = require('path');
-const Utilities = require('./lib/utilities');
-
 module.exports = {
   checkForUpdates(dawLastVisible, callback) {
     fs.readdir(path.resolve(__dirname, './presets/active/'), (err, files) => {
