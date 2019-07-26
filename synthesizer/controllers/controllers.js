@@ -46,7 +46,7 @@ window.addEventListener('keydown', (e) => {
 
 //  Visibility Changes
 window.addEventListener('visibilitychange', (e) => {
-  if (document.hidden) {
+  if (document.hidden && Manager.synthesizer) {
     fetch(`${netConfig.host}/synths/active`, {
       method: 'POST',
       headers: {
@@ -271,6 +271,7 @@ const OscController = {
     let waveSelector = document.getElementsByClassName('waveSelector')[id];
     waveSelector.addEventListener('change', (e) => {
       Manager.synthesizer.oscillators[id].setType(e.target.value);
+      console.log(Manager.synthesizer.oscillators[id]);
       if (Manager.synthesizer.mono) {
         for (let voice in Manager.synthesizer.mono.voices) {
           Manager.synthesizer.mono.voices[voice].type = e.target.value;
