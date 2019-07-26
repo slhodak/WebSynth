@@ -44,12 +44,12 @@ app.get('/synths', (req, res) => {
         res.status(200).send(synthData);
       }
     });
-  } else if (req.query.updateSince) {
-    Preset.checkForUpdates(req.query.updateSince, (error, synthsToUpdate) => {
+  } else if (req.query.dawLastVisible) {
+    Preset.checkForUpdates(req.query.dawLastVisible, (error, synthsToUpdate) => {
       if (error) {
         res.status(500).send({ error });
       } else {
-        res.status(200).send({ synthsToUpdate });
+        res.status(200).send(synthsToUpdate);
       }
     });
   }
