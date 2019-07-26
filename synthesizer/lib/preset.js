@@ -21,7 +21,6 @@ const Preset = {
     synthData.settings.globals.attack = synthesizer.globals.attack;
     synthData.settings.globals.release = synthesizer.globals.release;
     synthesizer.oscillators.forEach((osc, index) => {
-      console.log('osc wave: ', osc.type);
       synthData.oscillators[index] = {
         id: osc.id,
         semitoneOffset: osc.semitoneOffset,
@@ -39,12 +38,9 @@ const Preset = {
         q: filt.Q.value
       }
     });
-    console.log('saving ', synthData);
     return synthData;
   },
   load(synthData) {
-    //  warn user that this is going to overwrite all synth settings? annoying?
-
     //  Remove old Control Views
     const oscillatorsModule = document.getElementsByClassName('oscillatorControls')[0];
     while(oscillatorsModule.children[2]) {
