@@ -77,7 +77,8 @@ module.exports = {
   getAllNames(callback) {
     fs.readdir(path.resolve(__dirname, './presets'), (err, files) => {
       if (!err) {
-        callback(null, files.map(name => name.split('.')[0]));
+        callback(null, files.filter(name => /\.websynth\.json$/.test(name))
+          .map(fullname => fullname.match(/^(.*?)\.websynth\.json/)[1]));
       } else {
         callback(err);
       }
