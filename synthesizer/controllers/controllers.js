@@ -85,6 +85,9 @@ const FormController = {
     document.getElementsByClassName('savePreset')[0].addEventListener('submit', (e) => {
       e.preventDefault();
       if (Manager.synthesizer) {
+        Manager.synthesizer.name = e.srcElement[0].value;
+        //  learn about this pushstate thinger
+        history.pushState({}, 'WebSynth', `${netConfig.host}/?name=${Manager.synthesizer.name}`);
         fetch(`${netConfig.host}/preset?overwrite=${Manager.overwrite}`, {
           method: 'POST',
           headers: {
