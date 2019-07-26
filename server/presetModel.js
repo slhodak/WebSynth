@@ -1,7 +1,44 @@
 const fs = require('fs');
 const path = require('path');
+const Utilities = require('./lib/utilities');
 
 module.exports = {
+  checkForUpdates(dawLastVisible, callback) {
+    fs.readdir(path.resolve(__dirname, './presets/active/'), (err, files) => {
+      if (err) {
+        callback(err);
+      } else {
+        let results = [];
+        let filesChecked = 0;
+        files.forEach(filename => {
+          fs.stat(path.resolve(__dirname, `./presets/active/${filename}`), (err, stats) => {
+            if (err) {
+              callback(err);
+            } else {
+              if (stats.mtimeMs > Number(dawLastVisible)) {
+                fs.readFile(path.resolve(__dirname, `./presets/active/${filename}`), (err, synthData) => {
+                  if (err) {
+                    callback(err);
+                  } else {
+                    results.push(JSON.parse(synthData));
+                    filesChecked += 1;
+                  }
+                  if (filesChecked === files.length) {
+                    callback(null, results);
+                  }
+                });
+              } else {
+                filesChecked += 1;
+                if (filesChecked === files.length) {
+                  callback(null, results);
+                }
+              }
+            }
+          });
+        });
+      }
+    });
+  },
   createActive(synthData, callback) {
     fs.writeFile(path.resolve(__dirname, `./presets/active/${synthData.name}.websynth.json`), JSON.stringify(synthData), (err) => {
       if (err) {
