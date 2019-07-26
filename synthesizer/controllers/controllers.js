@@ -1,5 +1,6 @@
 import { Manager } from '../main.js';
 import Preset from '../lib/preset.js';
+import Active from '../lib/active.js';
 import Helpers from '../lib/helpers.js';
 import Template from '../views/templates.js';
 import netConfig from '../config/netConfig.js';
@@ -31,50 +32,47 @@ const Controls = {
   }
 };
 
-window.addEventListener('keydown', (e) => {
-  if (e.target.type !== 'text') {
-    if (!Manager.synthesizer) {
-      Manager.createSynthesizerIfNoneExists();
-      if (Controls[e.keyCode] && e.keyCode !== 32) {
+//  On Window Load
+window.onload = (event) => {
+
+  FormController.initializeLoadPresetModule();
+  FormController.initializeSavePresetModule();
+  FormController.initializeDarkModeButton();
+
+  SynthController.createControls();
+  document.getElementsByClassName('globalControls')[0].addEventListener('mousedown', Manager.createSynthesizerIfNoneExists);
+
+  window.addEventListener('keydown', (e) => {
+    if (e.target.type !== 'text') {
+      if (!Manager.synthesizer) {
+        Manager.createSynthesizerIfNoneExists();
+        if (Controls[e.keyCode] && e.keyCode !== 32) {
+          Controls[e.keyCode]();
+        }
+      } else if (Controls[e.keyCode]) {
         Controls[e.keyCode]();
       }
-    } else if (Controls[e.keyCode]) {
-      Controls[e.keyCode]();
     }
-  }
-});
+  });
 
-//  Visibility Changes
-window.addEventListener('visibilitychange', (e) => {
-  if (document.hidden && Manager.synthesizer && window.location.search) {
-    fetch(`${netConfig.host}/synths/active`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(Preset.save(Manager.synthesizer, Manager.synthesizer.name))
-    })
-      .catch(error => {
-        console.error(`Fetch error: ${error}`);
-      });
-  }
-});
-
-//  Possible Query Params for active synth
-window.onload = (event) => {
   let url = new URL(window.location);
   if (url.search) {
     if(window.confirm(`Load synth ${url.searchParams.get('name')}?`)) {
-      fetch(`${netConfig.host}/synths/${url.search}`)
-        .then(response => response.json())
-        .then(synthData => {
-          Preset.load(synthData)
-        })
-        .catch(err => {
-          console.error(err);
-        });
+      Active.load(url);
     }
   }
+};
+
+//  Visibility Changes
+window.addEventListener('visibilitychange', (event) => {
+  if (document.hidden && Manager.synthesizer && window.location.search) {
+    Active.update(Manager.synthesizer);
+  }
+});
+
+//  Window Close
+window.onunload = (event) => {
+  Active.update(Manager.synthesizer);
 };
 
 //  Save, Load, and DarkMode Buttons
@@ -177,10 +175,6 @@ const FormController = {
   }
 }
 
-FormController.initializeLoadPresetModule();
-FormController.initializeSavePresetModule();
-FormController.initializeDarkModeButton();
-
 //  Global Synth Parameters
 const SynthController = {
   controls() {
@@ -228,10 +222,6 @@ const SynthController = {
     });
   }
 }
-
-SynthController.createControls();
-document.getElementsByClassName('globalControls')[0].addEventListener('mousedown', Manager.createSynthesizerIfNoneExists);
-
 
 //  Router Controller
 const RouterController = {
