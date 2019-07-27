@@ -6,6 +6,7 @@ const DawSocket = function(socket) {
     console.log(message);
   });
   this.sendNameUpdate = (oldName, newName) => {
+    console.log(oldName, newName);
     this.socket.send(JSON.stringify({ rename: [oldName, newName ]}));
   };
 };
