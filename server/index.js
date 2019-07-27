@@ -33,7 +33,9 @@ app.post('/preset', (req, res) => {
     if (error) {
       res.status(500).send({ error });
     } else {
-      wss.dawSocket.sendNameUpdate('oldName', req.body);
+      if (req.query.oldName) {
+        wss.dawSocket.sendNameUpdate(req.query.oldName, req.query.newName);
+      }
       res.status(200).send({ success });
     }
   });
