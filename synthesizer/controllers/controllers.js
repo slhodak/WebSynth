@@ -85,9 +85,13 @@ const FormController = {
     document.getElementsByClassName('savePreset')[0].addEventListener('submit', (e) => {
       e.preventDefault();
       if (Manager.synthesizer) {
-        Manager.synthesizer.name = e.srcElement[0].value;
-        history.pushState({}, 'WebSynth', `${netConfig.host}/?name=${Manager.synthesizer.name}`);
-        fetch(`${netConfig.host}/preset?overwrite=${Manager.overwrite}`, {
+        let nameChanged = false;
+        if (Manager.synthesizer.name !== e.srcElement[0].value) {
+          Manager.synthesizer.name = e.srcElement[0].value;
+          history.pushState({}, 'WebSynth', `${netConfig.host}/?name=${Manager.synthesizer.name}`);
+          nameChanged = true;
+        }
+        fetch(`${netConfig.host}/preset?overwrite=${Manager.overwrite}?nameChanged=${nameChanged}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
