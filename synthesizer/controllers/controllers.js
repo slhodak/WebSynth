@@ -186,7 +186,7 @@ const FormController = {
 const SynthController = {
   controls() {
     let polyButton = '<button class="polyButton on" type="button">Poly</button>';
-    let masterGainSlider = Template.slider('masterGainSlider', 'Volume', 0, 1, 0.75, 0.001);
+    let masterGainSlider = Template.slider('masterGainSlider', 'Volume', 0, 1, 1, 0.001);
     let attackSlider = Template.slider('attackSlider', 'Attack', 0.001, 1, 0.1, 0.001);
     let releaseSlider = Template.slider('releaseSlider', 'Release', 0.1, 1, 0.1, 0.001);
     let portaSlider = Template.slider('portaSlider', 'Porta', 0.001, 1, 0.05, 0.001);
