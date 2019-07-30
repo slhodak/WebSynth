@@ -2,38 +2,35 @@ import { Manager } from '../main.js';
 import Helpers from '../lib/helpers.js';
 
 const Preset = {
-  save(synthesizer, name, overwrite) {
+  save(synthesizer, name) {
     let synthData = {
-      overwrite,
-      name,
-      synthesizer: {
-        router: {},
-        settings: {
-          globals: {}
-        },
-        oscillators: [],
-        filters: []
-      }
+      name: name || synthesizer.name,
+      router: {},
+      settings: {
+        globals: {}
+      },
+      oscillators: [],
+      filters: []
     };
     for (let route in synthesizer.router.table) {
-      synthData.synthesizer.router[route] = synthesizer.router.table[route].node.dest.id || 'main out';
+      synthData.router[route] = synthesizer.router.table[route].node.dest.id || 'main out';
     }
-    synthData.synthesizer.settings.globals.volume = synthesizer.masterGain.gain.value;
-    synthData.synthesizer.settings.poly = synthesizer.poly;
-    synthData.synthesizer.settings.globals.porta = synthesizer.globals.porta;
-    synthData.synthesizer.settings.globals.attack = synthesizer.globals.attack;
-    synthData.synthesizer.settings.globals.release = synthesizer.globals.release;
+    synthData.settings.globals.volume = synthesizer.masterGain.gain.value;
+    synthData.settings.poly = synthesizer.poly;
+    synthData.settings.globals.porta = synthesizer.globals.porta;
+    synthData.settings.globals.attack = synthesizer.globals.attack;
+    synthData.settings.globals.release = synthesizer.globals.release;
     synthesizer.oscillators.forEach((osc, index) => {
-      synthData.synthesizer.oscillators[index] = {
+      synthData.oscillators[index] = {
         id: osc.id,
         semitoneOffset: osc.semitoneOffset,
         fineDetune: osc.fineDetune,
         volume: osc.volume,
-        wave: osc.wave
+        type: osc.type
       }
     });
     synthesizer.filters.forEach((filt, index) => {
-      synthData.synthesizer.filters[index] = {
+      synthData.filters[index] = {
         id: filt.id,
         type: filt.type,
         frequency: filt.frequency.value,
@@ -44,8 +41,6 @@ const Preset = {
     return synthData;
   },
   load(synthData) {
-    //  warn user that this is going to overwrite all synth settings? annoying?
-
     //  Remove old Control Views
     const oscillatorsModule = document.getElementsByClassName('oscillatorControls')[0];
     while(oscillatorsModule.children[2]) {
@@ -58,24 +53,25 @@ const Preset = {
 
     Manager.synthesizer = null;
     Manager.createSynthesizerIfNoneExists({
-      porta: synthData.synthesizer.settings.globals.porta,
-      attack: synthData.synthesizer.settings.globals.attack,
-      release: synthData.synthesizer.settings.globals.release,
-      poly: synthData.synthesizer.settings.poly
+      name: synthData.name,
+      porta: synthData.settings.globals.porta,
+      attack: synthData.settings.globals.attack,
+      release: synthData.settings.globals.release,
+      poly: synthData.settings.poly
     });
 
     Manager.synthesizer.oscillators = [];
-    synthData.synthesizer.oscillators.forEach(osc => {
+    synthData.oscillators.forEach(osc => {
       Manager.synthesizer.addOscillator({
         semitoneOffset: osc.semitoneOffset,
         fineDetune: osc.fineDetune,
         volume: osc.volume,
-        wave: osc.wave
+        type: osc.type
       });
     });
     
     Manager.synthesizer.filters = [];
-    synthData.synthesizer.filters.forEach(filt => {
+    synthData.filters.forEach(filt => {
       Manager.synthesizer.addFilter({
         type: filt.type,
         frequency: filt.frequency,
@@ -84,12 +80,12 @@ const Preset = {
       });
     });
 
-    for (let route in synthData.synthesizer.router) {
+    for (let route in synthData.router) {
       let destination;
-      if (synthData.synthesizer.router[route] === 'main out') {
+      if (synthData.router[route] === 'main out') {
         destination = Manager.synthesizer.masterGain;
       } else {
-        destination = Manager.synthesizer.router.table[synthData.synthesizer.router[route]].node;
+        destination = Manager.synthesizer.router.table[synthData.router[route]].node;
       }
 
       Manager.synthesizer.router.setRoute(
@@ -110,11 +106,11 @@ const Preset = {
     
     Array.from(document.getElementsByClassName('globalControls')[0].firstChild.children).forEach(child => {
       //  deal with poly button
-      document.getElementsByClassName('polyButton')[0].setAttribute('class', `${synthData.synthesizer.settings.poly ? 'polyButton on' : 'polyButton off'}`);
+      document.getElementsByClassName('polyButton')[0].setAttribute('class', `${synthData.settings.poly ? 'polyButton on' : 'polyButton off'}`);
       const classes = Array.from(child.classList);
       if (Helpers.indexOf(classes, 'slider') >= 0) {
-        child.children[1].value = synthData.synthesizer.settings.globals[synthParamControlDict[child.children[1].name]];
-        child.children[2].innerText = Number(synthData.synthesizer.settings.globals[synthParamControlDict[child.children[1].name]]).toFixed(3);
+        child.children[1].value = synthData.settings.globals[synthParamControlDict[child.children[1].name]];
+        child.children[2].innerText = Number(synthData.settings.globals[synthParamControlDict[child.children[1].name]]).toFixed(3);
       }
     });
 
@@ -122,10 +118,10 @@ const Preset = {
       'Volume': 'volume',
       'Semitone': 'semitoneOffset',
       'Detune': 'fineDetune',
-      'Wave': 'wave'
+      'Wave': 'type'
     };
     
-    synthData.synthesizer.oscillators.forEach(osc => {
+    synthData.oscillators.forEach(osc => {
       Array.from(document.getElementById(`${osc.id}`).children).forEach(child => {
         const classes = Array.from(child.classList);
         if (Helpers.indexOf(classes, 'slider') >= 0) {
@@ -144,7 +140,7 @@ const Preset = {
       'Filter Type': 'type'
     };
 
-    synthData.synthesizer.filters.forEach(filt => {
+    synthData.filters.forEach(filt => {
       Array.from(document.getElementById(`${filt.id}`).children).forEach(child => {
         const classes = Array.from(child.classList);
         if (Helpers.indexOf(classes, 'slider') >= 0) {

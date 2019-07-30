@@ -1,5 +1,6 @@
 import { Manager } from '../main.js';
 import Preset from '../lib/preset.js';
+import Active from '../lib/active.js';
 import Helpers from '../lib/helpers.js';
 import Template from '../views/templates.js';
 import netConfig from '../config/netConfig.js';
@@ -31,18 +32,48 @@ const Controls = {
   }
 };
 
-window.addEventListener('keydown', (e) => {
-  if (e.target.type !== 'text') {
-    if (!Manager.synthesizer) {
-      Manager.createSynthesizerIfNoneExists();
-      if (Controls[e.keyCode] && e.keyCode !== 32) {
+//  On Window Load
+window.onload = (event) => {
+
+  FormController.initializeLoadPresetModule();
+  FormController.initializeSavePresetModule();
+  FormController.initializeDarkModeButton();
+
+  SynthController.createControls();
+  document.getElementsByClassName('globalControls')[0].addEventListener('mousedown', Manager.createSynthesizerIfNoneExists);
+
+  window.addEventListener('keydown', (e) => {
+    if (e.target.type !== 'text') {
+      if (!Manager.synthesizer) {
+        Manager.createSynthesizerIfNoneExists();
+        if (Controls[e.keyCode] && e.keyCode !== 32) {
+          Controls[e.keyCode]();
+        }
+      } else if (Controls[e.keyCode]) {
         Controls[e.keyCode]();
       }
-    } else if (Controls[e.keyCode]) {
-      Controls[e.keyCode]();
+    }
+  });
+
+  let url = new URL(window.location);
+  if (url.search) {
+    if(window.confirm(`Load synth ${url.searchParams.get('name')}?`)) {
+      Active.load(url);
     }
   }
+};
+
+//  Visibility Changes
+window.addEventListener('visibilitychange', (event) => {
+  if (document.hidden && Manager.synthesizer && window.location.search) {
+    Active.update(Manager.synthesizer);
+  }
 });
+
+//  Window Close
+window.onunload = (event) => {
+  Active.update(Manager.synthesizer);
+};
 
 //  Save, Load, and DarkMode Buttons
 const FormController = {
@@ -54,7 +85,14 @@ const FormController = {
     document.getElementsByClassName('savePreset')[0].addEventListener('submit', (e) => {
       e.preventDefault();
       if (Manager.synthesizer) {
-        fetch(`${netConfig.host}/preset?overwrite=${Manager.overwrite}`, {
+        let renamed = false;
+        let oldName = Manager.synthesizer.name;
+        if (Manager.synthesizer.name !== e.srcElement[0].value) {
+          Manager.synthesizer.name = e.srcElement[0].value;
+          history.pushState({}, 'WebSynth', `${netConfig.host}/?name=${Manager.synthesizer.name}`);
+          renamed = true;
+        }
+        fetch(`${netConfig.host}/preset?overwrite=${Manager.overwrite}${renamed ? `&oldName=${oldName}&newName=${Manager.synthesizer.name}` : null}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -74,7 +112,7 @@ const FormController = {
             }
           })
           .catch(err => {
-            console.log(err);
+            console.error(err);
           });
       }
     });
@@ -109,7 +147,7 @@ const FormController = {
           presetSelector.append(option);
         });
       })
-      .catch(err => console.log(err));
+      .catch(err => console.error(err));
   },
   initializeLoadPresetButton() {
     document.getElementsByClassName('loadButton')[0].addEventListener('mousedown', (e) => {
@@ -118,7 +156,7 @@ const FormController = {
         .then(data => {
           Preset.load(data);
         })
-        .catch(err => console.log(err));
+        .catch(err => console.error(err));
     });
   },
   initializeDarkModeButton() {
@@ -143,10 +181,6 @@ const FormController = {
     });
   }
 }
-
-FormController.initializeLoadPresetModule();
-FormController.initializeSavePresetModule();
-FormController.initializeDarkModeButton();
 
 //  Global Synth Parameters
 const SynthController = {
@@ -196,10 +230,6 @@ const SynthController = {
   }
 }
 
-SynthController.createControls();
-document.getElementsByClassName('globalControls')[0].addEventListener('mousedown', Manager.createSynthesizerIfNoneExists);
-
-
 //  Router Controller
 const RouterController = {
   updateRouterClickHandlers() {
@@ -211,7 +241,7 @@ const RouterController = {
         } else if (Helpers.indexOf(Manager.synthesizer.router.table[destination.parentNode.dataset.id].eligibleDestinations, Manager.synthesizer.router.table[destination.dataset.id].node) >= 0) {
           Manager.synthesizer.router.setRoute(Manager.synthesizer.router.table[destination.parentNode.dataset.id].node, Manager.synthesizer.router.table[destination.dataset.id].node);
         } else {
-          console.log('Ineligible route!');
+          console.warn('Ineligible route!');
         }
       });
     });

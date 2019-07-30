@@ -15,9 +15,9 @@ import { RouterViews } from './views/views.js';
 */
 
 let Manager = {
-  createSynthesizerIfNoneExists() {
+  createSynthesizerIfNoneExists(options = {}) {
     if (!Manager.synthesizer) {
-      Manager.synthesizer = new Synthesizer();
+      Manager.synthesizer = new Synthesizer(options);
       document.getElementsByClassName('globalControls')[0].removeEventListener('mousedown', Manager.createSynthesizerIfNoneExists);
     }
   },
@@ -29,6 +29,7 @@ let Manager = {
 //  - Synthesizer
 class Synthesizer {
   constructor(options = {}) {
+    this.name = options.name || 'default';
     this.context = new AudioContext();
     this.router = new Router(this);
     this.masterGain = this.context.createGain();
@@ -38,7 +39,7 @@ class Synthesizer {
       porta: options.porta || 0.05,
       attack: options.attack || 0.01,
       release: options.release || 0.1,
-      wave: 'sine'
+      type: options.type || 'sine'
     };
     this.mono = {
       note: null,
@@ -248,7 +249,7 @@ class Oscillator {
     this.semitoneOffset = options.semitoneOffset || 0;
     this.fineDetune = options.fineDetune || 0;
     this.volume = options.volume || 0.75;
-    this.wave = options.wave || 'sine';
+    this.type = options.type || 'sine';
     this.porta = this.synthesizer.globals.porta;
     this.attack = this.synthesizer.globals.attack;
     this.release = this.synthesizer.globals.release;
