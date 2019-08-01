@@ -5,8 +5,6 @@ import Helpers from '../lib/helpers.js';
 import Template from '../views/templates.js';
 import { SynthViews, FormViews } from '../views/views.js';
 
-//  figure out what to import, how to manage synth/osc/filt API to controllers
-
 /*  ___  __   __ _  ____  ____   __   __    __    ____  ____  ____ 
 *  / __)/  \ (  ( \(_  _)(  _ \ /  \ (  )  (  )  (  __)(  _ \/ ___)
 * ( (__(  O )/    /  )(   )   /(  O )/ (_/\/ (_/\ ) _)  )   /\___ \
@@ -114,12 +112,11 @@ const FormController = {
 //  Global Synth Parameters
 const SynthController = {
   controls() {
-    let polyButton = '<button class="polyButton on" type="button">Poly</button>';
-    let masterGainSlider = Template.slider('masterGainSlider', 'Volume', 0, 1, 1, 0.001);
-    let attackSlider = Template.slider('attackSlider', 'Attack', 0.001, 1, 0.1, 0.001);
-    let releaseSlider = Template.slider('releaseSlider', 'Release', 0.1, 1, 0.1, 0.001);
-    let portaSlider = Template.slider('portaSlider', 'Porta', 0.001, 1, 0.05, 0.001);
-    return polyButton + masterGainSlider + attackSlider + releaseSlider + portaSlider;
+    return '<button class="polyButton on" type="button">Poly</button>' +
+      Template.slider('masterGainSlider', 'Volume', 0, 1, 1, 0.001) +
+      Template.slider('attackSlider', 'Attack', 0.001, 1, 0.1, 0.001) +
+      Template.slider('releaseSlider', 'Release', 0.1, 1, 0.1, 0.001) +
+      Template.slider('portaSlider', 'Porta', 0.001, 1, 0.05, 0.001);
   },
   createControls() {
     let ControlsDiv = document.getElementsByClassName('globalControls')[0];
@@ -127,29 +124,45 @@ const SynthController = {
     controls.innerHTML = SynthController.controls();
     ControlsDiv.append(controls);
   },
-  createListeners() {
+  addControllers() {
+    SynthController.addPolyController();
+    SynthController.addMasterGainController();
+    SynthController.addAttackController();
+    SynthController.addReleaseController();
+    SynthController.addPortaController();
+  },
+  addPolyController() {
     let polyButton = document.getElementsByClassName('polyButton')[0];
     polyButton.addEventListener('mousedown', (e) => {
       Manager.synthesizer.togglePoly();
+      FormViews.updatePolyButton(this.poly);
     });
+  },
+  addMasterGainController() {
     let masterGainSlider = document.getElementsByClassName('masterGainSlider')[0];
     let masterGainSliderDisplay = document.getElementsByClassName('masterGainSliderDisplay')[0];
     masterGainSlider.addEventListener('input', (e) => {
       Manager.synthesizer.setGain(Number(e.target.value));
       masterGainSliderDisplay.innerText = e.target.value;
     });
+  },
+  addAttackController() {
     let attackSlider = document.getElementsByClassName('attackSlider')[0];
     let attackSliderDisplay = document.getElementsByClassName('attackSliderDisplay')[0];
     attackSlider.addEventListener('input', (e) => {
       Manager.synthesizer.setAttack(Number(e.target.value));
       attackSliderDisplay.innerText = e.target.value;
     });
+  },
+  addReleaseController() {
     let releaseSlider = document.getElementsByClassName('releaseSlider')[0];
     let releaseSliderDisplay = document.getElementsByClassName('releaseSliderDisplay')[0];
     releaseSlider.addEventListener('input', (e) => {
       Manager.synthesizer.setRelease(Number(e.target.value));
       releaseSliderDisplay.innerText = e.target.value;
     });
+  },
+  addPortaController() {
     let portaSlider = document.getElementsByClassName('portaSlider')[0];
     let portaSliderDisplay = document.getElementsByClassName('portaSliderDisplay')[0];
     portaSlider.addEventListener('input', (e) => {

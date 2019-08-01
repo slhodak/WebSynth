@@ -50,7 +50,7 @@ class Synthesizer {
     this.poly = options.poly || true;
     this.oscillators = [];
     this.filters = [];
-    SynthController.createListeners();   
+    SynthController.addControllers();   
     this.addOscillator = this.addOscillator.bind(this);
     this.addFilter = this.addFilter.bind(this);
     this.playNote = this.playNote.bind(this);
@@ -147,7 +147,6 @@ class Synthesizer {
 
   togglePoly() {
     this.poly = !this.poly;
-    FormViews.updatePolyButton(this.poly);
   }
 
   setGain(value) {
