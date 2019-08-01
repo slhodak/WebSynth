@@ -5,7 +5,7 @@ import {
   OscController,
   FilterController
 } from './controllers/controllers.js';
-import { OscView, RouterView } from './views/views.js';
+import { OscView, RouterView, SynthView } from './views/views.js';
 
 /*  _  _   __  ____  ____  __    ____ 
 *  ( \/ ) /  \(    \(  __)(  )  / ___)

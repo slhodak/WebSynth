@@ -21,7 +21,7 @@ const SynthView = {
   addControls() {
     let ControlsDiv = document.getElementsByClassName('globalControls')[0];
     let controls = document.createElement('div');
-    controls.innerHTML = SynthController.controls();
+    controls.innerHTML = SynthView.createControls();
     ControlsDiv.append(controls);
   },
   toggleDarkMode(darkMode) {
@@ -94,7 +94,7 @@ const OscView = {
   addControls(id) {
     let oscControlsDiv = document.getElementsByClassName('oscillatorControls')[0];
     let newControls = document.createElement('div');
-    newControls.innerHTML = OscController.controls(id);
+    newControls.innerHTML = OscView.createControls(id);
     oscControlsDiv.append(newControls);
   }
 };
