@@ -206,7 +206,13 @@ const OscController = {
     newControls.innerHTML = OscController.controls(id);
     oscControlsDiv.append(newControls);
   },
-  createListeners(id) {
+  addControllers(id) {
+    OscController.addWaveTypeController(id);
+    OscController.addVolumeController(id);
+    OscController.addSemitoneController(id);
+    OscController.addFineDetuneController(id);
+  },
+  addWaveTypeController(id) {
     let waveSelector = document.getElementsByClassName('waveSelector')[id];
     waveSelector.addEventListener('change', (e) => {
       Manager.synthesizer.oscillators[id].setType(e.target.value);
@@ -216,18 +222,24 @@ const OscController = {
         }
       }
     });
+  },
+  addVolumeController(id) {
     let volumeSlider = document.getElementsByClassName('volumeSlider')[id];
     let volumeSliderDisplay = document.getElementsByClassName('volumeSliderDisplay')[id];
     volumeSlider.addEventListener('input', (e) => {
       Manager.synthesizer.oscillators[id].setVolume(e.target.value);
       volumeSliderDisplay.innerText = e.target.value;
     });
+  },
+  addSemitoneController(id) {
     let semitoneSlider = document.getElementsByClassName('semitoneSlider')[id];
     let semitoneSliderDisplay = document.getElementsByClassName('semitoneSliderDisplay')[id];
     semitoneSlider.addEventListener('input', (e) => {
       Manager.synthesizer.oscillators[id].setSemitoneOffset(Number(e.target.value));
       semitoneSliderDisplay.innerText = e.target.value;
     });
+  },
+  addFineDetuneController(id) {
     let fineDetuneSlider = document.getElementsByClassName('fineDetuneSlider')[id];
     let fineDetuneSliderDisplay = document.getElementsByClassName('fineDetuneSliderDisplay')[id];
     fineDetuneSlider.addEventListener('input', (e) => {

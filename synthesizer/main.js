@@ -244,7 +244,7 @@ class Oscillator {
 
     this.id = 1000 + this.synthesizer.oscillators.length;
     OscController.createControls(this.id % 1000);
-    OscController.createListeners(this.id % 1000);
+    OscController.addControllers(this.id % 1000);
     this.semitoneOffset = options.semitoneOffset || 0;
     this.fineDetune = options.fineDetune || 0;
     this.volume = options.volume || 0.75;
