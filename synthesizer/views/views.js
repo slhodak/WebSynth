@@ -9,10 +9,38 @@ import Template from './templates.js';
 //  Visual feedback of what is going on with the models
 //  Oscillators, Filters, Routing Table
 
+const SynthViews = {
+  toggleDarkMode() {
+    let newMode, oldMode;
+      if (Manager.darkMode === true) {
+        oldMode = 'dark';
+        newMode = 'light';
+      } else {
+        oldMode = 'light';
+        newMode = 'dark';
+      }
+      Array.from(document.getElementsByClassName(oldMode)).forEach(element => {
+        let classes = Array.from(element.classList).filter(name => name !== oldMode);
+        classes.push(newMode);
+        element.setAttribute('class', classes.join(' '));
+      });
+      document.body.setAttribute('class', `${newMode}Body`);
+      document.getElementsByClassName('title')[0].setAttribute('class', `title module row ${newMode}Title`);
+      e.target.innerText = `${oldMode} mode`;
+  }
+}
+
 const FormViews = {
   updatePolyButton(poly) {
     const polyButton = document.getElementsByClassName('polyButton')[0];
     polyButton.setAttribute('class', `polyButton ${poly ? 'on' : 'off'}`);
+  },
+  updateOverwriteButton() {
+    if (Manager.overwrite === false) {
+      overwrite.classList.replace('false', 'true');
+    } else {
+      overwrite.classList.replace('true', 'false');
+    }
   }
 };
 
@@ -24,6 +52,7 @@ const RouterViews = {
 };
 
 export {
+  SynthViews,
   FormViews,
   RouterViews
 }

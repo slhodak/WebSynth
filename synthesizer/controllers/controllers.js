@@ -4,6 +4,7 @@ import Active from '../lib/active.js';
 import Helpers from '../lib/helpers.js';
 import Template from '../views/templates.js';
 import netConfig from '../config/netConfig.js';
+import { SynthViews, FormViews } from '../views/views.js';
 
 //  figure out what to import, how to manage synth/osc/filt API to controllers
 
@@ -90,11 +91,7 @@ const FormController = {
   initializeOverwriteButton() {
     let overwrite = document.getElementsByClassName('overwrite')[0];
     overwrite.addEventListener('mousedown', (e) => {
-      if (Manager.overwrite === false) {
-        overwrite.classList.replace('false', 'true');
-      } else {
-        overwrite.classList.replace('true', 'false');
-      }
+      FormView.updateOverwriteButton();
       Manager.overwrite = !Manager.overwrite;
     });
   },
@@ -131,22 +128,7 @@ const FormController = {
   },
   initializeDarkModeButton() {
     document.getElementsByClassName('darkMode')[0].addEventListener('mousedown', (e) => {
-      let newMode, oldMode;
-      if (Manager.darkMode === true) {
-        oldMode = 'dark';
-        newMode = 'light';
-      } else {
-        oldMode = 'light';
-        newMode = 'dark';
-      }
-      Array.from(document.getElementsByClassName(oldMode)).forEach(element => {
-        let classes = Array.from(element.classList).filter(name => name !== oldMode);
-        classes.push(newMode);
-        element.setAttribute('class', classes.join(' '));
-      });
-      document.body.setAttribute('class', `${newMode}Body`);
-      document.getElementsByClassName('title')[0].setAttribute('class', `title module row ${newMode}Title`);
-      e.target.innerText = `${oldMode} mode`;
+      SynthViews.toggleDarkMode();
       Manager.darkMode = !Manager.darkMode;
     });
   }
