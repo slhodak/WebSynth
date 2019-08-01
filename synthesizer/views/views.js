@@ -1,4 +1,5 @@
 import Template from './templates.js';
+import netConfig from '../config/netConfig.js';
 
 /*  _  _  __  ____  _  _  ____ 
 *  / )( \(  )(  __)/ )( \/ ___)
@@ -10,9 +11,9 @@ import Template from './templates.js';
 //  Oscillators, Filters, Routing Table
 
 const SynthViews = {
-  toggleDarkMode() {
+  toggleDarkMode(darkMode) {
     let newMode, oldMode;
-      if (Manager.darkMode === true) {
+      if (darkMode === true) {
         oldMode = 'dark';
         newMode = 'light';
       } else {
@@ -35,12 +36,29 @@ const FormViews = {
     const polyButton = document.getElementsByClassName('polyButton')[0];
     polyButton.setAttribute('class', `polyButton ${poly ? 'on' : 'off'}`);
   },
-  updateOverwriteButton() {
-    if (Manager.overwrite === false) {
-      overwrite.classList.replace('false', 'true');
+  updateOverwriteButton(overwrite, button) {
+    if (overwrite === false) {
+      button.classList.replace('false', 'true');
     } else {
-      overwrite.classList.replace('true', 'false');
+      button.classList.replace('true', 'false');
     }
+  },
+  populatePresetSelector() {
+    let presetSelector = document.getElementsByClassName('presetSelector')[0];
+    fetch(`${netConfig.host}/presetNames`)
+      .then(response => response.json())
+      .then(data => {
+        presetSelector.innerHTML = '';
+        let option = document.createElement('option');
+        option.innerText = '-- Preset Name --';
+        presetSelector.append(option);
+        data.names.forEach(name => {
+          option = document.createElement('option');
+          option.innerText = name;
+          presetSelector.append(option);
+        });
+      })
+      .catch(err => console.error(err));
   }
 };
 

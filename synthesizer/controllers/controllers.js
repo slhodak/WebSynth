@@ -3,7 +3,6 @@ import Preset from '../lib/preset.js';
 import Active from '../lib/active.js';
 import Helpers from '../lib/helpers.js';
 import Template from '../views/templates.js';
-import netConfig from '../config/netConfig.js';
 import { SynthViews, FormViews } from '../views/views.js';
 
 //  figure out what to import, how to manage synth/osc/filt API to controllers
@@ -89,32 +88,15 @@ const FormController = {
     });
   },
   initializeOverwriteButton() {
-    let overwrite = document.getElementsByClassName('overwrite')[0];
-    overwrite.addEventListener('mousedown', (e) => {
-      FormView.updateOverwriteButton();
+    let button = document.getElementsByClassName('overwrite')[0];
+    button.addEventListener('mousedown', (e) => {
+      FormView.updateOverwriteButton(Manager.overwrite, button);
       Manager.overwrite = !Manager.overwrite;
     });
   },
   initializeLoadPresetModule() {
-    FormController.populatePresetSelector();
+    FormViews.populatePresetSelector();
     FormController.initializeLoadPresetButton();
-  },
-  populatePresetSelector() {
-    let presetSelector = document.getElementsByClassName('presetSelector')[0];
-    fetch(`${netConfig.host}/presetNames`)
-      .then(response => response.json())
-      .then(data => {
-        presetSelector.innerHTML = '';
-        let option = document.createElement('option');
-        option.innerText = '-- Preset Name --';
-        presetSelector.append(option);
-        data.names.forEach(name => {
-          option = document.createElement('option');
-          option.innerText = name;
-          presetSelector.append(option);
-        });
-      })
-      .catch(err => console.error(err));
   },
   initializeLoadPresetButton() {
     document.getElementsByClassName('loadButton')[0].addEventListener('mousedown', (e) => {
@@ -123,7 +105,7 @@ const FormController = {
   },
   initializeDarkModeButton() {
     document.getElementsByClassName('darkMode')[0].addEventListener('mousedown', (e) => {
-      SynthViews.toggleDarkMode();
+      SynthViews.toggleDarkMode(Manager.darkMode);
       Manager.darkMode = !Manager.darkMode;
     });
   }
