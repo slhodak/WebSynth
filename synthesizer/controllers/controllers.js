@@ -59,7 +59,7 @@ window.onload = (event) => {
   let url = new URL(window.location);
   if (url.search) {
     if(window.confirm(`Load synth ${url.searchParams.get('name')}?`)) {
-      Active.load(url);
+      Active.retrieve(url);
     }
   }
 };
