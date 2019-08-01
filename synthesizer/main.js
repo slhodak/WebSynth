@@ -5,8 +5,7 @@ import {
   OscController,
   FilterController
 } from './controllers/controllers.js';
-import { FormViews } from './views/views.js';
-import { RouterViews } from './views/views.js';
+import { OscView, RouterView } from './views/views.js';
 
 /*  _  _   __  ____  ____  __    ____ 
 *  ( \/ ) /  \(    \(  __)(  )  / ___)
@@ -50,7 +49,7 @@ class Synthesizer {
     this.poly = options.poly || true;
     this.oscillators = [];
     this.filters = [];
-    SynthController.createListeners();   
+    SynthController.addControllers();   
     this.addOscillator = this.addOscillator.bind(this);
     this.addFilter = this.addFilter.bind(this);
     this.playNote = this.playNote.bind(this);
@@ -147,7 +146,6 @@ class Synthesizer {
 
   togglePoly() {
     this.poly = !this.poly;
-    FormViews.updatePolyButton(this.poly);
   }
 
   setGain(value) {
@@ -193,7 +191,7 @@ class Router {
         eligibleDestinations
       };
     });
-    RouterViews.updateTable(this.table);
+    RouterView.updateTable(this.synthesizer, this.table);
     RouterController.updateRouterClickHandlers();
   }
 
@@ -201,7 +199,7 @@ class Router {
     source.setDestination(destination);
     this.table[source.id].dest = destination;
     this.updateRouter();
-    RouterViews.updateTable(this.table);
+    RouterView.updateTable(this.table);
     RouterController.updateRouterClickHandlers();
   }
 }
@@ -244,8 +242,8 @@ class Oscillator {
     this.removeVoice = this.removeVoice.bind(this);
 
     this.id = 1000 + this.synthesizer.oscillators.length;
-    OscController.createControls(this.id % 1000);
-    OscController.createListeners(this.id % 1000);
+    OscView.addControls(this.id % 1000);
+    OscController.addControllers(this.id % 1000);
     this.semitoneOffset = options.semitoneOffset || 0;
     this.fineDetune = options.fineDetune || 0;
     this.volume = options.volume || 0.75;

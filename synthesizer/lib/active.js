@@ -8,13 +8,13 @@ const Active = {
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(Preset.save(synthesizer, synthesizer.name))
+      body: JSON.stringify(Preset.save(synthesizer))
     })
       .catch(error => {
         console.error(`Fetch error: ${error}`);
       });
   },
-  load(url) {
+  retrieve(url) {
     fetch(`${netConfig.host}/synths/${url.search}`)
     .then(response => response.json())
     .then(synthData => {

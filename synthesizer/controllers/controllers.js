@@ -3,9 +3,7 @@ import Preset from '../lib/preset.js';
 import Active from '../lib/active.js';
 import Helpers from '../lib/helpers.js';
 import Template from '../views/templates.js';
-import netConfig from '../config/netConfig.js';
-
-//  figure out what to import, how to manage synth/osc/filt API to controllers
+import { SynthView, FormView } from '../views/views.js';
 
 /*  ___  __   __ _  ____  ____   __   __    __    ____  ____  ____ 
 *  / __)/  \ (  ( \(_  _)(  _ \ /  \ (  )  (  )  (  __)(  _ \/ ___)
@@ -39,7 +37,7 @@ window.onload = (event) => {
   FormController.initializeSavePresetModule();
   FormController.initializeDarkModeButton();
 
-  SynthController.createControls();
+  SynthView.addControls();
   document.getElementsByClassName('globalControls')[0].addEventListener('mousedown', Manager.createSynthesizerIfNoneExists);
 
   window.addEventListener('keydown', (e) => {
@@ -58,7 +56,7 @@ window.onload = (event) => {
   let url = new URL(window.location);
   if (url.search) {
     if(window.confirm(`Load synth ${url.searchParams.get('name')}?`)) {
-      Active.load(url);
+      Active.retrieve(url);
     }
   }
 };
@@ -84,99 +82,28 @@ const FormController = {
   initializeSaveButton() {
     document.getElementsByClassName('savePreset')[0].addEventListener('submit', (e) => {
       e.preventDefault();
-      if (Manager.synthesizer) {
-        let renamed = false;
-        let oldName = Manager.synthesizer.name;
-        if (Manager.synthesizer.name !== e.srcElement[0].value) {
-          Manager.synthesizer.name = e.srcElement[0].value;
-          history.pushState({}, 'WebSynth', `${netConfig.host}/?name=${Manager.synthesizer.name}`);
-          renamed = true;
-        }
-        fetch(`${netConfig.host}/preset?overwrite=${Manager.overwrite}${renamed ? `&oldName=${oldName}&newName=${Manager.synthesizer.name}` : null}`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(Preset.save(Manager.synthesizer, e.srcElement[0].value))
-        })
-          .then(response => response.json())
-          .then(body => {
-            if (body.error === 'exists') {
-              window.alert('A preset already exists with that name.\nPlease choose another name or select the "overwrite" option.');
-            } else {
-              FormController.populatePresetSelector();
-              document.getElementsByClassName('save')[0].setAttribute('class', 'module save confirmation');
-              setTimeout(() => {
-                document.getElementsByClassName('save')[0].setAttribute('class', 'module save');
-              }, 1000);
-            }
-          })
-          .catch(err => {
-            console.error(err);
-          });
-      }
+      Preset.writeOrUpdate(Manager.synthesizer, Manager.overwrite);
     });
   },
   initializeOverwriteButton() {
-    let overwrite = document.getElementsByClassName('overwrite')[0];
-    overwrite.addEventListener('mousedown', (e) => {
-      if (Manager.overwrite === false) {
-        overwrite.classList.replace('false', 'true');
-      } else {
-        overwrite.classList.replace('true', 'false');
-      }
+    let button = document.getElementsByClassName('overwrite')[0];
+    button.addEventListener('mousedown', (e) => {
+      FormView.updateOverwriteButton(Manager.overwrite, button);
       Manager.overwrite = !Manager.overwrite;
     });
   },
   initializeLoadPresetModule() {
-    FormController.populatePresetSelector();
+    FormView.populatePresetSelector();
     FormController.initializeLoadPresetButton();
-  },
-  populatePresetSelector() {
-    let presetSelector = document.getElementsByClassName('presetSelector')[0];
-    fetch(`${netConfig.host}/presetNames`)
-      .then(response => response.json())
-      .then(data => {
-        presetSelector.innerHTML = '';
-        let option = document.createElement('option');
-        option.innerText = '-- Preset Name --';
-        presetSelector.append(option);
-        data.names.forEach(name => {
-          option = document.createElement('option');
-          option.innerText = name;
-          presetSelector.append(option);
-        });
-      })
-      .catch(err => console.error(err));
   },
   initializeLoadPresetButton() {
     document.getElementsByClassName('loadButton')[0].addEventListener('mousedown', (e) => {
-      fetch(`${netConfig.host}/preset/?name=${document.getElementsByClassName('presetSelector')[0].value}`)
-        .then(response => response.json())
-        .then(data => {
-          Preset.load(data);
-        })
-        .catch(err => console.error(err));
+      Preset.retrieve(document.getElementsByClassName('presetSelector')[0].value);
     });
   },
   initializeDarkModeButton() {
     document.getElementsByClassName('darkMode')[0].addEventListener('mousedown', (e) => {
-      let newMode, oldMode;
-      if (Manager.darkMode === true) {
-        oldMode = 'dark';
-        newMode = 'light';
-      } else {
-        oldMode = 'light';
-        newMode = 'dark';
-      }
-      Array.from(document.getElementsByClassName(oldMode)).forEach(element => {
-        let classes = Array.from(element.classList).filter(name => name !== oldMode);
-        classes.push(newMode);
-        element.setAttribute('class', classes.join(' '));
-      });
-      document.body.setAttribute('class', `${newMode}Body`);
-      document.getElementsByClassName('title')[0].setAttribute('class', `title module row ${newMode}Title`);
-      e.target.innerText = `${oldMode} mode`;
+      SynthView.toggleDarkMode(Manager.darkMode);
       Manager.darkMode = !Manager.darkMode;
     });
   }
@@ -184,43 +111,45 @@ const FormController = {
 
 //  Global Synth Parameters
 const SynthController = {
-  controls() {
-    let polyButton = '<button class="polyButton on" type="button">Poly</button>';
-    let masterGainSlider = Template.slider('masterGainSlider', 'Volume', 0, 1, 0.75, 0.001);
-    let attackSlider = Template.slider('attackSlider', 'Attack', 0.001, 1, 0.1, 0.001);
-    let releaseSlider = Template.slider('releaseSlider', 'Release', 0.1, 1, 0.1, 0.001);
-    let portaSlider = Template.slider('portaSlider', 'Porta', 0.001, 1, 0.05, 0.001);
-    return polyButton + masterGainSlider + attackSlider + releaseSlider + portaSlider;
+  addControllers() {
+    SynthController.addPolyController();
+    SynthController.addMasterGainController();
+    SynthController.addAttackController();
+    SynthController.addReleaseController();
+    SynthController.addPortaController();
   },
-  createControls() {
-    let ControlsDiv = document.getElementsByClassName('globalControls')[0];
-    let controls = document.createElement('div');
-    controls.innerHTML = SynthController.controls();
-    ControlsDiv.append(controls);
-  },
-  createListeners() {
+  addPolyController() {
     let polyButton = document.getElementsByClassName('polyButton')[0];
     polyButton.addEventListener('mousedown', (e) => {
       Manager.synthesizer.togglePoly();
+      FormView.updatePolyButton(this.poly);
     });
+  },
+  addMasterGainController() {
     let masterGainSlider = document.getElementsByClassName('masterGainSlider')[0];
     let masterGainSliderDisplay = document.getElementsByClassName('masterGainSliderDisplay')[0];
     masterGainSlider.addEventListener('input', (e) => {
       Manager.synthesizer.setGain(Number(e.target.value));
       masterGainSliderDisplay.innerText = e.target.value;
     });
+  },
+  addAttackController() {
     let attackSlider = document.getElementsByClassName('attackSlider')[0];
     let attackSliderDisplay = document.getElementsByClassName('attackSliderDisplay')[0];
     attackSlider.addEventListener('input', (e) => {
       Manager.synthesizer.setAttack(Number(e.target.value));
       attackSliderDisplay.innerText = e.target.value;
     });
+  },
+  addReleaseController() {
     let releaseSlider = document.getElementsByClassName('releaseSlider')[0];
     let releaseSliderDisplay = document.getElementsByClassName('releaseSliderDisplay')[0];
     releaseSlider.addEventListener('input', (e) => {
       Manager.synthesizer.setRelease(Number(e.target.value));
       releaseSliderDisplay.innerText = e.target.value;
     });
+  },
+  addPortaController() {
     let portaSlider = document.getElementsByClassName('portaSlider')[0];
     let portaSliderDisplay = document.getElementsByClassName('portaSliderDisplay')[0];
     portaSlider.addEventListener('input', (e) => {
@@ -250,21 +179,13 @@ const RouterController = {
 
 //  Individual Oscillator Parameters
 const OscController = {
-  controls(id) {
-    let header = `<h3>Oscillator ${id}</h3>`;
-    let volSlider = Template.slider('volumeSlider', 'Volume', 0, 1, 0.75, 0.001);
-    let semitoneSlider = Template.slider('semitoneSlider', 'Semitone', -24, 24, 0, 1);
-    let fineDetuneSlider = Template.slider('fineDetuneSlider', 'Detune', -50, 50, 0, 1);
-    let waveSelector = Template.selector('waveSelector', 'Wave', ['sine', 'sawtooth', 'square', 'triangle'], ['Sine', 'Sawtooth', 'Square', 'Triangle']);
-    return `<div id=${1000 + id}>` + /*header + */ volSlider + semitoneSlider + fineDetuneSlider + waveSelector + '</div>';
+  addControllers(id) {
+    OscController.addWaveTypeController(id);
+    OscController.addVolumeController(id);
+    OscController.addSemitoneController(id);
+    OscController.addFineDetuneController(id);
   },
-  createControls(id) {
-    let oscControlsDiv = document.getElementsByClassName('oscillatorControls')[0];
-    let newControls = document.createElement('div');
-    newControls.innerHTML = OscController.controls(id);
-    oscControlsDiv.append(newControls);
-  },
-  createListeners(id) {
+  addWaveTypeController(id) {
     let waveSelector = document.getElementsByClassName('waveSelector')[id];
     waveSelector.addEventListener('change', (e) => {
       Manager.synthesizer.oscillators[id].setType(e.target.value);
@@ -274,18 +195,24 @@ const OscController = {
         }
       }
     });
+  },
+  addVolumeController(id) {
     let volumeSlider = document.getElementsByClassName('volumeSlider')[id];
     let volumeSliderDisplay = document.getElementsByClassName('volumeSliderDisplay')[id];
     volumeSlider.addEventListener('input', (e) => {
       Manager.synthesizer.oscillators[id].setVolume(e.target.value);
       volumeSliderDisplay.innerText = e.target.value;
     });
+  },
+  addSemitoneController(id) {
     let semitoneSlider = document.getElementsByClassName('semitoneSlider')[id];
     let semitoneSliderDisplay = document.getElementsByClassName('semitoneSliderDisplay')[id];
     semitoneSlider.addEventListener('input', (e) => {
       Manager.synthesizer.oscillators[id].setSemitoneOffset(Number(e.target.value));
       semitoneSliderDisplay.innerText = e.target.value;
     });
+  },
+  addFineDetuneController(id) {
     let fineDetuneSlider = document.getElementsByClassName('fineDetuneSlider')[id];
     let fineDetuneSliderDisplay = document.getElementsByClassName('fineDetuneSliderDisplay')[id];
     fineDetuneSlider.addEventListener('input', (e) => {
