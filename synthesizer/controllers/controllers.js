@@ -38,7 +38,6 @@ window.onload = (event) => {
   FormController.initializeDarkModeButton();
 
   SynthView.addControls();
-  SynthController.addControllers();
   document.getElementsByClassName('globalControls')[0].addEventListener('mousedown', Manager.createSynthesizerIfNoneExists);
 
   window.addEventListener('keydown', (e) => {

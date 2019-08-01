@@ -49,7 +49,6 @@ class Synthesizer {
     this.poly = options.poly || true;
     this.oscillators = [];
     this.filters = [];
-    SynthView.addControls();
     SynthController.addControllers();   
     this.addOscillator = this.addOscillator.bind(this);
     this.addFilter = this.addFilter.bind(this);
