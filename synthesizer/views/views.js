@@ -69,9 +69,9 @@ const FormView = {
 };
 
 const RouterView = {
-  updateTable(table) {
+  updateTable(synthesizer, table) {
     const routerTable = document.getElementsByClassName('routingTable')[0];
-    routerTable.innerHTML = Template.routingTable(table);
+    routerTable.innerHTML = Template.routingTable(synthesizer, table);
   }
 };
 
