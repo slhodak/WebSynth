@@ -3,7 +3,7 @@ import Helpers from '../lib/helpers.js';
 
 const Template = {
   selector(name, title, options, optionTitles) {
-    let template = 
+    let template =
       `<div class="selector">
       <label for="${name}">${title}: </label>
       <select class="${name}" name="${title}">`;

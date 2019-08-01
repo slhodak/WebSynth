@@ -3,7 +3,6 @@ import netConfig from '../config/netConfig.js';
 
 const Active = {
   update(synthesizer) {
-    console.log('name when saving active ', synthesizer.name);
     fetch(`${netConfig.host}/synths/active`, {
       method: 'POST',
       headers: {

@@ -38,7 +38,6 @@ const Preset = {
         q: filt.Q.value
       }
     });
-    console.log('name after preset save: ', synthData.name);
     return synthData;
   },
   load(synthData) {
