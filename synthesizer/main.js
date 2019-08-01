@@ -5,8 +5,7 @@ import {
   OscController,
   FilterController
 } from './controllers/controllers.js';
-import { FormViews } from './views/views.js';
-import { RouterViews } from './views/views.js';
+import { OscView, RouterViews } from './views/views.js';
 
 /*  _  _   __  ____  ____  __    ____ 
 *  ( \/ ) /  \(    \(  __)(  )  / ___)
@@ -243,7 +242,7 @@ class Oscillator {
     this.removeVoice = this.removeVoice.bind(this);
 
     this.id = 1000 + this.synthesizer.oscillators.length;
-    OscController.createControls(this.id % 1000);
+    OscView.addControls(this.id % 1000);
     OscController.addControllers(this.id % 1000);
     this.semitoneOffset = options.semitoneOffset || 0;
     this.fineDetune = options.fineDetune || 0;

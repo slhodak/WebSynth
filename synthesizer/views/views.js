@@ -69,7 +69,25 @@ const RouterViews = {
   }
 };
 
+const OscView = {
+  createControls(id) {
+    let header = `<h3>Oscillator ${id}</h3>`;
+    let volSlider = Template.slider('volumeSlider', 'Volume', 0, 1, 0.75, 0.001);
+    let semitoneSlider = Template.slider('semitoneSlider', 'Semitone', -24, 24, 0, 1);
+    let fineDetuneSlider = Template.slider('fineDetuneSlider', 'Detune', -50, 50, 0, 1);
+    let waveSelector = Template.selector('waveSelector', 'Wave', ['sine', 'sawtooth', 'square', 'triangle'], ['Sine', 'Sawtooth', 'Square', 'Triangle']);
+    return `<div id=${1000 + id}>` + /*header + */ volSlider + semitoneSlider + fineDetuneSlider + waveSelector + '</div>';
+  },
+  addControls(id) {
+    let oscControlsDiv = document.getElementsByClassName('oscillatorControls')[0];
+    let newControls = document.createElement('div');
+    newControls.innerHTML = OscController.controls(id);
+    oscControlsDiv.append(newControls);
+  }
+};
+
 export {
+  OscView,
   SynthViews,
   FormViews,
   RouterViews
