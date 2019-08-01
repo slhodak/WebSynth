@@ -1,5 +1,6 @@
 import { Manager } from '../main.js';
 import Helpers from '../lib/helpers.js';
+import netConfig from '../config/netConfig.js';
 
 const Preset = {
   save(synthesizer, name) {
@@ -190,6 +191,18 @@ const Preset = {
       .then(response => response.json())
       .then(data => {
         Preset.load(data);
+      })
+      .catch(err => console.error(err));
+  },
+  getPresetNames(callback) {
+    fetch(`${netConfig.host}/presetNames`)
+      .then(response => response.json())
+      .then(data => {
+        if (data.names) {
+          callback(data.names);
+        } else {
+          console.warn("Possible error: no presets found.");
+        }
       })
       .catch(err => console.error(err));
   }

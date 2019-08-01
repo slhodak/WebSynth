@@ -1,5 +1,5 @@
 import Template from './templates.js';
-import netConfig from '../config/netConfig.js';
+import Preset from '../lib/preset.js';
 
 /*  _  _  __  ____  _  _  ____ 
 *  / )( \(  )(  __)/ )( \/ ___)
@@ -58,20 +58,13 @@ const FormView = {
   },
   populatePresetSelector() {
     let presetSelector = document.getElementsByClassName('presetSelector')[0];
-    fetch(`${netConfig.host}/presetNames`)
-      .then(response => response.json())
-      .then(data => {
-        presetSelector.innerHTML = '';
+    Preset.getPresetNames((names) => {
+      names.forEach(name => {
         let option = document.createElement('option');
-        option.innerText = '-- Preset Name --';
+        option.innerText = name;
         presetSelector.append(option);
-        data.names.forEach(name => {
-          option = document.createElement('option');
-          option.innerText = name;
-          presetSelector.append(option);
-        });
-      })
-      .catch(err => console.error(err));
+      });
+    });
   }
 };
 
