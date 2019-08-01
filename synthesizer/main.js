@@ -5,7 +5,7 @@ import {
   OscController,
   FilterController
 } from './controllers/controllers.js';
-import { OscView, RouterViews } from './views/views.js';
+import { OscView, RouterView } from './views/views.js';
 
 /*  _  _   __  ____  ____  __    ____ 
 *  ( \/ ) /  \(    \(  __)(  )  / ___)
@@ -49,6 +49,7 @@ class Synthesizer {
     this.poly = options.poly || true;
     this.oscillators = [];
     this.filters = [];
+    SynthView.addControls();
     SynthController.addControllers();   
     this.addOscillator = this.addOscillator.bind(this);
     this.addFilter = this.addFilter.bind(this);
@@ -191,7 +192,7 @@ class Router {
         eligibleDestinations
       };
     });
-    RouterViews.updateTable(this.table);
+    RouterView.updateTable(this.table);
     RouterController.updateRouterClickHandlers();
   }
 
@@ -199,7 +200,7 @@ class Router {
     source.setDestination(destination);
     this.table[source.id].dest = destination;
     this.updateRouter();
-    RouterViews.updateTable(this.table);
+    RouterView.updateTable(this.table);
     RouterController.updateRouterClickHandlers();
   }
 }

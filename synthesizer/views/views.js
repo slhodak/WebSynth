@@ -10,7 +10,20 @@ import netConfig from '../config/netConfig.js';
 //  Visual feedback of what is going on with the models
 //  Oscillators, Filters, Routing Table
 
-const SynthViews = {
+const SynthView = {
+  createControls() {
+    return '<button class="polyButton on" type="button">Poly</button>' +
+      Template.slider('masterGainSlider', 'Volume', 0, 1, 1, 0.001) +
+      Template.slider('attackSlider', 'Attack', 0.001, 1, 0.1, 0.001) +
+      Template.slider('releaseSlider', 'Release', 0.1, 1, 0.1, 0.001) +
+      Template.slider('portaSlider', 'Porta', 0.001, 1, 0.05, 0.001);
+  },
+  addControls() {
+    let ControlsDiv = document.getElementsByClassName('globalControls')[0];
+    let controls = document.createElement('div');
+    controls.innerHTML = SynthController.controls();
+    ControlsDiv.append(controls);
+  },
   toggleDarkMode(darkMode) {
     let newMode, oldMode;
       if (darkMode === true) {
@@ -31,7 +44,7 @@ const SynthViews = {
   }
 }
 
-const FormViews = {
+const FormView = {
   updatePolyButton(poly) {
     const polyButton = document.getElementsByClassName('polyButton')[0];
     polyButton.setAttribute('class', `polyButton ${poly ? 'on' : 'off'}`);
@@ -62,7 +75,7 @@ const FormViews = {
   }
 };
 
-const RouterViews = {
+const RouterView = {
   updateTable(table) {
     const routerTable = document.getElementsByClassName('routingTable')[0];
     routerTable.innerHTML = Template.routingTable(table);
@@ -88,7 +101,7 @@ const OscView = {
 
 export {
   OscView,
-  SynthViews,
-  FormViews,
-  RouterViews
+  SynthView,
+  FormView,
+  RouterView
 }

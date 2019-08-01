@@ -111,19 +111,6 @@ const FormController = {
 
 //  Global Synth Parameters
 const SynthController = {
-  controls() {
-    return '<button class="polyButton on" type="button">Poly</button>' +
-      Template.slider('masterGainSlider', 'Volume', 0, 1, 1, 0.001) +
-      Template.slider('attackSlider', 'Attack', 0.001, 1, 0.1, 0.001) +
-      Template.slider('releaseSlider', 'Release', 0.1, 1, 0.1, 0.001) +
-      Template.slider('portaSlider', 'Porta', 0.001, 1, 0.05, 0.001);
-  },
-  createControls() {
-    let ControlsDiv = document.getElementsByClassName('globalControls')[0];
-    let controls = document.createElement('div');
-    controls.innerHTML = SynthController.controls();
-    ControlsDiv.append(controls);
-  },
   addControllers() {
     SynthController.addPolyController();
     SynthController.addMasterGainController();
