@@ -3,7 +3,7 @@ import Preset from '../lib/preset.js';
 import Active from '../lib/active.js';
 import Helpers from '../lib/helpers.js';
 import Template from '../views/templates.js';
-import { SynthViews, FormViews } from '../views/views.js';
+import { SynthView, FormView } from '../views/views.js';
 
 /*  ___  __   __ _  ____  ____   __   __    __    ____  ____  ____ 
 *  / __)/  \ (  ( \(_  _)(  _ \ /  \ (  )  (  )  (  __)(  _ \/ ___)
@@ -93,7 +93,7 @@ const FormController = {
     });
   },
   initializeLoadPresetModule() {
-    FormViews.populatePresetSelector();
+    FormView.populatePresetSelector();
     FormController.initializeLoadPresetButton();
   },
   initializeLoadPresetButton() {
@@ -103,7 +103,7 @@ const FormController = {
   },
   initializeDarkModeButton() {
     document.getElementsByClassName('darkMode')[0].addEventListener('mousedown', (e) => {
-      SynthViews.toggleDarkMode(Manager.darkMode);
+      SynthView.toggleDarkMode(Manager.darkMode);
       Manager.darkMode = !Manager.darkMode;
     });
   }
@@ -122,7 +122,7 @@ const SynthController = {
     let polyButton = document.getElementsByClassName('polyButton')[0];
     polyButton.addEventListener('mousedown', (e) => {
       Manager.synthesizer.togglePoly();
-      FormViews.updatePolyButton(this.poly);
+      FormView.updatePolyButton(this.poly);
     });
   },
   addMasterGainController() {
