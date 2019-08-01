@@ -38,6 +38,7 @@ const Preset = {
         q: filt.Q.value
       }
     });
+    console.log('name after preset save: ', synthData.name);
     return synthData;
   },
   load(synthData) {
@@ -151,6 +152,47 @@ const Preset = {
         }
       });
     });
+  },
+  writeOrUpdate(synthesizer, overwrite) {
+    if (synthesizer) {
+      let renamed = false;
+      let oldName = synthesizer.name;
+      if (synthesizer.name !== e.srcElement[0].value) {
+        synthesizer.name = e.srcElement[0].value;
+        history.pushState({}, 'WebSynth', `${netConfig.host}/?name=${synthesizer.name}`);
+        renamed = true;
+      }
+      fetch(`${netConfig.host}/preset?overwrite=${overwrite}${renamed ? `&oldName=${oldName}&newName=${synthesizer.name}` : null}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(Preset.save(synthesizer, e.srcElement[0].value))
+      })
+        .then(response => response.json())
+        .then(body => {
+          if (body.error === 'exists') {
+            window.alert('A preset already exists with that name.\nPlease choose another name or select the "overwrite" option.');
+          } else {
+            FormController.populatePresetSelector();
+            document.getElementsByClassName('save')[0].setAttribute('class', 'module save confirmation');
+            setTimeout(() => {
+              document.getElementsByClassName('save')[0].setAttribute('class', 'module save');
+            }, 1000);
+          }
+        })
+        .catch(err => {
+          console.error(err);
+        });
+    }
+  },
+  retrieve(name) {
+    fetch(`${netConfig.host}/preset/?name=${name}`)
+      .then(response => response.json())
+      .then(data => {
+        Preset.load(data);
+      })
+      .catch(err => console.error(err));
   }
 };
 
