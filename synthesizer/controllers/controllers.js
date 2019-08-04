@@ -122,7 +122,7 @@ const SynthController = {
     let polyButton = document.getElementsByClassName('polyButton')[0];
     polyButton.addEventListener('mousedown', (e) => {
       Manager.synthesizer.togglePoly();
-      FormView.updatePolyButton(this.poly);
+      FormView.updatePolyButton(Manager.synthesizer.globals.poly);
     });
   },
   addMasterGainController() {

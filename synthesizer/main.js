@@ -66,7 +66,7 @@ class Synthesizer {
   }
 
   playNote(midiMessage) {
-    if (this.poly) {
+    if (this.globals.poly) {
       this.oscillators.forEach(osc => {
         osc.addVoice(midiMessage);
       });
@@ -113,7 +113,7 @@ class Synthesizer {
   }
 
   endNote(midiMessage) {
-    if (this.poly) {
+    if (this.globals.poly) {
       this.oscillators.forEach(osc => {
         osc.removeVoice(midiMessage);
       });
@@ -147,7 +147,7 @@ class Synthesizer {
   }
 
   togglePoly() {
-    this.poly = !this.poly;
+    this.globals.poly = !this.globals.poly;
   }
 
   setGain(value) {
