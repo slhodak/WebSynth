@@ -35,10 +35,13 @@ class Synthesizer {
     this.masterGain.connect(this.context.destination);
     this.globals = {
       demoTone: false,
-      porta: options.porta || 0.05,
-      attack: options.attack || 0.01,
-      release: options.release || 0.1,
-      type: options.type || 'sine'
+      poly: options.poly,
+      porta: options.porta,
+      attack: options.attack,
+      release: options.release,
+      type: options.type,
+      mute: options.mute,
+      volume: options.volume
     };
     this.mono = {
       note: null,
@@ -46,7 +49,6 @@ class Synthesizer {
       notesObj: {},
       voices: {}
     };
-    this.poly = options.poly || true;
     this.oscillators = [];
     this.filters = [];
     SynthController.addControllers();   
@@ -72,9 +74,9 @@ class Synthesizer {
       if (!this.mono.note) {
         this.oscillators.forEach(osc => {
           this.mono.voices[midiMessage.data[1]] = new Voice(
-            synthesizer.context, 
+            this.context, 
             {
-              frequency: synthesizer.findFrequencyFromNote(midiMessage.data[1]),
+              frequency: this.findFrequencyFromNote(midiMessage.data[1]),
               type: osc.type,
               detune: osc.fineDetune
             }, 
@@ -199,7 +201,7 @@ class Router {
     source.setDestination(destination);
     this.table[source.id].dest = destination;
     this.updateRouter();
-    RouterView.updateTable(this.table);
+    RouterView.updateTable(this.synthesizer, this.table);
     RouterController.updateRouterClickHandlers();
   }
 }

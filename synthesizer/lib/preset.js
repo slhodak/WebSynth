@@ -7,20 +7,18 @@ const Preset = {
     let synthData = {
       name: name || synthesizer.name,
       router: {},
-      settings: {
-        globals: {}
-      },
+      globals: {},
       oscillators: [],
       filters: []
     };
     for (let route in synthesizer.router.table) {
       synthData.router[route] = synthesizer.router.table[route].node.dest.id || 'main out';
     }
-    synthData.settings.globals.volume = synthesizer.masterGain.gain.value;
-    synthData.settings.poly = synthesizer.poly;
-    synthData.settings.globals.porta = synthesizer.globals.porta;
-    synthData.settings.globals.attack = synthesizer.globals.attack;
-    synthData.settings.globals.release = synthesizer.globals.release;
+    synthData.globals.volume = synthesizer.masterGain.gain.value;
+    synthData.globals.poly = synthesizer.globals.poly;
+    synthData.globals.porta = synthesizer.globals.porta;
+    synthData.globals.attack = synthesizer.globals.attack;
+    synthData.globals.release = synthesizer.globals.release;
     synthesizer.oscillators.forEach((osc, index) => {
       synthData.oscillators[index] = {
         id: osc.id,
@@ -41,8 +39,7 @@ const Preset = {
     });
     return synthData;
   },
-  load(synthData) {
-    //  Remove old Control Views
+  load(synthesizer) {
     const oscillatorsModule = document.getElementsByClassName('oscillatorControls')[0];
     while(oscillatorsModule.children[2]) {
       oscillatorsModule.removeChild(oscillatorsModule.lastChild);
@@ -54,15 +51,18 @@ const Preset = {
 
     Manager.synthesizer = null;
     Manager.createSynthesizerIfNoneExists({
-      name: synthData.name,
-      porta: synthData.settings.globals.porta,
-      attack: synthData.settings.globals.attack,
-      release: synthData.settings.globals.release,
-      poly: synthData.settings.poly
+      name: synthesizer.name,
+      poly: synthesizer.globals.poly,
+      porta: synthesizer.globals.porta,
+      attack: synthesizer.globals.attack,
+      release: synthesizer.globals.release,
+      type: synthesizer.globals.type,
+      mute: synthesizer.globals.mute,
+      volume: synthesizer.globals.volume
     });
 
     Manager.synthesizer.oscillators = [];
-    synthData.oscillators.forEach(osc => {
+    synthesizer.oscillators.forEach(osc => {
       Manager.synthesizer.addOscillator({
         semitoneOffset: osc.semitoneOffset,
         fineDetune: osc.fineDetune,
@@ -70,9 +70,9 @@ const Preset = {
         type: osc.type
       });
     });
-    
+
     Manager.synthesizer.filters = [];
-    synthData.filters.forEach(filt => {
+    synthesizer.filters.forEach(filt => {
       Manager.synthesizer.addFilter({
         type: filt.type,
         frequency: filt.frequency,
@@ -81,22 +81,18 @@ const Preset = {
       });
     });
 
-    for (let route in synthData.router) {
+    for (let route in synthesizer.router) {
       let destination;
-      if (synthData.router[route] === 'main out') {
+      if (synthesizer.router[route] === 'main out') {
         destination = Manager.synthesizer.masterGain;
       } else {
-        destination = Manager.synthesizer.router.table[synthData.router[route]].node;
+        destination = Manager.synthesizer.router.table[synthesizer.router[route]].node;
       }
-
       Manager.synthesizer.router.setRoute(
         Manager.synthesizer.router.table[route].node,
         destination
       );
     }
-
-    // Update new Control Views
-
 
     const synthParamControlDict = {
       'Volume': 'volume',
@@ -106,12 +102,11 @@ const Preset = {
     };
     
     Array.from(document.getElementsByClassName('globalControls')[0].firstChild.children).forEach(child => {
-      //  deal with poly button
-      document.getElementsByClassName('polyButton')[0].setAttribute('class', `${synthData.settings.poly ? 'polyButton on' : 'polyButton off'}`);
+      document.getElementsByClassName('polyButton')[0].setAttribute('class', `${synthesizer.globals.poly ? 'polyButton on' : 'polyButton off'}`);
       const classes = Array.from(child.classList);
       if (Helpers.indexOf(classes, 'slider') >= 0) {
-        child.children[1].value = synthData.settings.globals[synthParamControlDict[child.children[1].name]];
-        child.children[2].innerText = Number(synthData.settings.globals[synthParamControlDict[child.children[1].name]]).toFixed(3);
+        child.children[1].value = synthesizer.globals[synthParamControlDict[child.children[1].name]];
+        child.children[2].innerText = Number(synthesizer.globals[synthParamControlDict[child.children[1].name]]).toFixed(3);
       }
     });
 
@@ -122,7 +117,7 @@ const Preset = {
       'Wave': 'type'
     };
     
-    synthData.oscillators.forEach(osc => {
+    synthesizer.oscillators.forEach(osc => {
       Array.from(document.getElementById(`${osc.id}`).children).forEach(child => {
         const classes = Array.from(child.classList);
         if (Helpers.indexOf(classes, 'slider') >= 0) {
@@ -141,7 +136,7 @@ const Preset = {
       'Filter Type': 'type'
     };
 
-    synthData.filters.forEach(filt => {
+    synthesizer.filters.forEach(filt => {
       Array.from(document.getElementById(`${filt.id}`).children).forEach(child => {
         const classes = Array.from(child.classList);
         if (Helpers.indexOf(classes, 'slider') >= 0) {
