@@ -83,7 +83,7 @@ const FormController = {
   initializeSaveButton() {
     document.getElementsByClassName('savePreset')[0].addEventListener('submit', (e) => {
       e.preventDefault();
-      Preset.writeOrUpdate(Manager.synthesizer, Manager.overwrite);
+      Preset.writeOrUpdate(Manager.synthesizer, Manager.overwrite, e.srcElement[0].value);
     });
   },
   initializeOverwriteButton() {
