@@ -81,9 +81,21 @@ const FormController = {
     FormController.initializeOverwriteButton();
   },
   initializeSaveButton() {
+    let nameInput = '';
+    let valid = false;
+    document.getElementsByClassName('nameInput')[0].addEventListener('input', (e) => {
+      nameInput = e.target.value;
+      if (!isNaN(nameInput)) {
+        console.error('Please use at least 1 character');
+      } else {
+        valid = true;
+      }
+    });
     document.getElementsByClassName('savePreset')[0].addEventListener('submit', (e) => {
       e.preventDefault();
-      Preset.writeOrUpdate(Manager.synthesizer, Manager.overwrite, e.srcElement[0].value);
+      if (valid) {
+        Preset.writeOrUpdate(Manager.synthesizer, Manager.overwrite, nameInput);
+      }
     });
   },
   initializeOverwriteButton() {
