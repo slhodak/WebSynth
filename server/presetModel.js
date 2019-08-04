@@ -62,10 +62,10 @@ module.exports = {
     });
   },
   create(synthData, overwrite, callback) {
-    if (overwrite === 'false' && fs.existsSync(path.resolve(__dirname, `./presets/${synthData.name || 'default'}.websynth.json`))) {
+    if (overwrite === 'false' && fs.existsSync(path.resolve(__dirname, `./presets/${synthData.name}.websynth.json`))) {
       callback('exists');
     } else {
-      fs.writeFile(path.resolve(__dirname, `./presets/${synthData.name || 'default'}.websynth.json`), JSON.stringify(synthData), (err) => {
+      fs.writeFile(path.resolve(__dirname, `./presets/${synthData.name}.websynth.json`), JSON.stringify(synthData), (err) => {
         if (err) {
           callback(err);
         } else {

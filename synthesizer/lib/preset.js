@@ -101,7 +101,7 @@ const Preset = {
       'Release': 'release',
       'Porta': 'porta'
     };
-    
+
     Array.from(document.getElementsByClassName('globalControls')[0].firstChild.children).forEach(child => {
       document.getElementsByClassName('polyButton')[0].setAttribute('class', `${synthesizer.globals.poly ? 'polyButton on' : 'polyButton off'}`);
       const classes = Array.from(child.classList);
@@ -158,7 +158,7 @@ const Preset = {
         history.pushState({}, 'WebSynth', `${netConfig.host}/?name=${synthesizer.name}`);
         renamed = true;
       }
-      fetch(`${netConfig.host}/preset?overwrite=${overwrite}${renamed ? `&oldName=${oldName}&newName=${synthesizer.name}` : null}`, {
+      fetch(`${netConfig.host}/preset?overwrite=${overwrite}${renamed ? `&oldName=${oldName}&newName=${synthesizer.name}` : ''}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

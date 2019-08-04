@@ -95,6 +95,8 @@ const FormController = {
       e.preventDefault();
       if (valid) {
         Preset.writeOrUpdate(Manager.synthesizer, Manager.overwrite, nameInput);
+      } else {
+        console.error('Invalid name');
       }
     });
   },
