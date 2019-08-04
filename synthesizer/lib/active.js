@@ -14,8 +14,8 @@ const Active = {
         console.error(`Fetch error: ${error}`);
       });
   },
-  retrieve(url) {
-    fetch(`${netConfig.host}/synths/${url.search}`)
+  retrieve(search) {
+    fetch(`${netConfig.host}/synths${search}`)
     .then(response => response.json())
     .then(synthData => {
       Preset.load(synthData)

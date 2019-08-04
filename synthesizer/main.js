@@ -29,7 +29,7 @@ const Manager = {
 //  - Synthesizer
 class Synthesizer {
   constructor(options = {}) {
-    this.name = options.name || 'default';
+    this.name = options.name;
     this.context = new AudioContext();
     this.router = new Router(this);
     this.masterGain = this.context.createGain();

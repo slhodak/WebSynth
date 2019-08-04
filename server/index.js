@@ -76,6 +76,7 @@ app.get('/synths', (req, res) => {
 });
 
 app.post('/synths/active', (req, res) => {
+  console.log("save to actives with name", req.body.name);
   Preset.createActive(req.body, (error, success) => {
     if (error) {
       res.status(500).send({ error });
