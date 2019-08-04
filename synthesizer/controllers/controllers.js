@@ -66,6 +66,7 @@ window.addEventListener('visibilitychange', (event) => {
   if (document.hidden && Manager.synthesizer && window.location.search) {
     Active.update(Manager.synthesizer);
   }
+  Manager.MIDIOn = !Manager.MIDIOn;
 });
 
 //  Window Close

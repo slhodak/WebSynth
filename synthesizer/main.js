@@ -13,7 +13,7 @@ import { OscView, RouterView } from './views/views.js';
 *  \_)(_/ \__/(____/(____)\____/(____/
 */
 
-let Manager = {
+const Manager = {
   createSynthesizerIfNoneExists(options = {}) {
     if (!Manager.synthesizer) {
       Manager.synthesizer = new Synthesizer(options);
@@ -22,7 +22,8 @@ let Manager = {
   },
   synthesizer: null,
   overwrite: false,
-  darkMode: false
+  darkMode: false,
+  MIDIOn: true
 };
 
 //  - Synthesizer
