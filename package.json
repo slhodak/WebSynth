@@ -4,7 +4,7 @@
   "description": "browser-based synth",
   "main": "bundle.js",
   "scripts": {
-    "test": "nodemon server/index.js",
+    "http-dev": "nodemon server/index.js",
     "start": "node server/index.js"
   },
   "repository": {
