@@ -1,6 +1,7 @@
 import { Manager } from '../main.js';
 import Helpers from '../lib/helpers.js';
 import netConfig from '../config/netConfig.js';
+import { FormView } from '../views/views.js';
 
 const Preset = {
   save(synthesizer, name) {
@@ -148,12 +149,12 @@ const Preset = {
       });
     });
   },
-  writeOrUpdate(synthesizer, overwrite) {
+  writeOrUpdate(synthesizer, overwrite, inputName) {
     if (synthesizer) {
       let renamed = false;
       let oldName = synthesizer.name;
-      if (synthesizer.name !== e.srcElement[0].value) {
-        synthesizer.name = e.srcElement[0].value;
+      if (synthesizer.name !== inputName) {
+        synthesizer.name = inputName;
         history.pushState({}, 'WebSynth', `${netConfig.host}/?name=${synthesizer.name}`);
         renamed = true;
       }
@@ -162,14 +163,14 @@ const Preset = {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(Preset.save(synthesizer, e.srcElement[0].value))
+        body: JSON.stringify(Preset.save(synthesizer, inputName))
       })
         .then(response => response.json())
         .then(body => {
           if (body.error === 'exists') {
             window.alert('A preset already exists with that name.\nPlease choose another name or select the "overwrite" option.');
           } else {
-            FormController.populatePresetSelector();
+            FormView.populatePresetSelector();
             document.getElementsByClassName('save')[0].setAttribute('class', 'module save confirmation');
             setTimeout(() => {
               document.getElementsByClassName('save')[0].setAttribute('class', 'module save');

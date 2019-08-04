@@ -56,16 +56,17 @@ window.onload = (event) => {
   let url = new URL(window.location);
   if (url.search) {
     if(window.confirm(`Load synth ${url.searchParams.get('name')}?`)) {
-      Active.retrieve(url);
+      Active.retrieve(url.search);
     }
   }
 };
 
 //  Visibility Changes
 window.addEventListener('visibilitychange', (event) => {
-  if (document.hidden && Manager.synthesizer && window.location.search) {
+  if (document.visibilityState === 'hidden' && Manager.synthesizer && window.location.search) {
     Active.update(Manager.synthesizer);
   }
+  Manager.MIDIOn = !Manager.MIDIOn;
 });
 
 //  Window Close
@@ -82,7 +83,7 @@ const FormController = {
   initializeSaveButton() {
     document.getElementsByClassName('savePreset')[0].addEventListener('submit', (e) => {
       e.preventDefault();
-      Preset.writeOrUpdate(Manager.synthesizer, Manager.overwrite);
+      Preset.writeOrUpdate(Manager.synthesizer, Manager.overwrite, e.srcElement[0].value);
     });
   },
   initializeOverwriteButton() {
