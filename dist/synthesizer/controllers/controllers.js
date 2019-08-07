@@ -134,7 +134,7 @@ const SynthController = {
     let masterGainSliderDisplay = document.getElementsByClassName('masterGainSliderDisplay')[0];
     masterGainSlider.addEventListener('input', (e) => {
       Manager.synthesizer.setGain(Number(e.target.value));
-      masterGainSliderDisplay.innerText = e.target.value;
+      masterGainSliderDisplay.innerText = Number(e.target.value).toFixed(2);
     });
   },
   addAttackController() {
@@ -142,7 +142,7 @@ const SynthController = {
     let attackSliderDisplay = document.getElementsByClassName('attackSliderDisplay')[0];
     attackSlider.addEventListener('input', (e) => {
       Manager.synthesizer.setAttack(Number(e.target.value));
-      attackSliderDisplay.innerText = e.target.value;
+      attackSliderDisplay.innerText = Number(e.target.value).toFixed(2);
     });
   },
   addReleaseController() {
@@ -150,7 +150,7 @@ const SynthController = {
     let releaseSliderDisplay = document.getElementsByClassName('releaseSliderDisplay')[0];
     releaseSlider.addEventListener('input', (e) => {
       Manager.synthesizer.setRelease(Number(e.target.value));
-      releaseSliderDisplay.innerText = e.target.value;
+      releaseSliderDisplay.innerText = Number(e.target.value).toFixed(2);
     });
   },
   addPortaController() {
@@ -158,7 +158,7 @@ const SynthController = {
     let portaSliderDisplay = document.getElementsByClassName('portaSliderDisplay')[0];
     portaSlider.addEventListener('input', (e) => {
       Manager.synthesizer.setPorta(Number(e.target.value));
-      portaSliderDisplay.innerText = e.target.value;
+      portaSliderDisplay.innerText = Number(e.target.value).toFixed(2);
     });
   }
 }

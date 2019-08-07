@@ -15,7 +15,7 @@ const SynthView = {
     return '<button class="polyButton on" type="button">Poly</button>' +
       Template.slider('masterGainSlider', 'Volume', 0, 1, 1, 0.001) +
       Template.slider('attackSlider', 'Attack', 0.001, 1, 0.1, 0.001) +
-      Template.slider('releaseSlider', 'Release', 0.1, 1, 0.1, 0.001) +
+      Template.slider('releaseSlider', 'Release', 0.1, 1, 0.05, 0.001) +
       Template.slider('portaSlider', 'Porta', 0.001, 1, 0.05, 0.001);
   },
   addControls() {
@@ -82,7 +82,7 @@ const OscView = {
     let semitoneSlider = Template.slider('semitoneSlider', 'Semitone', -24, 24, 0, 1);
     let fineDetuneSlider = Template.slider('fineDetuneSlider', 'Detune', -50, 50, 0, 1);
     let waveSelector = Template.selector('waveSelector', 'Wave', ['sine', 'sawtooth', 'square', 'triangle'], ['Sine', 'Sawtooth', 'Square', 'Triangle']);
-    return `<div id=${1000 + id}>` + /*header + */ volSlider + semitoneSlider + fineDetuneSlider + waveSelector + '</div>';
+    return `<div id=${1000 + id}>` + header + volSlider + semitoneSlider + fineDetuneSlider + waveSelector + '</div>';
   },
   addControls(id) {
     let oscControlsDiv = document.getElementsByClassName('oscillatorControls')[0];

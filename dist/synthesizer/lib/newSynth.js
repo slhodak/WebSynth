@@ -7,7 +7,7 @@ export default {
     "poly": true,
     "porta": 0.05,
     "attack": 0.01,
-    "release": 0.1,
+    "release": 0.05,
     "type": "sine",
     "mute": false,
     "volume": 0.75
