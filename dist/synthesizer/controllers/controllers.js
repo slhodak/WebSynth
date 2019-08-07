@@ -107,7 +107,7 @@ const FormController = {
   },
   initializeDarkModeButton() {
     document.getElementsByClassName('darkMode')[0].addEventListener('mousedown', (e) => {
-      SynthView.toggleDarkMode(Manager.darkMode);
+      SynthView.toggleDarkMode(Manager.darkMode, e.target);
       Manager.darkMode = !Manager.darkMode;
     });
   }

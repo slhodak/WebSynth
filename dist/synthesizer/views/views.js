@@ -24,7 +24,7 @@ const SynthView = {
     controls.innerHTML = SynthView.createControls();
     ControlsDiv.append(controls);
   },
-  toggleDarkMode(darkMode) {
+  toggleDarkMode(darkMode, button) {
     let newMode, oldMode;
       if (darkMode === true) {
         oldMode = 'dark';
@@ -40,7 +40,7 @@ const SynthView = {
       });
       document.body.setAttribute('class', `${newMode}Body`);
       document.getElementsByClassName('title')[0].setAttribute('class', `title module row ${newMode}Title`);
-      e.target.innerText = `${oldMode} mode`;
+      button.innerText = `${oldMode} mode`;
   }
 }
 
