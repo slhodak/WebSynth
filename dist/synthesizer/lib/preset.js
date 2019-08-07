@@ -1,5 +1,5 @@
 import { Manager } from '../main.js';
-import Helpers from '../lib/helpers.js';
+import Helpers from './helpers.js';
 import netConfig from '../config/netConfig.js';
 import { FormView } from '../views/views.js';
 

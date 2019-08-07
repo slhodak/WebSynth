@@ -1,5 +1,3 @@
-const host = 'http://localhost:3000';
-
 const scripts = [
   '/synthesizer/lib/preset.js',
   '/synthesizer/config/netConfig.js',
@@ -16,7 +14,7 @@ let reference = document.getElementsByClassName('scripts')[0];
 function addScripts(scripts, reference) {
   scripts.forEach((title, index) => {
     let script = document.createElement('script');
-    script.src = host + title;
+    script.src = title;
     script.type = "module"
     document.body.insertBefore(script, reference);
   });

@@ -36,13 +36,13 @@ class Synthesizer {
     this.masterGain.connect(this.context.destination);
     this.globals = {
       demoTone: false,
-      poly: options.poly,
-      porta: options.porta,
-      attack: options.attack,
-      release: options.release,
-      type: options.type,
-      mute: options.mute,
-      volume: options.volume
+      poly: options.globals.poly,
+      porta: options.globals.porta,
+      attack: options.globals.attack,
+      release: options.globals.release,
+      type: options.globals.type,
+      mute: options.globals.mute,
+      volume: options.globals.volume
     };
     this.mono = {
       note: null,
@@ -262,7 +262,7 @@ class Oscillator {
 
     this.setDestination = this.setDestination.bind(this);
 
-    this.setVolume = this.setVolume.bind(this);
+    this.setGain = this.setGain.bind(this);
     this.setPorta = this.setPorta.bind(this);
     this.setType = this.setType.bind(this);
     this.setSemitoneOffset = this.setSemitoneOffset.bind(this);
@@ -303,11 +303,12 @@ class Oscillator {
     this.dest = destination;
   }
 
-  setVolume(volume) {
-    this.volume = volume;
+  setGain(value) {
+    // console.log(value);
+    this.volume = value;
     for (let voice in this.voices) {
       Helpers.LL.changeAllNodes(this.voices[voice], (node) => {
-        node.gainNode.value = volume;
+        node.gainNode.gain.setTargetAtTime(value, this.synthesizer.context.currentTime, 0);
       });
     }
   }

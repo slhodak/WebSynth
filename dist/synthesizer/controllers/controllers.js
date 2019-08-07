@@ -3,6 +3,7 @@ import Preset from '../lib/preset.js';
 import Active from '../lib/active.js';
 import Helpers from '../lib/helpers.js';
 import Template from '../views/templates.js';
+import newSynth from '../lib/newSynth.js';
 import { SynthView, FormView } from '../views/views.js';
 
 /*  ___  __   __ _  ____  ____   __   __    __    ____  ____  ____ 
@@ -38,12 +39,14 @@ window.onload = (event) => {
   FormController.initializeDarkModeButton();
 
   SynthView.addControls();
-  document.getElementsByClassName('globalControls')[0].addEventListener('mousedown', Manager.createSynthesizerIfNoneExists);
+  document.getElementsByClassName('globalControls')[0].addEventListener('mousedown', () => {
+    Manager.createSynthesizerIfNoneExists(newSynth) 
+  });
 
   window.addEventListener('keydown', (e) => {
     if (e.target.type !== 'text') {
       if (!Manager.synthesizer) {
-        Manager.createSynthesizerIfNoneExists();
+        Manager.createSynthesizerIfNoneExists(newSynth);
         if (Controls[e.keyCode] && e.keyCode !== 32) {
           Controls[e.keyCode]();
         }
@@ -94,7 +97,7 @@ const FormController = {
     });
   },
   initializeLoadPresetModule() {
-    FormView.populatePresetSelector();
+    // FormView.populatePresetSelector();
     FormController.initializeLoadPresetButton();
   },
   initializeLoadPresetButton() {
@@ -201,7 +204,7 @@ const OscController = {
     let volumeSlider = document.getElementsByClassName('volumeSlider')[id];
     let volumeSliderDisplay = document.getElementsByClassName('volumeSliderDisplay')[id];
     volumeSlider.addEventListener('input', (e) => {
-      Manager.synthesizer.oscillators[id].setVolume(e.target.value);
+      Manager.synthesizer.oscillators[id].setGain(e.target.value);
       volumeSliderDisplay.innerText = e.target.value;
     });
   },
