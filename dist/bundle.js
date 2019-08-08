@@ -1,3 +1,5 @@
+const host = 'https://slhodak.github.io/WebSynth/dist';
+
 const scripts = [
   '/synthesizer/lib/preset.js',
   '/synthesizer/config/netConfig.js',
@@ -14,7 +16,7 @@ let reference = document.getElementsByClassName('scripts')[0];
 function addScripts(scripts, reference) {
   scripts.forEach((title, index) => {
     let script = document.createElement('script');
-    script.src = title;
+    script.src = host + title;
     script.type = "module"
     document.body.insertBefore(script, reference);
   });
