@@ -15,11 +15,13 @@ const wss = new ws.Server({
 });
 
 wss.on('listening', () => {
-  console.log(`WebSocket Server connected on port 3001`);
-  wss.on('connection', (socket) => {
-    console.log('Handshake completed, socket created');
-    wss.dawSocket = new DawSocket(socket);
-  });
+  console.log(`Synth WebSocket Server connected on port 3001`);
+});
+
+wss.on('connection', (ws) => {
+  console.log(ws.protocol);
+  console.log('Handshake completed, daw socket created');
+  wss.dawSocket = new DawSocket(ws);
 });
   
 module.exports = wss;
