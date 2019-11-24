@@ -42,7 +42,7 @@ app.post('/preset', (req, res) => {
 });
 
 app.get('/presetNames', (req, res) => {
-  Preset.getAllNames((error, names) => {
+  Preset.findAllNames((error, names) => {
     if (error) {
       res.status(500).send({ error });
     } else {
