@@ -74,15 +74,27 @@ module.exports = {
       });
     }
   },
-  getAllNames(callback) {
+  findAllNames(callback) {
     fs.readdir(path.resolve(__dirname, './presets'), (err, files) => {
       if (!err) {
-        callback(null, files.filter(name => /\.websynth\.json$/.test(name))
-          .map(fullname => fullname.match(/^(.*?)\.websynth\.json/)[1]));
+        this.readAllNames(callback, files);
+      } else if (err.code === 'ENOENT') {
+        fs.mkdir(path.resolve(__dirname, './presets'), (err) => {
+          if (!err) {
+            findAllNames(callback, files);
+          } else {
+            callback(err);
+          }
+        });
       } else {
         callback(err);
       }
     });
+  },
+  readAllNames(callback, files) {
+    const presetFiles = files.filter(name => /\.websynth\.json$/.test(name));
+    const presetNames = presetFiles.map(fullname => fullname.match(/^(.*?)\.websynth\.json/)[1]);
+    callback(null, presetNames);
   },
   getOnePreset(filename, callback) {
     fs.open(path.resolve(__dirname, `./presets/${filename}.websynth.json`), 'r', (err, fd) => {
