@@ -24,6 +24,6 @@
   "homepage": "https://github.com/slhodak/synthesizer_b2#readme",
   "dependencies": {
     "express": "^4.17.1",
-    "ws": "^7.1.1"
+    "ws": "^7.4.6"
   }
 }
